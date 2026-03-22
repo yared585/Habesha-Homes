@@ -113,9 +113,9 @@ async function handleTelebirrPayment(
   // Based on Telebirr H5Pay API
   try {
     const telebirrPayload = {
-      appId: process.env.TELEBIRR_APP_ID,
-      appKey: process.env.TELEBIRR_APP_KEY,
-      shortCode: process.env.TELEBIRR_SHORT_CODE,
+      appId: process.env.TELEBIRR_APP_ID || '',
+      appKey: process.env.TELEBIRR_APP_KEY || '',
+      shortCode: process.env.TELEBIRR_SHORT_CODE || '',
       outTradeNo: payment.id,
       subject: payment.description || 'Habesha Homes Payment',
       totalAmount: pricing.etb.toString(),
