@@ -189,7 +189,7 @@ export default function PropertyDetailPage() {
           )}
           {tab === 'ai' && <PropertyChat property={property} initialLanguage={lang} />}
           {tab === 'fraud' && <FraudCheckUpload propertyId={property.id} existingResult={property.title_verification_report} />}
-          {tab === 'valuation' && <ValuationReport property={property} existingValuation={property.ai_valuation_report} />}
+          {tab === 'valuation' && <ValuationReport property={property} />}
         </div>
 
         {/* RIGHT SIDEBAR */}
