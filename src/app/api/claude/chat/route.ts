@@ -1,54 +1,73 @@
 import { NextRequest } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
 
 export const runtime = 'edge'
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { property_id, messages, language = 'en' } = body
+    const { messages, language = 'en' } = body
 
     if (!messages?.length) {
       return Response.json({ error: 'Missing messages' }, { status: 400 })
     }
 
-    // Build system prompt
     const isAmharic = language === 'am'
     const systemPrompt = isAmharic
-      ? `አንተ የሀበሻ ሆምስ AI ረዳት ነህ - ኢትዮጵያ ውስጥ ያለ ቤት ለሚፈልጉ ሰዎች ትረዳለህ። ስለ ዋጋ፣ ሰፈር፣ ሕጋዊ ሂደት፣ እና ቤት ስለ መግዛት ወይም ስለ መከራየት ጥያቄዎችን መልስ ስጥ። አጠር ያሉ፣ ጠቃሚ መልሶችን ስጥ።`
-      : `You are the Habesha Homes AI assistant helping users find and evaluate Ethiopian properties. Answer questions about pricing, neighborhoods, legal steps, buying/renting process, and investment potential. Be concise, helpful, and knowledgeable about the Ethiopian real estate market. Prices are in Ethiopian Birr (ETB). Key areas: Bole, Kazanchis, Megenagna, CMC, Sarbet, Gerji, Piassa.`
+      ? `አንተ የሀበሻ ሆምስ AI ረዳት ነህ። ስለ ቤት ዋጋ፣ ሰፈር፣ ሕጋዊ ሂደት ጥያቄዎችን መልስ ስጥ። አጠር ያሉ መልሶችን ስጥ።`
+      : `You are the Habesha Homes AI assistant for Ethiopian real estate. Answer questions about pricing, neighborhoods, legal steps, buying/renting process, and investment potential. Be concise and helpful. Prices in Ethiopian Birr (ETB). Key areas: Bole, Kazanchis, Megenagna, CMC, Sarbet, Gerji, Piassa.`
 
-    const formattedMessages = messages.map((m: any) => ({
-      role: m.role as 'user' | 'assistant',
-      content: m.content,
-    }))
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_API_KEY!,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1024,
+        system: systemPrompt,
+        stream: true,
+        messages: messages.map((m: any) => ({
+          role: m.role,
+          content: m.content,
+        })),
+      }),
+    })
 
+    if (!response.ok) {
+      const err = await response.json()
+      return Response.json({ error: err.error?.message || 'API error' }, { status: 500 })
+    }
+
+    // Pass through the stream directly
     const encoder = new TextEncoder()
     const stream = new ReadableStream({
       async start(controller) {
+        const reader = response.body!.getReader()
+        const decoder = new TextDecoder()
         try {
-          const response = await client.messages.create({
-            model: 'claude-sonnet-4-6',
-            max_tokens: 1024,
-            system: systemPrompt,
-            messages: formattedMessages,
-            stream: true,
-          })
-
-          for await (const chunk of response) {
-            if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: chunk.delta.text })}\n\n`))
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+            const chunk = decoder.decode(value)
+            for (const line of chunk.split('\n')) {
+              if (line.startsWith('data: ')) {
+                const data = line.slice(6)
+                if (data === '[DONE]') continue
+                try {
+                  const parsed = JSON.parse(data)
+                  if (parsed.type === 'content_block_delta' && parsed.delta?.type === 'text_delta') {
+                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: parsed.delta.text })}\n\n`))
+                  }
+                } catch {}
+              }
             }
           }
           controller.enqueue(encoder.encode('data: [DONE]\n\n'))
           controller.close()
-        } catch (err: any) {
-          console.error('Stream error:', err)
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: 'Sorry, I encountered an error. Please try again.' })}\n\n`))
-          controller.enqueue(encoder.encode('data: [DONE]\n\n'))
-          controller.close()
+        } catch (err) {
+          controller.error(err)
         }
       }
     })
@@ -57,12 +76,10 @@ export async function POST(request: NextRequest) {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
       }
     })
 
   } catch (error: any) {
-    console.error('Chat API error:', error)
-    return Response.json({ error: error.message || 'Internal server error' }, { status: 500 })
+    return Response.json({ error: error.message }, { status: 500 })
   }
 }
