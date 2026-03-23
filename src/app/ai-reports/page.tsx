@@ -1,5 +1,3 @@
-'use client'
-
 import Link from 'next/link'
 import { PayButton } from '@/components/ui/PayButton'
 import { ArrowRight, Shield, TrendingUp, FileText, MessageCircle, Map, Sparkles } from 'lucide-react'
