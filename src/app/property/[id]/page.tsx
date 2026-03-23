@@ -243,7 +243,7 @@ export default function PropertyDetailPage() {
               {property.coordinates && (
                 <div>
                   <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', marginBottom: 12 }}>Location</h3>
-                  <PropertyMap properties={[property]} center={property.coordinates} zoom={15} height={280} />
+                  <PropertyMap properties={[property]} center={(property as any).lat ? { lat: (property as any).lat, lng: (property as any).lng } : { lat: 9.0192, lng: 38.7892 }} zoom={15} height={280} />
                 </div>
               )}
             </div>

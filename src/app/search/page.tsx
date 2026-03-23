@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Search, SlidersHorizontal, MapIcon, List, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { PropertyMap } from '@/components/property/PropertyMap'
+
 import { formatETB } from '@/lib/utils'
 import type { Property, PropertyFilters, Neighborhood } from '@/types'
 

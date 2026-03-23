@@ -100,35 +100,37 @@ export function PropertyMap({
       const price = property.listing_intent === 'rent' ? property.rent_per_month_etb : property.price_etb
       const label = formatETB(price)
 
+      const isRent = property.listing_intent === 'rent'
+      const bgColor = property.is_featured ? '#f59e0b' : isRent ? '#2563eb' : '#16a34a'
+
       const el = document.createElement('div')
-      el.style.cssText = `
-        background: ${property.is_featured ? '#16a34a' : '#111'};
-        color: white;
-        padding: 5px 10px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        white-space: nowrap;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-        font-family: system-ui, sans-serif;
-        transition: transform 0.1s;
-        user-select: none;
-      `
-      el.textContent = label
-      el.onmouseenter = () => el.style.transform = 'scale(1.08)'
-      el.onmouseleave = () => el.style.transform = 'scale(1)'
+      el.style.cssText = 'display:flex;flex-direction:column;align-items:center;cursor:pointer;user-select:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.3));transition:transform 0.15s;'
+
+      const bubble = document.createElement('div')
+      bubble.style.cssText = 'background:' + bgColor + ';color:white;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;font-family:system-ui,sans-serif;border:2px solid rgba(255,255,255,0.35);'
+      bubble.textContent = label
+
+      const tip = document.createElement('div')
+      tip.style.cssText = 'width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid ' + bgColor + ';margin-top:-1px;'
+
+      el.appendChild(bubble)
+      el.appendChild(tip)
+
+      el.onmouseenter = () => { el.style.transform = 'scale(1.12)'; el.style.filter = 'drop-shadow(0 5px 10px rgba(0,0,0,0.4))' }
+      el.onmouseleave = () => { el.style.transform = 'scale(1)'; el.style.filter = 'drop-shadow(0 3px 6px rgba(0,0,0,0.3))' }
 
       try {
-        const marker = new MB.Marker({ element: el })
-          .setLngLat([coords.lng, coords.lat])
-          .addTo(map)
-
-        el.addEventListener('click', () => {
+        // Add click BEFORE adding to map
+        el.addEventListener('click', (e) => {
+          e.stopPropagation()
           setSelectedProperty(property)
           if (onPropertyClick) onPropertyClick(property)
           map.flyTo({ center: [coords.lng, coords.lat], zoom: 15, duration: 800 })
         })
+
+        const marker = new MB.Marker({ element: el })
+          .setLngLat([coords.lng, coords.lat])
+          .addTo(map)
 
         markersRef.current.push(marker)
       } catch (err) {
