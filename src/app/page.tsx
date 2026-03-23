@@ -6,9 +6,9 @@ export default function HomePage() {
   return (
     <>
       <Hero/>
+      <FeaturedProperties/>
       <StatsBar/>
       <AIFeatures/>
-      <FeaturedProperties/>
       <NeighborhoodGrid/>
       <HowItWorks/>
       <DiasporaCTA/>

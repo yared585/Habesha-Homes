@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { createClient } from '@/lib/supabase/client'
 import { Check, ArrowRight, ArrowLeft, Home, MapPin, Image, Sparkles, Building2 } from 'lucide-react'
+import { PhotoUpload } from '@/components/property/PhotoUpload'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface ListingForm {
@@ -30,6 +31,7 @@ interface ListingForm {
   address: string
   // Step 4 — Photos (URLs for now)
   cover_image_url: string
+  photos: string[]
 }
 
 const INITIAL: ListingForm = {
@@ -39,6 +41,7 @@ const INITIAL: ListingForm = {
   amenities: [], description: '',
   city: 'Addis Ababa', neighborhood_name: '', address: '',
   cover_image_url: '',
+  photos: [],
 }
 
 const PROPERTY_TYPES = ['apartment','villa','house','condominium','land','office','commercial','warehouse']
@@ -207,22 +210,13 @@ function Step4({ form, set }: { form: ListingForm; set: (f: Partial<ListingForm>
     <div style={{ display: 'grid', gap: 20 }}>
       <h2 style={{ fontSize: 22, fontWeight: 800, color: '#111', margin: 0 }}>Property photos</h2>
       <p style={{ fontSize: 14, color: '#666', margin: 0, lineHeight: 1.6 }}>
-        Add a cover photo URL for now. Full photo upload with Cloudinary will be available soon.
+        Upload photos of your property. The first photo will be the cover image shown in listings.
       </p>
-      <Input label="Cover photo URL" value={form.cover_image_url} onChange={(v: string) => set({ cover_image_url: v })} placeholder="https://images.unsplash.com/..."/>
-      {form.cover_image_url && (
-        <div>
-          <div style={{ fontSize: 12, color: '#888', marginBottom: 8 }}>Preview:</div>
-          <img src={form.cover_image_url} alt="Cover" style={{ width: '100%', height: 200, objectFit: 'cover', borderRadius: 12, border: '1px solid #eae9e4' }}
-            onError={e => (e.target as HTMLImageElement).style.display = 'none'}
-          />
-        </div>
-      )}
-      <div style={{ background: '#fafaf8', border: '1px dashed #d0d0cc', borderRadius: 12, padding: 24, textAlign: 'center' }}>
-        <div style={{ fontSize: 32, marginBottom: 8 }}>📸</div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: '#888', marginBottom: 4 }}>Photo upload coming soon</div>
-        <div style={{ fontSize: 12, color: '#aaa' }}>For now paste an image URL above or skip and add photos later</div>
-      </div>
+      <PhotoUpload
+        onUpload={(urls) => set({ cover_image_url: urls[0] || '', photos: urls })}
+        maxPhotos={8}
+        existingPhotos={form.photos || (form.cover_image_url ? [form.cover_image_url] : [])}
+      />
     </div>
   )
 }

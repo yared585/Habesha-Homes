@@ -10,7 +10,7 @@ export function FeaturedProperties() {
   const { properties, loading } = useProperties({ limit: 6, featured: false })
 
   return (
-    <section style={{ padding: '80px 24px', background: '#fff', borderTop: '1px solid #eae9e4' }}>
+    <section style={{ padding: '20px 24px 40px', background: '#fff', borderTop: '1px solid #eae9e4' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <SectionHeader
           title="Featured properties"

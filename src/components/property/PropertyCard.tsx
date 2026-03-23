@@ -58,10 +58,15 @@ export function PropertyCard({ property: p }: Props) {
             {p.listing_intent === 'rent' && <span style={{ fontSize: 12, color: '#aaa' }}>/mo</span>}
             {p.price_usd && <span style={{ fontSize: 12, color: '#bbb' }}>≈ ${p.price_usd.toLocaleString()}</span>}
           </div>
-          <div style={{ display: 'flex', gap: 14, fontSize: 13, color: '#666', paddingTop: 12, borderTop: '1px solid #f5f5f2' }}>
-            {p.bedrooms && <span>{p.bedrooms} bed</span>}
-            {p.bathrooms && <span>{p.bathrooms} bath</span>}
-            {p.size_sqm && <span>{p.size_sqm}m²</span>}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: '1px solid #f5f5f2' }}>
+            <div style={{ display: 'flex', gap: 14, fontSize: 13, color: '#666' }}>
+              {p.bedrooms && <span>{p.bedrooms} bed</span>}
+              {p.bathrooms && <span>{p.bathrooms} bath</span>}
+              {p.size_sqm && <span>{p.size_sqm}m²</span>}
+            </div>
+            {(p as any).views > 0 && (
+              <span style={{ fontSize: 11, color: '#bbb' }}>{(p as any).views} views</span>
+            )}
           </div>
         </div>
       </div>

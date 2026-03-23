@@ -2,10 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Search, MapPin, TrendingUp, Home, Building2, Map, Zap } from 'lucide-react'
-import { ChevronDown, Check } from 'lucide-react'
-import { EthiopianFlag, AIPill } from '@/components/ui'
-import { Counter, Sparkline, LiveStatItem } from '@/components/ui/DataViz'
+import { Search, MapPin, TrendingUp, Home, Building2, Map, ChevronDown, Check, Sparkles } from 'lucide-react'
+import { Counter } from '@/components/ui/DataViz'
 import { useLiveStats } from '@/hooks/useProperties'
 
 const CITIES = ['Addis Ababa','Dire Dawa','Hawassa','Bahir Dar','Mekelle','Adama','Jimma']
@@ -13,38 +11,36 @@ const TYPES  = ['Any type','Apartment','Villa','House','Condominium','Commercial
 const BEDS   = ['Any beds','Studio','1+','2+','3+','4+','5+']
 const SALE_PRICES = ['Any price','Under ETB 1M','ETB 1M–3M','ETB 3M–6M','ETB 6M–10M','Over ETB 10M']
 const RENT_PRICES = ['Any price','Under ETB 5K','ETB 5K–15K','ETB 15K–30K','ETB 30K–60K','Over ETB 60K']
+const FURNISHED = ['Any','Furnished','Unfurnished','Semi-furnished']
 
-const BOLE_TREND = [42,45,48,51,55,60,64,67,71,74,76,78]
-
-// ── Dropdown ──────────────────────────────────────────────────────────────────
 function Dropdown({ id, value, options, onChange, icon, active, setActive }: any) {
   const open = active === id
   const changed = value !== options[0]
   return (
-    <div style={{ position: 'relative', flex: 1, minWidth: 130 }}>
+    <div style={{ position: 'relative', flex: 1, minWidth: 100 }}>
       <button onClick={() => setActive(open ? null : id)} style={{
-        width: '100%', display: 'flex', alignItems: 'center', gap: 8,
+        display: 'flex', alignItems: 'center', gap: 6, width: '100%',
         background: changed ? '#f0fdf4' : '#fff',
         border: `1.5px solid ${changed ? '#16a34a' : '#e0dfd9'}`,
-        borderRadius: 10, padding: '11px 14px', cursor: 'pointer', fontSize: 14,
-        color: changed ? '#15803d' : '#555', transition: 'all .15s',
-        fontWeight: changed ? 600 : 400, fontFamily: 'inherit',
+        borderRadius: 8, padding: '8px 10px', cursor: 'pointer', fontSize: 12,
+        color: changed ? '#15803d' : '#555', fontWeight: changed ? 600 : 400,
+        fontFamily: 'inherit', transition: 'all .15s', whiteSpace: 'nowrap',
       }}>
-        <span style={{ color: changed ? '#16a34a' : '#888', display: 'flex' }}>{icon}</span>
-        <span style={{ flex: 1, textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{value}</span>
-        <ChevronDown size={14} style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .15s', color: '#aaa', flexShrink: 0 }}/>
+        <span style={{ color: changed ? '#16a34a' : '#aaa', display: 'flex', flexShrink: 0 }}>{icon}</span>
+        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, textAlign: 'left' }}>{value}</span>
+        <ChevronDown size={11} style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .15s', color: '#bbb', flexShrink: 0 }}/>
       </button>
       {open && (
         <>
           <div onClick={() => setActive(null)} style={{ position: 'fixed', inset: 0, zIndex: 40 }}/>
-          <div style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0, background: '#fff', border: '1px solid #e0dfd9', borderRadius: 12, boxShadow: '0 12px 40px rgba(0,0,0,0.12)', zIndex: 50, overflow: 'hidden', minWidth: 180 }}>
+          <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, background: '#fff', border: '1px solid #e0dfd9', borderRadius: 10, boxShadow: '0 8px 30px rgba(0,0,0,0.12)', zIndex: 50, overflow: 'hidden', minWidth: 160 }}>
             {options.map((opt: string) => (
               <button key={opt} onClick={() => { onChange(opt); setActive(null) }}
-                style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '11px 14px', background: opt === value ? '#f0fdf4' : 'transparent', border: 'none', fontSize: 14, color: opt === value ? '#15803d' : '#333', cursor: 'pointer', textAlign: 'left', fontWeight: opt === value ? 600 : 400, fontFamily: 'inherit' }}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '9px 12px', background: opt === value ? '#f0fdf4' : 'transparent', border: 'none', fontSize: 13, color: opt === value ? '#15803d' : '#333', cursor: 'pointer', fontWeight: opt === value ? 600 : 400, fontFamily: 'inherit' }}
                 onMouseEnter={e => { if (opt !== value) (e.currentTarget as HTMLButtonElement).style.background = '#f9f9f7' }}
                 onMouseLeave={e => { if (opt !== value) (e.currentTarget as HTMLButtonElement).style.background = 'transparent' }}
               >
-                {opt === value ? <Check size={13} color="#16a34a" style={{ flexShrink: 0 }}/> : <span style={{ width: 13, flexShrink: 0 }}/>}
+                {opt === value ? <Check size={12} color="#16a34a" style={{ flexShrink: 0 }}/> : <span style={{ width: 12, flexShrink: 0 }}/>}
                 {opt}
               </button>
             ))}
@@ -55,43 +51,22 @@ function Dropdown({ id, value, options, onChange, icon, active, setActive }: any
   )
 }
 
-// ── Live market card ──────────────────────────────────────────────────────────
-function LiveMarketCard() {
-  const { stats, loading } = useLiveStats()
-  return (
-    <div style={{ background: '#f9f9f7', border: '1px solid #eae9e4', borderRadius: 20, padding: 24, boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 20 }}>
-        <div style={{ width: 7, height: 7, borderRadius: '50%', background: loading ? '#d0d0cc' : '#16a34a' }}/>
-        <div style={{ fontSize: 11, fontWeight: 700, color: '#bbb', letterSpacing: '.07em', textTransform: 'uppercase' }}>
-          {loading ? 'Loading...' : 'Live data'}
-        </div>
-      </div>
-      <LiveStatItem label="Active listings" value={stats.listings} suffix={stats.listings > 0 ? '+' : ''} color="#16a34a" note={stats.listings === 0 ? 'Add properties to see data' : undefined}/>
-      <LiveStatItem label="Verified agents" value={stats.agents} color="#111"/>
-      <LiveStatItem label="AI reports run" value={stats.reports} color="#16a34a"/>
-      <LiveStatItem label="Yearly price growth" value={14} suffix="%" color="#2563eb" note="Addis Ababa avg"/>
-      <div style={{ borderTop: '1px solid #eae9e4', paddingTop: 16, marginTop: 2 }}>
-        <div style={{ fontSize: 11, color: '#ccc', marginBottom: 6 }}>Bole price trend — 12 months</div>
-        <Sparkline data={BOLE_TREND}/>
-      </div>
-    </div>
-  )
-}
-
-// ── Hero ──────────────────────────────────────────────────────────────────────
 export function Hero() {
   const [intent, setIntent] = useState<'sale' | 'rent'>('sale')
-  const [city, setCity]   = useState('Addis Ababa')
-  const [type, setType]   = useState('Any type')
-  const [price, setPrice] = useState('Any price')
-  const [beds, setBeds]   = useState('Any beds')
-  const [activeDD, setActiveDD] = useState<string | null>(null)
+  const [city, setCity]       = useState('Addis Ababa')
+  const [type, setType]       = useState('Any type')
+  const [price, setPrice]     = useState('Any price')
+  const [beds, setBeds]       = useState('Any beds')
+  const [furnished, setFurnished] = useState('Any')
+  const [activeDD, setActiveDD]   = useState<string | null>(null)
+  const { stats, loading }        = useLiveStats()
 
   function buildUrl() {
     const p = new URLSearchParams({ intent })
     if (city !== 'Addis Ababa') p.set('city', city)
     if (type !== 'Any type') p.set('types', type.toLowerCase())
     if (beds !== 'Any beds' && beds !== 'Studio') p.set('min_beds', beds.replace('+', ''))
+    if (furnished !== 'Any') p.set('furnished', furnished.toLowerCase())
     if (price !== 'Any price') {
       const ranges: Record<string, [number, number]> = {
         'Under ETB 1M': [0,1000000], 'ETB 1M–3M': [1000000,3000000],
@@ -107,74 +82,99 @@ export function Hero() {
   }
 
   return (
-    <section style={{ background: '#fff', borderBottom: '1px solid #eae9e4', padding: '64px 24px 72px' }}>
+    <section style={{ background: '#fff', borderBottom: '1px solid #eae9e4', padding: '16px 24px' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <EthiopianFlag size="lg"/>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 48, alignItems: 'start', marginTop: 28 }}>
+
+        {/* Title row — small */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
           <div>
-            <div style={{ marginBottom: 22 }}><AIPill label="Powered by Claude AI · ክሎድ AI"/></div>
-
-            <h1 style={{ fontSize: 'clamp(34px,5vw,60px)', fontWeight: 900, color: '#111', lineHeight: 1.05, margin: '0 0 18px', letterSpacing: '-.025em' }}>
-              Ethiopia's smartest<br/>
-              <span style={{ color: '#16a34a' }}>property marketplace</span>
+            <h1 style={{ fontSize: 18, fontWeight: 900, color: '#111', margin: 0, letterSpacing: '-.015em', display: 'inline' }}>
+              Ethiopia's smartest{' '}
             </h1>
+            <span style={{ fontSize: 18, fontWeight: 900, color: '#16a34a' }}>property marketplace</span>
+            <span style={{ fontSize: 12, color: '#bbb', marginLeft: 12 }}>
+              AI fraud detection · valuations · Amharic 24/7
+            </span>
+          </div>
+        </div>
 
-            <p style={{ fontSize: 17, color: '#666', marginBottom: 36, lineHeight: 1.7, maxWidth: 520 }}>
-              Buy, sell, rent and invest with AI that speaks Amharic — fraud detection, instant valuations, and expert guidance 24/7.
-            </p>
-
-            {/* Intent toggle */}
-            <div style={{ display: 'inline-flex', background: '#f5f4f0', borderRadius: 12, padding: 4, marginBottom: 16 }}>
+        {/* Search box */}
+        <div style={{ background: '#f9f9f7', border: '1px solid #eae9e4', borderRadius: 12, padding: '10px 14px', marginBottom: 8 }}>
+          {/* Row 1 — toggle + all filters */}
+          <div style={{ display: 'flex', gap: 7, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8, width: '100%' }}>
+            {/* Buy/Rent */}
+            <div style={{ display: 'inline-flex', background: '#fff', borderRadius: 7, padding: 2, border: '1px solid #eae9e4', flexShrink: 0 }}>
               {(['sale', 'rent'] as const).map(i => (
-                <button key={i} onClick={() => { setIntent(i); setPrice('Any price') }} style={{
-                  padding: '9px 28px', borderRadius: 9, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600,
-                  background: intent === i ? '#fff' : 'transparent', color: intent === i ? '#111' : '#888',
-                  boxShadow: intent === i ? '0 2px 8px rgba(0,0,0,0.08)' : 'none', transition: 'all .15s', fontFamily: 'inherit',
+                <button key={i} onClick={() => { setIntent(i); setPrice('Any price'); setFurnished('Any') }} style={{
+                  padding: '5px 14px', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600,
+                  background: intent === i ? '#0d2318' : 'transparent',
+                  color: intent === i ? '#fff' : '#888',
+                  transition: 'all .15s', fontFamily: 'inherit',
                 }}>
                   {i === 'sale' ? 'Buy' : 'Rent'}
                 </button>
               ))}
             </div>
 
-            {/* Filters */}
-            <div style={{ display: 'flex', gap: 10, marginBottom: 14, flexWrap: 'wrap' }}>
-              <Dropdown id="city"  value={city}  options={CITIES} onChange={setCity}  icon={<MapPin size={15}/>}    active={activeDD} setActive={setActiveDD}/>
-              <Dropdown id="type"  value={type}  options={TYPES}  onChange={setType}  icon={<Building2 size={15}/>} active={activeDD} setActive={setActiveDD}/>
-              <Dropdown id="price" value={price} options={intent === 'sale' ? SALE_PRICES : RENT_PRICES} onChange={setPrice} icon={<TrendingUp size={15}/>} active={activeDD} setActive={setActiveDD}/>
-              <Dropdown id="beds"  value={beds}  options={BEDS}   onChange={setBeds}  icon={<Home size={15}/>}       active={activeDD} setActive={setActiveDD}/>
-            </div>
+            <Dropdown id="city"  value={city}  options={CITIES} onChange={setCity}  icon={<MapPin size={12}/>}    active={activeDD} setActive={setActiveDD}/>
+            <Dropdown id="type"  value={type}  options={TYPES}  onChange={setType}  icon={<Building2 size={12}/>} active={activeDD} setActive={setActiveDD}/>
+            <Dropdown id="price" value={price} options={intent === 'sale' ? SALE_PRICES : RENT_PRICES} onChange={setPrice} icon={<TrendingUp size={12}/>} active={activeDD} setActive={setActiveDD}/>
+            <Dropdown id="beds"  value={beds}  options={BEDS}   onChange={setBeds}  icon={<Home size={12}/>}      active={activeDD} setActive={setActiveDD}/>
+            {intent === 'rent' && (
+              <Dropdown id="furn" value={furnished} options={FURNISHED} onChange={setFurnished} icon={<Sparkles size={12}/>} active={activeDD} setActive={setActiveDD}/>
+            )}
+          </div>
 
-            {/* CTA buttons */}
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-              <Link href={buildUrl()} style={{ display: 'inline-flex', alignItems: 'center', gap: 9, background: '#111', color: '#fff', padding: '14px 32px', borderRadius: 12, fontSize: 15, fontWeight: 700, textDecoration: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.15)', transition: 'all .15s' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#0d2318'; (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-1px)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#111'; (e.currentTarget as HTMLAnchorElement).style.transform = 'none' }}
+          {/* Row 2 — buttons + popular */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'space-between', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 7 }}>
+              <Link href={buildUrl()} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#16a34a', color: '#fff', padding: '8px 22px', borderRadius: 8, fontSize: 13, fontWeight: 700, textDecoration: 'none' }}
+                onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.background = '#15803d'}
+                onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.background = '#16a34a'}
               >
-                <Search size={17}/> Search properties
+                <Search size={13}/> Search
               </Link>
-              <Link href="/search?view=map" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'transparent', color: '#555', padding: '14px 22px', borderRadius: 12, fontSize: 14, fontWeight: 500, textDecoration: 'none', border: '1.5px solid #e0dfd9', transition: 'all .15s' }}
+              <Link href="/search?view=map" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#666', padding: '8px 14px', borderRadius: 8, fontSize: 12, textDecoration: 'none', border: '1.5px solid #e0dfd9' }}
                 onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = '#16a34a'; (e.currentTarget as HTMLAnchorElement).style.color = '#16a34a' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = '#e0dfd9'; (e.currentTarget as HTMLAnchorElement).style.color = '#555' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = '#e0dfd9'; (e.currentTarget as HTMLAnchorElement).style.color = '#666' }}
               >
-                <Map size={15}/> Map view
+                <Map size={12}/> Map
               </Link>
             </div>
-
-            {/* Popular tags */}
-            <div style={{ display: 'flex', gap: 8, marginTop: 20, flexWrap: 'wrap', alignItems: 'center' }}>
-              <span style={{ fontSize: 12, color: '#bbb' }}>Popular:</span>
-              {['Bole apartments', 'Kazanchis villas', 'CMC condos', 'Diaspora deals', 'Land for sale'].map(t => (
+            <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', alignItems: 'center' }}>
+              <span style={{ fontSize: 10, color: '#ccc' }}>Popular:</span>
+              {['Bole', 'Kazanchis', 'CMC', 'Diaspora', 'Land'].map(t => (
                 <Link key={t} href={`/search?q=${encodeURIComponent(t)}`}
-                  style={{ fontSize: 12, color: '#666', padding: '5px 13px', border: '1px solid #e5e4df', borderRadius: 20, textDecoration: 'none', transition: 'all .15s' }}
+                  style={{ fontSize: 11, color: '#888', padding: '2px 9px', border: '1px solid #e5e4df', borderRadius: 20, textDecoration: 'none' }}
                   onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = '#16a34a'; (e.currentTarget as HTMLAnchorElement).style.color = '#16a34a' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = '#e5e4df'; (e.currentTarget as HTMLAnchorElement).style.color = '#666' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = '#e5e4df'; (e.currentTarget as HTMLAnchorElement).style.color = '#888' }}
                 >{t}</Link>
               ))}
             </div>
           </div>
-
-          <LiveMarketCard/>
         </div>
+
+        {/* Live data — right aligned compact row */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <div style={{ width: 5, height: 5, borderRadius: '50%', background: loading ? '#ccc' : '#16a34a' }}/>
+              <span style={{ fontSize: 10, color: '#bbb', fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase' }}>Live</span>
+            </div>
+            {[
+              { label: 'Listings', val: stats.listings, suffix: stats.listings > 0 ? '+' : '', color: '#16a34a' },
+              { label: 'Agents', val: stats.agents, suffix: '', color: '#555' },
+              { label: 'Reports', val: stats.reports, suffix: '', color: '#555' },
+              { label: 'Growth', val: 14, suffix: '%', color: '#2563eb' },
+            ].map(({ label, val, suffix, color }) => (
+              <div key={label} style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: 14, fontWeight: 800, color, lineHeight: 1 }}><Counter end={val} suffix={suffix}/></div>
+                <div style={{ fontSize: 9, color: '#bbb' }}>{label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
     </section>
   )

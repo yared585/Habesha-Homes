@@ -29,11 +29,16 @@ export default function PropertyDetailPage() {
   }, [params.id])
 
   async function load(id: string) {
-    const { data } = await createClient()
+    const sb = createClient()
+    const { data } = await sb
       .from('properties')
       .select('*,neighborhood:neighborhoods(*),agent:agents(*,profile:profiles(full_name,avatar_url,phone,email))')
       .eq('id', id).single()
-    if (data) setProperty(data as unknown as Property)
+    if (data) {
+      setProperty(data as unknown as Property)
+      // Increment view count
+      await sb.from('properties').update({ views: (data.views || 0) + 1 }).eq('id', id)
+    }
     setLoading(false)
   }
 
@@ -48,7 +53,13 @@ export default function PropertyDetailPage() {
   if (loading) return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: 'var(--text-3)', fontSize: 14 }}>Loading property...</div>
   if (!property) return <div style={{ textAlign: 'center', padding: 60 }}>Property not found. <Link href="/search">Back to search</Link></div>
 
-  const images = property.images?.length ? property.images : property.cover_image_url ? [{ url: property.cover_image_url, caption: null, order: 0 }] : []
+  // Support both photos array and legacy cover_image_url
+  const photos: string[] = (property as any).photos?.length
+    ? (property as any).photos
+    : property.cover_image_url
+    ? [property.cover_image_url]
+    : []
+  const images = photos.map((url: string) => ({ url, caption: null, order: 0 }))
   const price = property.listing_intent === 'rent' ? property.rent_per_month_etb : property.price_etb
   const title = lang === 'am' && property.title_amharic ? property.title_amharic : property.title
   const desc = lang === 'am' && property.description_amharic ? property.description_amharic : property.description
@@ -78,17 +89,39 @@ export default function PropertyDetailPage() {
           <div style={{ borderRadius: 'var(--r-xl)', overflow: 'hidden', marginBottom: 24, position: 'relative' }}>
             {images.length > 0 ? (
               <>
-                <img src={images[activeImage]?.url} alt={title} style={{ width: '100%', height: 420, objectFit: 'cover' }} />
+                {/* Main image with navigation */}
+                <div style={{ position: 'relative', background: '#000' }}>
+                  <img src={images[activeImage]?.url} alt={title} style={{ width: '100%', height: 520, objectFit: 'cover', display: 'block' }} />
+                  {/* Counter */}
+                  <div style={{ position: 'absolute', bottom: 14, right: 14, background: 'rgba(0,0,0,0.55)', color: '#fff', fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 20 }}>
+                    {activeImage + 1} / {images.length}
+                  </div>
+                  {/* Prev button */}
+                  {images.length > 1 && activeImage > 0 && (
+                    <button onClick={() => setActiveImage(i => i - 1)}
+                      style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 36, height: 36, borderRadius: '50%', background: 'rgba(0,0,0,0.5)', border: 'none', color: '#fff', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >‹</button>
+                  )}
+                  {/* Next button */}
+                  {images.length > 1 && activeImage < images.length - 1 && (
+                    <button onClick={() => setActiveImage(i => i + 1)}
+                      style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', width: 36, height: 36, borderRadius: '50%', background: 'rgba(0,0,0,0.5)', border: 'none', color: '#fff', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >›</button>
+                  )}
+                </div>
+                {/* Thumbnails */}
                 {images.length > 1 && (
-                  <div style={{ display: 'flex', gap: 8, padding: '8px 0', overflowX: 'auto' }}>
+                  <div style={{ display: 'flex', gap: 6, padding: '8px 0', overflowX: 'auto' }}>
                     {images.map((img, i) => (
-                      <img key={i} src={img.url} onClick={() => setActiveImage(i)} style={{ width: 80, height: 58, objectFit: 'cover', borderRadius: 8, cursor: 'pointer', opacity: i === activeImage ? 1 : 0.55, border: i === activeImage ? '2px solid var(--green)' : 'none', flexShrink: 0 }} />
+                      <img key={i} src={img.url} onClick={() => setActiveImage(i)}
+                        style={{ width: 90, height: 65, objectFit: 'cover', borderRadius: 8, cursor: 'pointer', flexShrink: 0, opacity: i === activeImage ? 1 : 0.5, border: i === activeImage ? '2px solid #16a34a' : '2px solid transparent', transition: 'all .15s' }}
+                      />
                     ))}
                   </div>
                 )}
               </>
             ) : (
-              <div style={{ height: 300, background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-3)', borderRadius: 'var(--r-xl)' }}>No photos</div>
+              <div style={{ height: 400, background: '#f0f0ec', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aaa', borderRadius: 16 }}>No photos uploaded</div>
             )}
             {/* Badges */}
             <div style={{ position: 'absolute', top: 16, left: 16, display: 'flex', gap: 7 }}>
