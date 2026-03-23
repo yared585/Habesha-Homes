@@ -27,7 +27,7 @@ export function PropertyCard({ property: p }: Props) {
         }}
       >
         {/* Image */}
-        <div style={{ height: 210, background: '#f0f0ec', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ height: 260, background: '#f0f0ec', position: 'relative', overflow: 'hidden' }}>
           {p.cover_image_url
             ? <img src={p.cover_image_url} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform .4s', transform: hov ? 'scale(1.04)' : 'scale(1)' }}/>
             : <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Building2 size={44} color="#d0cfc9"/></div>

@@ -32,6 +32,7 @@ interface ListingForm {
   // Step 4 — Photos (URLs for now)
   cover_image_url: string
   photos: string[]
+  video_url: string
 }
 
 const INITIAL: ListingForm = {
@@ -42,6 +43,7 @@ const INITIAL: ListingForm = {
   city: 'Addis Ababa', neighborhood_name: '', address: '',
   cover_image_url: '',
   photos: [],
+  video_url: '',
 }
 
 const PROPERTY_TYPES = ['apartment','villa','house','condominium','land','office','commercial','warehouse']
@@ -208,15 +210,43 @@ function Step3({ form, set }: { form: ListingForm; set: (f: Partial<ListingForm>
 function Step4({ form, set }: { form: ListingForm; set: (f: Partial<ListingForm>) => void }) {
   return (
     <div style={{ display: 'grid', gap: 20 }}>
-      <h2 style={{ fontSize: 22, fontWeight: 800, color: '#111', margin: 0 }}>Property photos</h2>
-      <p style={{ fontSize: 14, color: '#666', margin: 0, lineHeight: 1.6 }}>
-        Upload photos of your property. The first photo will be the cover image shown in listings.
-      </p>
-      <PhotoUpload
-        onUpload={(urls) => set({ cover_image_url: urls[0] || '', photos: urls })}
-        maxPhotos={8}
-        existingPhotos={form.photos || (form.cover_image_url ? [form.cover_image_url] : [])}
-      />
+      <h2 style={{ fontSize: 22, fontWeight: 800, color: '#111', margin: 0 }}>Photos & Video</h2>
+
+      {/* Photos */}
+      <div>
+        <label style={{ fontSize: 13, fontWeight: 600, color: '#333', display: 'block', marginBottom: 6 }}>
+          Property photos <span style={{ fontSize: 11, color: '#aaa', fontWeight: 400 }}>(first photo = cover image)</span>
+        </label>
+        <PhotoUpload
+          onUpload={(urls) => set({ cover_image_url: urls[0] || '', photos: urls })}
+          maxPhotos={8}
+          existingPhotos={form.photos || (form.cover_image_url ? [form.cover_image_url] : [])}
+        />
+      </div>
+
+      {/* Video URL */}
+      <div>
+        <label style={{ fontSize: 13, fontWeight: 600, color: '#333', display: 'block', marginBottom: 6 }}>
+          Video tour URL <span style={{ fontSize: 11, color: '#aaa', fontWeight: 400 }}>(YouTube or Vimeo — optional)</span>
+        </label>
+        <input
+          type="url"
+          value={form.video_url}
+          onChange={e => set({ video_url: e.target.value })}
+          placeholder="https://www.youtube.com/watch?v=..."
+          style={{ width: '100%', padding: '12px 14px', border: '1.5px solid #e0dfd9', borderRadius: 10, fontSize: 14, outline: 'none', color: '#111', background: '#fff', fontFamily: 'inherit', transition: 'border .15s' }}
+          onFocus={e => (e.target as HTMLInputElement).style.borderColor = '#16a34a'}
+          onBlur={e => (e.target as HTMLInputElement).style.borderColor = '#e0dfd9'}
+        />
+        {form.video_url && (
+          <div style={{ fontSize: 12, color: '#16a34a', marginTop: 6, display: 'flex', alignItems: 'center', gap: 5 }}>
+            ✓ Video tour will be shown on your listing page
+          </div>
+        )}
+        <div style={{ fontSize: 11, color: '#aaa', marginTop: 6 }}>
+          Upload your property video to YouTube first, then paste the link here
+        </div>
+      </div>
     </div>
   )
 }
@@ -345,6 +375,7 @@ Keep each paragraph under 100 words.`
       address: form.address || null,
       neighborhood_id: hood?.id || null,
       cover_image_url: form.cover_image_url || null,
+      video_url: form.video_url || null,
       agent_id: user.id,
       status: 'pending_review',
       listed_at: new Date().toISOString(),
