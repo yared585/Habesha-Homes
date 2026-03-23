@@ -13,6 +13,17 @@ import { PriceHistoryChart } from '@/components/charts/PriceHistoryChart'
 import { formatETB, timeAgo } from '@/lib/utils'
 import type { Property, Language } from '@/types'
 
+function getVideoEmbedUrl(url: string): string {
+  if (!url) return ''
+  // YouTube
+  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
+  if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`
+  // Vimeo
+  const vimeoMatch = url.match(/vimeo\.com\/(\d+)/)
+  if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`
+  return url
+}
+
 export default function PropertyDetailPage() {
   const params = useParams()
   const [property, setProperty] = useState<Property | null>(null)
@@ -157,6 +168,23 @@ export default function PropertyDetailPage() {
               {property.is_negotiable && <span style={{ fontSize: 12, background: 'var(--gold-light)', color: 'var(--gold)', padding: '3px 10px', borderRadius: 'var(--r-full)', fontWeight: 600 }}>Negotiable</span>}
             </div>
           </div>
+
+          {/* Video tour */}
+          {(property as any).video_url && (
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#111', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 7 }}>
+                <span>🎥</span> Video tour
+              </div>
+              <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, borderRadius: 12, overflow: 'hidden', background: '#000' }}>
+                <iframe
+                  src={getVideoEmbedUrl((property as any).video_url)}
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+          )}
 
           {/* Specs */}
           <div style={{ display: 'flex', gap: 20, padding: '14px 0', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', marginBottom: 24, flexWrap: 'wrap' }}>
