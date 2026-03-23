@@ -64,7 +64,8 @@ function UserMenu({ profile, signOut }: { profile: any; signOut: () => void }) {
   const agentLinks = [
     { icon: <LayoutDashboard size={14}/>, label: 'Dashboard', href: '/dashboard' },
     { icon: <Plus size={14}/>, label: 'Add listing', href: '/dashboard/listings/new' },
-    { icon: <User size={14}/>, label: 'Profile', href: '/profile' },
+    { icon: <User size={14}/>, label: 'My profile', href: '/profile' },
+    { icon: <Building2 size={14}/>, label: 'Public profile', href: `/agent/${profile.id}` },
   ]
   const buyerLinks = [
     { icon: <Home size={14}/>, label: 'Saved properties', href: '/saved' },

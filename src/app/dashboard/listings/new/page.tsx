@@ -33,6 +33,8 @@ interface ListingForm {
   cover_image_url: string
   photos: string[]
   video_url: string
+  lat: string
+  lng: string
 }
 
 const INITIAL: ListingForm = {
@@ -44,6 +46,8 @@ const INITIAL: ListingForm = {
   cover_image_url: '',
   photos: [],
   video_url: '',
+  lat: '',
+  lng: '',
 }
 
 const PROPERTY_TYPES = ['apartment','villa','house','condominium','land','office','commercial','warehouse']
@@ -183,6 +187,21 @@ function Step2({ form, set }: { form: ListingForm; set: (f: Partial<ListingForm>
 }
 
 function Step3({ form, set }: { form: ListingForm; set: (f: Partial<ListingForm>) => void }) {
+  // Neighborhood coordinates lookup
+  const HOOD_COORDS: Record<string, {lat: number, lng: number}> = {
+    'Bole': {lat: 9.0192, lng: 38.7892}, 'Kazanchis': {lat: 9.0238, lng: 38.7614},
+    'Megenagna': {lat: 9.0367, lng: 38.7991}, 'CMC': {lat: 9.0522, lng: 38.8119},
+    'Sarbet': {lat: 9.0024, lng: 38.7502}, 'Gerji': {lat: 9.0298, lng: 38.8201},
+    'Piassa': {lat: 9.0336, lng: 38.7469}, 'Kolfe': {lat: 9.0154, lng: 38.7021},
+    'Lebu': {lat: 8.9735, lng: 38.7234}, 'Lideta': {lat: 9.0168, lng: 38.7389},
+    'Kirkos': {lat: 9.0134, lng: 38.7571}, 'Yeka': {lat: 9.0512, lng: 38.8042},
+  }
+
+  function selectNeighborhood(n: string) {
+    const coords = HOOD_COORDS[n]
+    set({ neighborhood_name: n, lat: coords ? coords.lat.toString() : form.lat, lng: coords ? coords.lng.toString() : form.lng })
+  }
+
   return (
     <div style={{ display: 'grid', gap: 20 }}>
       <h2 style={{ fontSize: 22, fontWeight: 800, color: '#111', margin: 0 }}>Location</h2>
@@ -193,7 +212,7 @@ function Step3({ form, set }: { form: ListingForm; set: (f: Partial<ListingForm>
           {NEIGHBORHOODS.map(n => {
             const selected = form.neighborhood_name === n
             return (
-              <button key={n} type="button" onClick={() => set({ neighborhood_name: n })}
+              <button key={n} type="button" onClick={() => selectNeighborhood(n)}
                 style={{ padding: '7px 14px', borderRadius: 20, border: `1.5px solid ${selected ? '#16a34a' : '#e0dfd9'}`, background: selected ? '#f0fdf4' : '#fff', fontSize: 13, color: selected ? '#16a34a' : '#666', cursor: 'pointer', fontWeight: selected ? 600 : 400, transition: 'all .15s', fontFamily: 'inherit' }}
               >
                 {n}
@@ -203,6 +222,25 @@ function Step3({ form, set }: { form: ListingForm; set: (f: Partial<ListingForm>
         </div>
       </div>
       <Input label="Full address" value={form.address} onChange={(v: string) => set({ address: v })} placeholder="e.g. Bole Sub City, Woreda 03, House No. 456"/>
+
+      {/* Exact coordinates */}
+      <div>
+        <label style={{ fontSize: 13, fontWeight: 600, color: '#333', display: 'block', marginBottom: 6 }}>
+          Exact coordinates <span style={{ fontSize: 11, color: '#aaa', fontWeight: 400 }}>(optional — auto-filled from neighborhood)</span>
+        </label>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <Input label="Latitude" value={form.lat} onChange={(v: string) => set({ lat: v })} placeholder="e.g. 9.0192"/>
+          <Input label="Longitude" value={form.lng} onChange={(v: string) => set({ lng: v })} placeholder="e.g. 38.7892"/>
+        </div>
+        {form.lat && form.lng && (
+          <div style={{ fontSize: 12, color: '#16a34a', marginTop: 6 }}>
+            ✓ Location set — property will show on map
+          </div>
+        )}
+        <div style={{ fontSize: 11, color: '#aaa', marginTop: 4 }}>
+          To get exact coordinates: open Google Maps → right click on your property → click the coordinates shown
+        </div>
+      </div>
     </div>
   )
 }
@@ -376,6 +414,9 @@ Keep each paragraph under 100 words.`
       neighborhood_id: hood?.id || null,
       cover_image_url: form.cover_image_url || null,
       video_url: form.video_url || null,
+      coordinates: form.lat && form.lng ? `SRID=4326;POINT(${form.lng} ${form.lat})` : null,
+      lat: form.lat ? parseFloat(form.lat) : null,
+      lng: form.lng ? parseFloat(form.lng) : null,
       agent_id: user.id,
       status: 'pending_review',
       listed_at: new Date().toISOString(),

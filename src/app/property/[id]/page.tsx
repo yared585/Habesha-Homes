@@ -264,7 +264,9 @@ export default function PropertyDetailPage() {
                   : ((property.agent as any)?.agency_name || 'A')[0]}
               </div>
               <div>
-                <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)' }}>{(property.agent as any)?.agency_name || (property.agent as any)?.profile?.full_name || 'Private seller'}</div>
+                <Link href={`/agent/${property.agent_id}`} style={{ fontSize: 15, fontWeight: 600, color: '#16a34a', textDecoration: 'none' }}>
+                    {(property.agent as any)?.agency_name || (property.agent as any)?.profile?.full_name || 'Private seller'} →
+                  </Link>
                 <div style={{ fontSize: 12, color: 'var(--text-3)' }}>
                   {(property.agent as any)?.is_verified && <span style={{ color: 'var(--green)', fontWeight: 600 }}>✓ Verified agent</span>}
                 </div>
