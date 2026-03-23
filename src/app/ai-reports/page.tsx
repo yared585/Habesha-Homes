@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { PayButton } from '@/components/ui/PayButton'
 import { ArrowRight, Shield, TrendingUp, FileText, MessageCircle, Map, Sparkles } from 'lucide-react'
 
 export const metadata = { title: 'AI Reports — Habesha Homes' }
@@ -114,9 +117,13 @@ export default function AIReportsPage() {
                   <span style={{ fontSize: 12, color: '#aaa' }}>{priceNote}</span>
                 </div>
 
-                <Link href={href} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: color, color: '#fff', padding: '12px', borderRadius: 10, fontSize: 14, fontWeight: 700, textDecoration: 'none' }}>
-                  {btnLabel} <ArrowRight size={14}/>
-                </Link>
+                {price === 'Free' ? (
+                  <Link href={href} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: color, color: '#fff', padding: '12px', borderRadius: 10, fontSize: 14, fontWeight: 700, textDecoration: 'none' }}>
+                    {btnLabel} <ArrowRight size={14}/>
+                  </Link>
+                ) : (
+                  <PayButton reportType={id as any || 'fraud_check'} label={`${btnLabel} — ${price}`} style={{ background: color }}/>
+                )}
               </div>
             ))}
           </div>
