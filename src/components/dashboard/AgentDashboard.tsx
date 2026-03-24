@@ -182,7 +182,7 @@ export function AgentDashboard({ profile, properties, stats }: Props) {
       </div>
 
       {/* Stats row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: 12, marginBottom: 24 }}>
+      <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: 12, marginBottom: 24 }}>
         <StatCard icon={<Home size={17}/>} label="Active listings" value={activeCount} color="#16a34a"/>
         <StatCard icon={<Eye size={17}/>} label="Total views" value={totalViews} color="#2563eb"/>
         <StatCard icon={<MessageSquare size={17}/>} label="Inquiries" value={totalInquiries} color="#d97706"/>

@@ -297,7 +297,7 @@ export default function AdminPage() {
             )}
 
             {/* Recent activity */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div className="admin-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               <div style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 14, padding: 18 }}>
                 <div style={{ fontSize: 14, fontWeight: 700, color: '#111', marginBottom: 14 }}>Recent listings</div>
                 {properties.slice(0, 5).map(p => (

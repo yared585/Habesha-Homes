@@ -118,3 +118,79 @@ img { max-width: 100%; display: block; }
 /* Mapbox */
 .mapboxgl-ctrl-logo { display: none !important; }
 .mapboxgl-ctrl-attrib { font-size: 10px !important; }
+
+/* ── Mobile Responsiveness ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+
+  /* Property detail page — stack sidebar below content */
+  .property-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .property-sidebar {
+    position: static !important;
+  }
+
+  /* Search page — full width */
+  .search-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Admin / dashboard grids */
+  .admin-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Hero search bar — stack on mobile */
+  .hero-filters {
+    flex-direction: column !important;
+  }
+
+  /* Listing cards grid */
+  .cards-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Inquiry form grid */
+  .inquiry-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Hide desktop nav links on mobile */
+  .nav-links-desktop {
+    display: none !important;
+  }
+
+  /* Show hamburger on mobile */
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+
+  /* Full width buttons on mobile */
+  .mobile-full {
+    width: 100% !important;
+  }
+
+  /* Reduce padding on mobile */
+  .mobile-padding {
+    padding: 16px !important;
+  }
+
+  /* Stack agent dashboard stats */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Map height on mobile */
+  .map-mobile {
+    height: 300px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .hide-mobile {
+    display: none !important;
+  }
+}

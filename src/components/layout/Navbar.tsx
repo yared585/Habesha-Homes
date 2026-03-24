@@ -173,8 +173,8 @@ export function Navbar() {
             <span style={{ fontSize: 10, fontWeight: 700, color: '#4ade80', letterSpacing: '.05em' }}>CLAUDE AI</span>
           </div>
 
-          {/* Desktop nav */}
-          <div style={{ display: 'flex', gap: 1, flex: 1, overflow: 'hidden' }}>
+          {/* Desktop nav - hidden on mobile */}
+          <div className="nav-links-desktop" style={{ display: 'flex', gap: 1, flex: 1, overflow: 'hidden' }}>
             {NAV_LINKS.map(l => <NavLink key={l.label} label={l.label} href={l.href}/>)}
           </div>
 
@@ -199,7 +199,7 @@ export function Navbar() {
               </div>
             )}
 
-            <button onClick={() => setMobileOpen(!mobileOpen)} style={{ background: 'rgba(255,255,255,0.09)', border: '1px solid rgba(255,255,255,0.14)', borderRadius: 8, padding: 7, cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', fontFamily: 'inherit' }}>
+            <button onClick={() => setMobileOpen(!mobileOpen)} className="mobile-menu-btn" style={{ background: 'rgba(255,255,255,0.09)', border: '1px solid rgba(255,255,255,0.14)', borderRadius: 8, padding: 7, cursor: 'pointer', color: '#fff', display: 'none', alignItems: 'center', fontFamily: 'inherit' }}>
               {mobileOpen ? <X size={18}/> : <Menu size={18}/>}
             </button>
           </div>

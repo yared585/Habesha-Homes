@@ -101,7 +101,7 @@ export function Hero() {
         {/* Search box */}
         <div style={{ background: '#f9f9f7', border: '1px solid #eae9e4', borderRadius: 12, padding: '10px 14px', marginBottom: 8 }}>
           {/* Row 1 — toggle + all filters */}
-          <div style={{ display: 'flex', gap: 7, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8, width: '100%' }}>
+          <div className="hero-filters" style={{ display: 'flex', gap: 7, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8, width: '100%' }}>
             {/* Buy/Rent */}
             <div style={{ display: 'inline-flex', background: '#fff', borderRadius: 7, padding: 2, border: '1px solid #eae9e4', flexShrink: 0 }}>
               {(['sale', 'rent'] as const).map(i => (
