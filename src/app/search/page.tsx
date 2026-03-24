@@ -1,12 +1,14 @@
 'use client'
 
+// Note: metadata must be in a server component wrapper for full SEO
+// Dynamic title is handled via useEffect below
+
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Search, SlidersHorizontal, MapIcon, List, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { PropertyMap } from '@/components/property/PropertyMap'
-
 import { formatETB } from '@/lib/utils'
 import type { Property, PropertyFilters, Neighborhood } from '@/types'
 
@@ -25,6 +27,7 @@ function SearchContent() {
     query: searchParams.get('q') || '',
     listing_intent: (searchParams.get('intent') as any) || undefined,
     neighborhoods: searchParams.get('neighborhoods')?.split(',').filter(Boolean) || [],
+    furnished: searchParams.get('furnished') || undefined,
   })
 
   useEffect(() => {
@@ -50,6 +53,7 @@ function SearchContent() {
     if (filters.min_price_etb) params.set('min_price', filters.min_price_etb.toString())
     if (filters.max_price_etb) params.set('max_price', filters.max_price_etb.toString())
     if (filters.min_bedrooms) params.set('min_beds', filters.min_bedrooms.toString())
+    if ((filters as any).furnished) params.set('furnished', (filters as any).furnished)
     params.set('page', page.toString())
 
     const res = await fetch(`/api/properties?${params}`)
@@ -174,6 +178,26 @@ function SearchContent() {
                 {['apartment','villa','house','condominium','commercial','land'].map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
+            <div>
+              <label style={{ fontSize: 12, color: '#888', display: 'block', marginBottom: 6 }}>Furnished</label>
+              <select onChange={e => updateFilter('furnished' as any, e.target.value || undefined)}
+                style={{ width: '100%', padding: '8px 10px', border: '1px solid #e0e0e0', borderRadius: 6, fontSize: 13 }}>
+                <option value="">Any</option>
+                <option value="furnished">Furnished</option>
+                <option value="semi-furnished">Semi-furnished</option>
+                <option value="unfurnished">Unfurnished</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ fontSize: 12, color: '#888', display: 'block', marginBottom: 6 }}>Sort by</label>
+              <select onChange={e => updateFilter('sort' as any, e.target.value)}
+                style={{ width: '100%', padding: '8px 10px', border: '1px solid #e0e0e0', borderRadius: 6, fontSize: 13 }}>
+                <option value="newest">Newest first</option>
+                <option value="price_asc">Price: Low to high</option>
+                <option value="price_desc">Price: High to low</option>
+                <option value="featured">Featured first</option>
+              </select>
+            </div>
           </div>
         </div>
       )}
@@ -192,7 +216,7 @@ function SearchContent() {
       {/* Map view */}
       {viewMode === 'map' && (
         <div style={{ marginBottom: 20 }}>
-          <PropertyMap properties={properties} height={500} />
+          <PropertyMap properties={properties} height={500} center={{ lat: 9.0192, lng: 38.7892 }} zoom={13} />
         </div>
       )}
 

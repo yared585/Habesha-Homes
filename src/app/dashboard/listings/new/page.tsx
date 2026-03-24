@@ -25,6 +25,7 @@ interface ListingForm {
   floor_number: string
   amenities: string[]
   description: string
+  is_furnished: string
   // Step 3 — Location
   city: string
   neighborhood_name: string
@@ -41,7 +42,7 @@ const INITIAL: ListingForm = {
   title: '', title_amharic: '', listing_intent: 'sale', property_type: 'apartment',
   price_etb: '', rent_per_month_etb: '', is_negotiable: false,
   bedrooms: '', bathrooms: '', size_sqm: '', year_built: '', floor_number: '',
-  amenities: [], description: '',
+  amenities: [], description: '', is_furnished: 'false',
   city: 'Addis Ababa', neighborhood_name: '', address: '',
   cover_image_url: '',
   photos: [],
@@ -148,6 +149,18 @@ function Step2({ form, set }: { form: ListingForm; set: (f: Partial<ListingForm>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
         <Input label="Bedrooms" type="number" value={form.bedrooms} onChange={(v: string) => set({ bedrooms: v })} placeholder="e.g. 3"/>
         <Input label="Bathrooms" type="number" value={form.bathrooms} onChange={(v: string) => set({ bathrooms: v })} placeholder="e.g. 2"/>
+        <div>
+          <label style={{ fontSize: 13, fontWeight: 600, color: '#333', display: 'block', marginBottom: 6 }}>Furnished status</label>
+          <select value={form.is_furnished} onChange={e => set({ is_furnished: e.target.value })}
+            style={{ width: '100%', padding: '11px 14px', border: '1.5px solid #e0dfd9', borderRadius: 10, fontSize: 14, outline: 'none', color: '#111', background: '#fff', fontFamily: 'inherit' }}
+            onFocus={e => (e.target as HTMLSelectElement).style.borderColor = '#16a34a'}
+            onBlur={e => (e.target as HTMLSelectElement).style.borderColor = '#e0dfd9'}
+          >
+            <option value="false">Unfurnished</option>
+            <option value="semi">Semi-furnished</option>
+            <option value="true">Fully furnished</option>
+          </select>
+        </div>
         <Input label="Size (m²)" type="number" value={form.size_sqm} onChange={(v: string) => set({ size_sqm: v })} placeholder="e.g. 120"/>
         <Input label="Year built" type="number" value={form.year_built} onChange={(v: string) => set({ year_built: v })} placeholder="e.g. 2020"/>
         <Input label="Floor number" type="number" value={form.floor_number} onChange={(v: string) => set({ floor_number: v })} placeholder="e.g. 4"/>
@@ -414,6 +427,8 @@ Keep each paragraph under 100 words.`
       neighborhood_id: hood?.id || null,
       cover_image_url: form.cover_image_url || null,
       video_url: form.video_url || null,
+      is_furnished: form.is_furnished === 'true',
+      furnished_status: form.is_furnished === 'semi' ? 'semi' : null,
       coordinates: form.lat && form.lng ? `SRID=4326;POINT(${form.lng} ${form.lat})` : null,
       lat: form.lat ? parseFloat(form.lat) : null,
       lng: form.lng ? parseFloat(form.lng) : null,

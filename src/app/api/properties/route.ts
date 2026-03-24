@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
     min_bedrooms: searchParams.get('min_beds') ? parseInt(searchParams.get('min_beds')!) : undefined,
     is_featured: searchParams.get('featured') === 'true' ? true : undefined,
     is_verified: searchParams.get('verified') === 'true' ? true : undefined,
+    furnished: searchParams.get('furnished') || undefined,
   }
 
   const sort = searchParams.get('sort') || 'newest' // 'newest', 'price_asc', 'price_desc', 'featured'
@@ -73,6 +74,12 @@ export async function GET(request: NextRequest) {
     if (filters.min_bedrooms) query = query.gte('bedrooms', filters.min_bedrooms)
     if (filters.is_featured) query = query.eq('is_featured', true)
     if (filters.is_verified) query = query.eq('title_verified', true)
+    if ((filters as any).furnished && (filters as any).furnished !== 'any') {
+      const f = (filters as any).furnished.toLowerCase()
+      if (f === 'furnished') query = query.eq('is_furnished', true)
+      else if (f === 'unfurnished') query = query.eq('is_furnished', false)
+      else if (f === 'semi-furnished') query = query.eq('furnished_status', 'semi')
+    }
 
     // Sorting
     switch (sort) {
