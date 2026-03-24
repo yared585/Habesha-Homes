@@ -149,6 +149,8 @@ export interface PropertyFilters {
   is_featured?: boolean
   is_verified?: boolean
   currency?: 'ETB' | 'USD'
+  furnished?: string
+  sort?: string
 }
 
 export interface SearchResult {
