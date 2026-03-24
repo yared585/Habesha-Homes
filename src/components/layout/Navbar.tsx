@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Search, LogOut, LayoutDashboard, Plus, User, Sparkles, Home, Building2, Globe, TrendingUp, ChevronDown, Menu, X } from 'lucide-react'
+import { Search, LogOut, LayoutDashboard, Plus, User, Sparkles, Home, Building2, Globe, TrendingUp, ChevronDown, Menu, X, Shield } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { SearchOverlay } from '@/components/layout/SearchOverlay'
 
@@ -67,11 +67,16 @@ function UserMenu({ profile, signOut }: { profile: any; signOut: () => void }) {
     { icon: <User size={14}/>, label: 'My profile', href: '/profile' },
     { icon: <Building2 size={14}/>, label: 'Public profile', href: `/agent/${profile.id}` },
   ]
+  const adminLinks = [
+    { icon: <Shield size={14}/>, label: 'Admin panel', href: '/admin' },
+    { icon: <User size={14}/>, label: 'My profile', href: '/profile' },
+  ]
   const buyerLinks = [
     { icon: <Home size={14}/>, label: 'Saved properties', href: '/saved' },
     { icon: <User size={14}/>, label: 'Profile', href: '/profile' },
   ]
-  const menuLinks = isAgent ? agentLinks : buyerLinks
+  const isAdmin = profile.role === 'admin'
+  const menuLinks = isAdmin ? adminLinks : isAgent ? agentLinks : buyerLinks
 
   return (
     <div style={{ position: 'relative' }}>
@@ -85,8 +90,8 @@ function UserMenu({ profile, signOut }: { profile: any; signOut: () => void }) {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
           <span style={{ fontSize: 13, color: '#fff', fontWeight: 600, lineHeight: 1.2 }}>{profile.full_name?.split(' ')[0]}</span>
-          <span style={{ fontSize: 9, color: isAgent ? '#4ade80' : 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '.05em' }}>
-            {isAgent ? '✦ Agent' : 'Buyer'}
+          <span style={{ fontSize: 9, color: profile.role === 'admin' ? '#f87171' : isAgent ? '#4ade80' : 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '.05em' }}>
+            {profile.role === 'admin' ? '⚡ Admin' : isAgent ? '✦ Agent' : 'Buyer'}
           </span>
         </div>
         <ChevronDown size={12} color="rgba(255,255,255,0.5)" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}/>

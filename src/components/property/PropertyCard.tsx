@@ -1,10 +1,53 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
-import { MapPin, Building2 } from 'lucide-react'
+import { MapPin, Building2, Heart } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { Badge } from '@/components/ui'
 import type { Property } from '@/types'
+
+// ── Save button ──────────────────────────────────────────────────────────────
+function SaveButton({ propertyId }: { propertyId: string }) {
+  const [saved, setSaved] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    const sb = createClient()
+    sb.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return
+      sb.from('saved_properties').select('id').eq('user_id', user.id).eq('property_id', propertyId).single()
+        .then(({ data }) => { if (data) setSaved(true) })
+    })
+  }, [propertyId])
+
+  async function toggle(e: React.MouseEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    const sb = createClient()
+    const { data: { user } } = await sb.auth.getUser()
+    if (!user) { window.location.href = '/auth/login'; return }
+    setLoading(true)
+    if (saved) {
+      await sb.from('saved_properties').delete().eq('user_id', user.id).eq('property_id', propertyId)
+      setSaved(false)
+    } else {
+      await sb.from('saved_properties').insert({ user_id: user.id, property_id: propertyId })
+      setSaved(true)
+    }
+    setLoading(false)
+  }
+
+  return (
+    <button onClick={toggle} disabled={loading}
+      style={{ position: 'absolute', top: 12, right: 12, width: 34, height: 34, borderRadius: '50%', background: 'rgba(255,255,255,0.92)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', transition: 'all .15s', zIndex: 2 }}
+      onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = '#fff'}
+      onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.92)'}
+    >
+      <Heart size={16} fill={saved ? '#dc2626' : 'none'} color={saved ? '#dc2626' : '#888'} style={{ transition: 'all .2s' }}/>
+    </button>
+  )
+}
 
 interface Props {
   property: Property
@@ -27,11 +70,13 @@ export function PropertyCard({ property: p }: Props) {
         }}
       >
         {/* Image */}
-        <div style={{ height: 300, background: '#f0f0ec', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ height: 210, background: '#f0f0ec', position: 'relative', overflow: 'hidden' }}>
           {p.cover_image_url
             ? <img src={p.cover_image_url} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform .4s', transform: hov ? 'scale(1.04)' : 'scale(1)' }}/>
             : <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Building2 size={44} color="#d0cfc9"/></div>
           }
+          {/* Save button */}
+          <SaveButton propertyId={p.id}/>
           {/* Top badges */}
           <div style={{ position: 'absolute', top: 12, left: 12, display: 'flex', gap: 6 }}>
             {p.is_featured && <Badge color="green">Featured</Badge>}
