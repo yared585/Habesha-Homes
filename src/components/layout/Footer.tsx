@@ -1,4 +1,5 @@
 'use client'
+
 import Link from 'next/link'
 
 export function Footer() {
@@ -23,8 +24,8 @@ export function Footer() {
 
           {[
             { title: 'Properties', links: [['Buy a home', '/search?intent=sale'], ['Rent a home', '/search?intent=rent'], ['Diaspora investing', '/diaspora'], ['New developments', '/search?types=condominium']] },
-            { title: 'AI Tools', links: [['Property assistant', '/ai-reports'], ['Fraud detection', '/ai-reports#fraud'], ['Valuation report', '/ai-reports#valuation'], ['Contract analyzer', '/ai-reports#contract']] },
-            { title: 'For agents', links: [['List properties', '/auth/signup'], ['Dashboard', '/dashboard'], ['Pricing plans', '/pricing'], ['AI listing writer', '/dashboard/ai']] },
+            { title: 'AI Tools', links: [['Property assistant', '/ai-reports'], ['Fraud detection', '/ai-reports'], ['Valuation report', '/ai-reports'], ['Contract analyzer', '/ai-reports']] },
+            { title: 'For agents', links: [['List properties', '/auth/signup'], ['Dashboard', '/dashboard'], ['Pricing plans', '/pricing'], ['AI listing writer', '/dashboard/listings/new']] },
           ].map(({ title, links }) => (
             <div key={title}>
               <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 14 }}>{title}</div>
@@ -41,7 +42,7 @@ export function Footer() {
         </div>
 
         <div style={{ borderTop: '1px solid var(--border)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-          <span style={{ fontSize: 12, color: 'var(--text-4)' }}>© 2025 Habesha Homes · Powered by Claude AI · Built for Ethiopia 🇪🇹</span>
+          <span style={{ fontSize: 12, color: 'var(--text-4)' }}>© 2026 Habesha Homes · Powered by Claude AI · Built for Ethiopia 🇪🇹</span>
           <div style={{ display: 'flex', gap: 20 }}>
             {['Privacy', 'Terms', 'Contact'].map(l => (
               <Link key={l} href={`/${l.toLowerCase()}`} style={{ fontSize: 12, color: 'var(--text-4)', textDecoration: 'none' }}>{l}</Link>

@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
         ),
         agent:agents(
           id, agency_name, agency_name_amharic, rating, is_verified,
-          profile:profiles(full_name, avatar_url, phone)
+          profile:profiles(id, full_name, avatar_url, phone, email)
         )
       `, { count: 'exact' })
       .eq('status', 'active')

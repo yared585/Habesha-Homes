@@ -54,6 +54,8 @@ function SearchContent() {
     if (filters.max_price_etb) params.set('max_price', filters.max_price_etb.toString())
     if (filters.min_bedrooms) params.set('min_beds', filters.min_bedrooms.toString())
     if ((filters as any).furnished) params.set('furnished', (filters as any).furnished)
+    if ((filters as any).sort) params.set('sort', (filters as any).sort)
+    if ((filters as any).sort) params.set('sort', (filters as any).sort)
     params.set('page', page.toString())
 
     const res = await fetch(`/api/properties?${params}`)
@@ -205,7 +207,7 @@ function SearchContent() {
       {/* Results count */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, fontSize: 13, color: '#888' }}>
         <span>{loading ? 'Searching...' : `${total.toLocaleString()} properties found`}</span>
-        <select onChange={() => {}} style={{ border: '1px solid #e0e0e0', borderRadius: 6, padding: '6px 10px', fontSize: 12 }}>
+        <select value={(filters as any).sort || 'newest'} onChange={e => updateFilter('sort' as any, e.target.value)} style={{ border: '1px solid #e0e0e0', borderRadius: 6, padding: '6px 10px', fontSize: 12, fontFamily: 'inherit', outline: 'none' }}>
           <option value="newest">Newest first</option>
           <option value="price_asc">Price: Low to high</option>
           <option value="price_desc">Price: High to low</option>

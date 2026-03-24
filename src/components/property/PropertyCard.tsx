@@ -113,6 +113,25 @@ export function PropertyCard({ property: p }: Props) {
               <span style={{ fontSize: 11, color: '#bbb' }}>{(p as any).views} views</span>
             )}
           </div>
+
+          {/* Agent info + verified badge */}
+          {(p as any).agent && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10, paddingTop: 10, borderTop: '1px solid #f5f5f2' }}>
+              <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: '#fff', fontWeight: 700, flexShrink: 0, overflow: 'hidden' }}>
+                {(p as any).agent?.profile?.avatar_url
+                  ? <img src={(p as any).agent.profile.avatar_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
+                  : ((p as any).agent?.agency_name?.[0] || 'A')}
+              </div>
+              <span style={{ fontSize: 12, color: '#888', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {(p as any).agent?.agency_name || 'Agent'}
+              </span>
+              {(p as any).agent?.is_verified && (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10, fontWeight: 700, color: '#16a34a', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '2px 7px', borderRadius: 10, flexShrink: 0 }}>
+                  ✓ Verified
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </Link>
