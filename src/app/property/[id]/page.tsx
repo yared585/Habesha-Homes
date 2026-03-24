@@ -56,9 +56,44 @@ export default function PropertyDetailPage() {
   async function sendInquiry(e: React.FormEvent) {
     e.preventDefault()
     if (!property) return
-    await createClient().from('inquiries').insert({ property_id: property.id, agent_id: property.agent_id, ...inquiry })
+    const sb = createClient()
+
+    // Save inquiry to database
+    await sb.from('inquiries').insert({
+      property_id: property.id,
+      agent_id: property.agent_id,
+      name: inquiry.name,
+      email: inquiry.email,
+      phone: inquiry.phone,
+      message: inquiry.message,
+    })
+
+    // Send email notification to agent
+    const agentEmail = (property.agent as any)?.profile?.email
+    const agentName = (property.agent as any)?.agency_name || (property.agent as any)?.profile?.full_name || 'Agent'
+
+    if (agentEmail) {
+      await fetch('/api/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'inquiry',
+          to: agentEmail,
+          data: {
+            agentName,
+            buyerName: inquiry.name,
+            buyerEmail: inquiry.email,
+            buyerPhone: inquiry.phone,
+            message: inquiry.message,
+            propertyTitle: property.title,
+            propertyId: property.id,
+          }
+        })
+      })
+    }
+
     setShowInquiry(false)
-    alert('Message sent!')
+    alert('Message sent! The agent will contact you soon.')
   }
 
   if (loading) return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: 'var(--text-3)', fontSize: 14 }}>Loading property...</div>

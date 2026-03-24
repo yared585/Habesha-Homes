@@ -127,6 +127,24 @@ export default function AdminPage() {
   async function updateListingStatus(id: string, status: string) {
     await createClient().from('properties').update({ status, updated_at: new Date().toISOString() }).eq('id', id)
     setProperties(p => p.map(x => x.id === id ? { ...x, status } : x))
+
+    // Send approval email to agent
+    if (status === 'active') {
+      const property = properties.find(p => p.id === id)
+      const agentEmail = property?.agent?.profile?.email
+      const agentName = property?.agent?.agency_name || property?.agent?.profile?.full_name
+      if (agentEmail) {
+        await fetch('/api/email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'listing_approved',
+            to: agentEmail,
+            data: { agentName, propertyTitle: property?.title, propertyId: id }
+          })
+        }).catch(() => {})
+      }
+    }
     setStats(s => ({
       ...s,
       activeListings: status === 'active' ? s.activeListings + 1 : s.activeListings - (properties.find(p => p.id === id)?.status === 'active' ? 1 : 0),
