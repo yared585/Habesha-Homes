@@ -165,7 +165,15 @@ export default function AdminPage() {
   }
 
   async function changeUserRole(id: string, role: string) {
-    await createClient().from('profiles').update({ role }).eq('id', id)
+    const { error } = await createClient()
+      .from('profiles')
+      .update({ role: role as any })
+      .eq('id', id)
+    if (error) {
+      console.error('Role change error:', error)
+      alert('Failed to change role: ' + error.message)
+      return
+    }
     setUsers(u => u.map(x => x.id === id ? { ...x, role } : x))
   }
 

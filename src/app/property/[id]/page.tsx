@@ -164,7 +164,7 @@ export default function PropertyDetailPage() {
       // Check if saved
       const { data: { user } } = await sb.auth.getUser()
       if (user) {
-        const { data: savedData } = await sb.from('saved_properties').select('id').eq('user_id', user.id).eq('property_id', id).single()
+        const { data: savedData } = await sb.from('saved_properties').select('id').eq('user_id', user.id).eq('property_id', id).maybeSingle()
         if (savedData) setSaved(true)
       }
     }

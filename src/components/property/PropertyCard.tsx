@@ -16,7 +16,7 @@ function SaveButton({ propertyId }: { propertyId: string }) {
     const sb = createClient()
     sb.auth.getUser().then(({ data: { user } }) => {
       if (!user) return
-      sb.from('saved_properties').select('id').eq('user_id', user.id).eq('property_id', propertyId).single()
+      sb.from('saved_properties').select('id').eq('user_id', user.id).eq('property_id', propertyId).maybeSingle()
         .then(({ data }) => { if (data) setSaved(true) })
     })
   }, [propertyId])
