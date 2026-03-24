@@ -4,6 +4,8 @@ import { Resend } from 'resend'
 const resend = new Resend(process.env.RESEND_API_KEY)
 const FROM = 'Habesha Homes <onboarding@resend.dev>'
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://habesha-homes.vercel.app'
+// Until domain is verified, all emails go to admin email
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'yohanesy585@gmail.com'
 
 // ── Email templates ────────────────────────────────────────────────────────
 
@@ -182,14 +184,42 @@ export async function POST(req: NextRequest) {
         html = welcomeEmailHtml(data)
         break
 
+      case 'contact':
+        subject = `Contact form: ${data.subject} — from ${data.name}`
+        html = `
+<!DOCTYPE html><html><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f9f9f7;font-family:system-ui,sans-serif;">
+<div style="max-width:560px;margin:0 auto;padding:32px 16px;">
+<div style="background:#0d2318;border-radius:14px 14px 0 0;padding:24px 32px;">
+<h1 style="color:#fff;font-size:20px;font-weight:800;margin:0;">New Contact Form Message</h1>
+</div>
+<div style="background:#fff;padding:28px 32px;border:1px solid #eae9e4;border-top:none;border-radius:0 0 14px 14px;">
+<table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+<tr><td style="font-size:13px;color:#888;padding:6px 0;width:80px;">Name</td><td style="font-size:14px;font-weight:600;color:#111;">${data.name}</td></tr>
+<tr><td style="font-size:13px;color:#888;padding:6px 0;">Email</td><td style="font-size:14px;color:#111;"><a href="mailto:${data.email}" style="color:#16a34a;">${data.email}</a></td></tr>
+${data.phone ? `<tr><td style="font-size:13px;color:#888;padding:6px 0;">Phone</td><td style="font-size:14px;color:#111;">${data.phone}</td></tr>` : ''}
+<tr><td style="font-size:13px;color:#888;padding:6px 0;">Subject</td><td style="font-size:14px;font-weight:600;color:#111;">${data.subject}</td></tr>
+</table>
+<div style="background:#f9f9f7;border-left:3px solid #16a34a;border-radius:0 8px 8px 0;padding:14px 16px;font-size:14px;color:#555;line-height:1.7;">${data.message}</div>
+<div style="margin-top:20px;">
+<a href="mailto:${data.email}" style="display:inline-block;background:#16a34a;color:#fff;padding:11px 24px;border-radius:9px;font-size:14px;font-weight:700;text-decoration:none;">Reply to ${data.name}</a>
+</div>
+</div>
+</div>
+</body></html>`
+        break
+
       default:
         return NextResponse.json({ error: 'Unknown email type' }, { status: 400 })
     }
 
+    // Use admin email until domain is verified
+    const recipient = process.env.DOMAIN_VERIFIED === 'true' ? to : ADMIN_EMAIL
+
     const { data: result, error } = await resend.emails.send({
       from: FROM,
-      to,
-      subject,
+      to: recipient,
+      subject: recipient !== to ? `[To: ${to}] ${subject}` : subject,
       html,
     })
 
