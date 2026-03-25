@@ -118,12 +118,14 @@ export default function SignupPage() {
 
   const inp = (field: string, placeholder: string, type = 'text', icon: React.ReactNode, right?: React.ReactNode) => (
     <div style={{ position:'relative' }}>
-      <div style={{ position:'absolute',left:14,top:'50%',transform:'translateY(-50%)',color:'#aaa',display:'flex' }}>{icon}</div>
-      <input type={type} placeholder={placeholder} required value={(form as any)[field]}
+      <div style={{ position:'absolute',left:14,top:'50%',transform:'translateY(-50%)',color:'#aaa',display:'flex',pointerEvents:'none' }}>{icon}</div>
+      <input
+        type={type}
+        placeholder={placeholder}
+        required
+        value={(form as any)[field]}
         onChange={e=>setForm(p=>({...p,[field]:e.target.value}))}
-        style={{ width:'100%',padding:'13px 16px 13px 42px',border:'1.5px solid #e0dfd9',borderRadius:10,fontSize:14,outline:'none',color:'#111',background:'#fff',transition:'border .15s',paddingRight:right?44:16 }}
-        onFocus={e=>(e.target as HTMLInputElement).style.borderColor='#16a34a'}
-        onBlur={e=>(e.target as HTMLInputElement).style.borderColor='#e0dfd9'}
+        className={`auth-input${right ? ' auth-input-pw' : ''}`}
       />
       {right && <div style={{ position:'absolute',right:14,top:'50%',transform:'translateY(-50%)',cursor:'pointer',color:'#aaa',display:'flex' }} onClick={()=>setShowPw(!showPw)}>{right}</div>}
     </div>
@@ -155,11 +157,7 @@ export default function SignupPage() {
               <h1 style={{ fontSize:24,fontWeight:800,color:'#111',margin:'0 0 6px',letterSpacing:'-.02em' }}>Create your account</h1>
               <p style={{ fontSize:14,color:'#888',margin:'0 0 24px' }}>Who are you? · እርስዎ ማን ናቸው?</p>
 
-              <button onClick={handleGoogle}
-                style={{ width:'100%',display:'flex',alignItems:'center',justifyContent:'center',gap:10,padding:'12px',border:'1.5px solid #e0dfd9',borderRadius:10,background:'#fff',fontSize:14,fontWeight:600,color:'#333',cursor:'pointer',marginBottom:20,transition:'all .15s' }}
-                onMouseEnter={e=>(e.currentTarget as HTMLButtonElement).style.borderColor='#16a34a'}
-                onMouseLeave={e=>(e.currentTarget as HTMLButtonElement).style.borderColor='#e0dfd9'}
-              >
+              <button onClick={handleGoogle} className="auth-btn-google" style={{ marginBottom:20 }}>
                 <svg width="18" height="18" viewBox="0 0 18 18">
                   <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
                   <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/>
@@ -208,9 +206,7 @@ export default function SignupPage() {
                 </div>
               </div>
 
-              <button onClick={()=>{ if(role) setStep('details') }} disabled={!role}
-                style={{ width:'100%',display:'flex',alignItems:'center',justifyContent:'center',gap:8,background:role?'#16a34a':'#e0dfd9',color:role?'#fff':'#aaa',border:'none',padding:'13px',borderRadius:10,fontSize:15,fontWeight:700,cursor:role?'pointer':'not-allowed',transition:'all .15s' }}
-              >
+              <button onClick={()=>{ if(role) setStep('details') }} disabled={!role} className="auth-btn-primary">
                 Continue <ArrowRight size={16}/>
               </button>
             </>
@@ -250,9 +246,7 @@ export default function SignupPage() {
                   <div style={{ background:'#fef2f2',border:'1px solid #fecaca',borderRadius:8,padding:'10px 14px',fontSize:13,color:'#dc2626' }}>{error}</div>
                 )}
 
-                <button type="submit" disabled={loading}
-                  style={{ display:'flex',alignItems:'center',justifyContent:'center',gap:8,background:loading?'#9ca3af':'#16a34a',color:'#fff',border:'none',padding:'13px',borderRadius:10,fontSize:15,fontWeight:700,cursor:loading?'not-allowed':'pointer',transition:'all .15s' }}
-                >
+                <button type="submit" disabled={loading} className="auth-btn-primary">
                   {loading ? 'Creating account...' : <><Check size={15}/> Create account</>}
                 </button>
 

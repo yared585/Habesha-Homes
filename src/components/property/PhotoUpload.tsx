@@ -29,10 +29,12 @@ export function PhotoUpload({ onUpload, maxPhotos = 8, existingPhotos = [] }: Pr
     const sb = createClient()
     const newUrls: string[] = []
 
+    // Only allow safe raster formats — SVG is excluded (can carry XSS)
+    const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
+
     for (const file of fileArray) {
-      // Validate file
-      if (!file.type.startsWith('image/')) {
-        setError('Only image files allowed')
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        setError('Only JPG, PNG, WebP, or GIF files are allowed')
         continue
       }
       if (file.size > 5 * 1024 * 1024) {
@@ -96,7 +98,7 @@ export function PhotoUpload({ onUpload, maxPhotos = 8, existingPhotos = [] }: Pr
           transition: 'all .15s', marginBottom: 14,
         }}
       >
-        <input ref={inputRef} type="file" accept="image/*" multiple style={{ display: 'none' }}
+        <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple style={{ display: 'none' }}
           onChange={e => e.target.files && uploadFiles(e.target.files)}
         />
         {uploading ? (

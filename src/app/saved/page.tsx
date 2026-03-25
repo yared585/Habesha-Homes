@@ -33,8 +33,30 @@ export default function SavedPage() {
   }
 
   if (loading) return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: '#aaa', fontSize: 14 }}>
-      Loading saved properties...
+    <div style={{ background: 'var(--bg)', minHeight: '100vh', padding: '32px 24px' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+        <div style={{ marginBottom: 28 }}>
+          <div className="skeleton-line" style={{ width: 220, height: 28, marginBottom: 10 }}/>
+          <div className="skeleton-line" style={{ width: 120, height: 14 }}/>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(300px,1fr))', gap: 20 }}>
+          {[1,2,3,4,5,6].map(i => (
+            <div key={i} className="skeleton-card">
+              <div className="skeleton-img"/>
+              <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 9 }}>
+                <div className="skeleton-line" style={{ width: '72%' }}/>
+                <div className="skeleton-line" style={{ width: '44%', height: 10 }}/>
+                <div className="skeleton-line" style={{ width: '52%', height: 20, marginTop: 2 }}/>
+                <div style={{ display: 'flex', gap: 8, marginTop: 2 }}>
+                  <div className="skeleton-line" style={{ width: 48 }}/>
+                  <div className="skeleton-line" style={{ width: 48 }}/>
+                  <div className="skeleton-line" style={{ width: 56 }}/>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   )
 

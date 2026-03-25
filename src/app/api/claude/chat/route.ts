@@ -1,8 +1,16 @@
 import { NextRequest } from 'next/server'
+import { rateLimit, getIP } from '@/lib/rate-limit'
 
 export const runtime = 'edge'
 
 export async function POST(request: NextRequest) {
+  const { success } = rateLimit(getIP(request), { limit: 20, windowMs: 60_000 })
+  if (!success) {
+    return Response.json({ error: 'Too many requests. Please wait a minute.' }, {
+      status: 429, headers: { 'Retry-After': '60' }
+    })
+  }
+
   try {
     const body = await request.json()
     const { messages, language = 'en' } = body

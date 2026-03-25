@@ -138,7 +138,6 @@ function UserMenu({ profile, signOut }: { profile: any; signOut: () => void }) {
 
 // ── Main Navbar ───────────────────────────────────────────────────────────────
 const NAV_LINKS = [
-  { label: 'Home', href: '/' },
   { label: 'Buy', href: '/search?intent=sale' },
   { label: 'Rent', href: '/search?intent=rent' },
   { label: 'Diaspora', href: '/diaspora' },
@@ -223,10 +222,37 @@ export function Navbar() {
                 style={{ display: 'block', padding: '13px 0', fontSize: 15, color: 'rgba(255,255,255,0.85)', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)' }}
               >{l.label}</Link>
             ))}
-            <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
-              <Link href="/auth/login" style={{ flex: 1, textAlign: 'center', padding: 11, background: 'rgba(255,255,255,0.09)', color: '#fff', borderRadius: 10, textDecoration: 'none', fontSize: 14 }}>Log in</Link>
-              <Link href="/auth/signup" style={{ flex: 1, textAlign: 'center', padding: 11, background: '#16a34a', color: '#fff', borderRadius: 10, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>Get started</Link>
-            </div>
+            {profile ? (
+              <div style={{ marginTop: 16 }}>
+                <div style={{ padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: 4 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>{profile.full_name}</div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>{profile.email}</div>
+                </div>
+                {(profile.role === 'agent' || profile.role === 'admin') && (
+                  <Link href="/dashboard" onClick={() => setMobileOpen(false)}
+                    style={{ display: 'block', padding: '12px 0', fontSize: 14, color: 'rgba(255,255,255,0.8)', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+                  >Dashboard</Link>
+                )}
+                {profile.role === 'agent' && (
+                  <Link href="/dashboard/listings/new" onClick={() => setMobileOpen(false)}
+                    style={{ display: 'block', padding: '12px 0', fontSize: 14, color: 'rgba(255,255,255,0.8)', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+                  >Add listing</Link>
+                )}
+                {profile.role === 'buyer' && (
+                  <Link href="/saved" onClick={() => setMobileOpen(false)}
+                    style={{ display: 'block', padding: '12px 0', fontSize: 14, color: 'rgba(255,255,255,0.8)', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+                  >Saved properties</Link>
+                )}
+                <button onClick={() => { setMobileOpen(false); signOut() }}
+                  style={{ display: 'block', width: '100%', textAlign: 'left', padding: '12px 0', fontSize: 14, color: '#f87171', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', marginTop: 4 }}
+                >Sign out</button>
+              </div>
+            ) : (
+              <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
+                <Link href="/auth/login" onClick={() => setMobileOpen(false)} style={{ flex: 1, textAlign: 'center', padding: 11, background: 'rgba(255,255,255,0.09)', color: '#fff', borderRadius: 10, textDecoration: 'none', fontSize: 14 }}>Log in</Link>
+                <Link href="/auth/signup" onClick={() => setMobileOpen(false)} style={{ flex: 1, textAlign: 'center', padding: 11, background: '#16a34a', color: '#fff', borderRadius: 10, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>Get started</Link>
+              </div>
+            )}
           </div>
         )}
       </nav>

@@ -25,17 +25,18 @@ function SearchContent() {
 
   const [filters, setFilters] = useState<PropertyFilters>({
     query: searchParams.get('q') || '',
-    listing_intent: (searchParams.get('intent') as any) || undefined,
+    listing_intent: (['sale','rent','both'].includes(searchParams.get('intent') || '') ? searchParams.get('intent') as any : undefined),
     neighborhoods: searchParams.get('neighborhoods')?.split(',').filter(Boolean) || [],
     furnished: searchParams.get('furnished') || undefined,
   })
 
   // Sync filters when URL changes (e.g. clicking Buy/Rent in navbar)
   useEffect(() => {
+    const intent = searchParams.get('intent')
     setFilters(f => ({
       ...f,
       query: searchParams.get('q') || '',
-      listing_intent: (searchParams.get('intent') as any) || undefined,
+      listing_intent: (['sale','rent','both'].includes(intent || '') ? intent as any : undefined),
       neighborhoods: searchParams.get('neighborhoods')?.split(',').filter(Boolean) || [],
       furnished: searchParams.get('furnished') || undefined,
     }))
@@ -65,9 +66,8 @@ function SearchContent() {
     if (filters.min_price_etb) params.set('min_price', filters.min_price_etb.toString())
     if (filters.max_price_etb) params.set('max_price', filters.max_price_etb.toString())
     if (filters.min_bedrooms) params.set('min_beds', filters.min_bedrooms.toString())
-    if ((filters as any).furnished) params.set('furnished', (filters as any).furnished)
-    if ((filters as any).sort) params.set('sort', (filters as any).sort)
-    if ((filters as any).sort) params.set('sort', (filters as any).sort)
+    if (filters.furnished) params.set('furnished', filters.furnished)
+    if (filters.sort) params.set('sort', filters.sort)
     params.set('page', page.toString())
 
     const res = await fetch(`/api/properties?${params}`)
@@ -194,7 +194,7 @@ function SearchContent() {
             </div>
             <div>
               <label style={{ fontSize: 12, color: '#888', display: 'block', marginBottom: 6 }}>Furnished</label>
-              <select onChange={e => updateFilter('furnished' as any, e.target.value || undefined)}
+              <select onChange={e => updateFilter('furnished', e.target.value || undefined)}
                 style={{ width: '100%', padding: '8px 10px', border: '1px solid #e0e0e0', borderRadius: 6, fontSize: 13 }}>
                 <option value="">Any</option>
                 <option value="furnished">Furnished</option>
@@ -204,7 +204,7 @@ function SearchContent() {
             </div>
             <div>
               <label style={{ fontSize: 12, color: '#888', display: 'block', marginBottom: 6 }}>Sort by</label>
-              <select onChange={e => updateFilter('sort' as any, e.target.value)}
+              <select onChange={e => updateFilter('sort', e.target.value)}
                 style={{ width: '100%', padding: '8px 10px', border: '1px solid #e0e0e0', borderRadius: 6, fontSize: 13 }}>
                 <option value="newest">Newest first</option>
                 <option value="price_asc">Price: Low to high</option>
@@ -219,7 +219,7 @@ function SearchContent() {
       {/* Results count */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, fontSize: 13, color: '#888' }}>
         <span>{loading ? 'Searching...' : `${total.toLocaleString()} properties found`}</span>
-        <select value={(filters as any).sort || 'newest'} onChange={e => updateFilter('sort' as any, e.target.value)} style={{ border: '1px solid #e0e0e0', borderRadius: 6, padding: '6px 10px', fontSize: 12, fontFamily: 'inherit', outline: 'none' }}>
+        <select value={(filters as any).sort || 'newest'} onChange={e => updateFilter('sort', e.target.value)} style={{ border: '1px solid #e0e0e0', borderRadius: 6, padding: '6px 10px', fontSize: 12, fontFamily: 'inherit', outline: 'none' }}>
           <option value="newest">Newest first</option>
           <option value="price_asc">Price: Low to high</option>
           <option value="price_desc">Price: High to low</option>
@@ -240,13 +240,39 @@ function SearchContent() {
           {loading ? (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
               {[1,2,3,4,5,6].map(i => (
-                <div key={i} style={{ height: 300, background: '#f5f5f5', borderRadius: 10, animation: 'pulse 1.5s ease-in-out infinite' }} />
+                <div key={i} className="skeleton-card">
+                  <div className="skeleton-img"/>
+                  <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 9 }}>
+                    <div className="skeleton-line" style={{ width: '72%' }}/>
+                    <div className="skeleton-line" style={{ width: '44%', height: 10 }}/>
+                    <div className="skeleton-line" style={{ width: '52%', height: 20, marginTop: 2 }}/>
+                    <div style={{ display: 'flex', gap: 8, marginTop: 2 }}>
+                      <div className="skeleton-line" style={{ width: 48 }}/>
+                      <div className="skeleton-line" style={{ width: 48 }}/>
+                      <div className="skeleton-line" style={{ width: 56 }}/>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           ) : properties.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: 60, color: '#888' }}>
-              <Search size={40} style={{ opacity: 0.3, marginBottom: 16 }} />
-              <p>No properties found. Try adjusting your filters.</p>
+            <div style={{ textAlign: 'center', padding: '64px 24px', background: 'var(--surface)', borderRadius: 16, border: '1px solid var(--border)' }}>
+              <div style={{ width: 64, height: 64, borderRadius: 20, background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                <Search size={26} color="var(--text-4)"/>
+              </div>
+              <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', margin: '0 0 8px' }}>No properties found</h3>
+              <p style={{ fontSize: 14, color: 'var(--text-3)', margin: '0 0 24px', lineHeight: 1.6 }}>
+                Try adjusting your filters or search in a different area.
+              </p>
+              <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
+                <button onClick={() => { setFilters({ query: '', listing_intent: undefined, neighborhoods: [] }); setPage(1) }}
+                  style={{ padding: '10px 20px', background: 'var(--green)', color: '#fff', border: 'none', borderRadius: 'var(--r-lg)', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                  Clear filters
+                </button>
+                <Link href="/search" style={{ padding: '10px 20px', background: 'var(--surface-2)', color: 'var(--text-2)', border: '1px solid var(--border)', borderRadius: 'var(--r-lg)', fontSize: 13, fontWeight: 500, textDecoration: 'none' }}>
+                  Browse all
+                </Link>
+              </div>
             </div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>

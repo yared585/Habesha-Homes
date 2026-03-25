@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Home, Users, Award, Shield, Clock, Zap, ArrowRight, Search, Star, Check, Phone, TrendingUp } from 'lucide-react'
+import { Home, Users, Award, Shield, Clock, Zap, ArrowRight, Search, Star, Check, Phone, TrendingUp, Bot, ShieldCheck, BarChart3, FileText, MapPin, Target } from 'lucide-react'
 import { EthiopianFlag, AIPill, SectionHeader } from '@/components/ui'
 import { Counter, Sparkline } from '@/components/ui/DataViz'
 import { useLiveStats, useNeighborhoods } from '@/hooks/useProperties'
@@ -44,12 +44,12 @@ export function StatsBar() {
 
 // ── AI features ───────────────────────────────────────────────────────────────
 const AI_FEATURES = [
-  { e:'🤖', t:'Amharic AI assistant', a:'አማርኛ AI ረዳት', d:'Ask any property question in Amharic or English — instant answer 24/7.', p:'Free', pc:'#16a34a', bg:'#f0fdf4', bc:'#bbf7d0' },
-  { e:'🔍', t:'Title fraud detector', a:'ማጭበርበር መፈለጊያ', d:'Upload title documents — Claude Vision scans for forged stamps instantly.', p:'$49/check', pc:'#dc2626', bg:'#fef2f2', bc:'#fecaca' },
-  { e:'📊', t:'AI property valuation', a:'AI ዋጋ ግምት', d:'Instant valuation with price range, rental yield, and investment verdict.', p:'$25', pc:'#2563eb', bg:'#eff6ff', bc:'#bfdbfe' },
-  { e:'📄', t:'Contract analyzer', a:'ውል ፈታኝ', d:'Upload any contract — dangerous clauses highlighted in Amharic instantly.', p:'$9.99', pc:'#d97706', bg:'#fffbeb', bc:'#fde68a' },
-  { e:'🏘️', t:'Neighborhood report', a:'ሰፈር ሪፖርት', d:'Safety, transport, flood risk — full area intelligence for Addis.', p:'$14.99', pc:'#7c3aed', bg:'#f5f3ff', bc:'#ddd6fe' },
-  { e:'🎯', t:'Smart property matching', a:'ስማርት ፍለጋ', d:'Describe what you want in Amharic — Claude finds your top 5 matches.', p:'Free', pc:'#16a34a', bg:'#f0fdf4', bc:'#bbf7d0' },
+  { icon: <Bot size={20}/>, t:'Amharic AI assistant', a:'አማርኛ AI ረዳት', d:'Ask any property question in Amharic or English — instant answer 24/7.', p:'Free', pc:'#16a34a', bg:'#f0fdf4', bc:'#bbf7d0', ic:'#16a34a', ib:'rgba(22,163,74,0.1)' },
+  { icon: <ShieldCheck size={20}/>, t:'Title fraud detector', a:'ማጭበርበር መፈለጊያ', d:'Upload title documents — Claude Vision scans for forged stamps instantly.', p:'$49/check', pc:'#dc2626', bg:'#fef2f2', bc:'#fecaca', ic:'#dc2626', ib:'rgba(220,38,38,0.08)' },
+  { icon: <BarChart3 size={20}/>, t:'AI property valuation', a:'AI ዋጋ ግምት', d:'Instant valuation with price range, rental yield, and investment verdict.', p:'$25', pc:'#2563eb', bg:'#eff6ff', bc:'#bfdbfe', ic:'#2563eb', ib:'rgba(37,99,235,0.08)' },
+  { icon: <FileText size={20}/>, t:'Contract analyzer', a:'ውል ፈታኝ', d:'Upload any contract — dangerous clauses highlighted in Amharic instantly.', p:'$9.99', pc:'#d97706', bg:'#fffbeb', bc:'#fde68a', ic:'#d97706', ib:'rgba(217,119,6,0.08)' },
+  { icon: <MapPin size={20}/>, t:'Neighborhood report', a:'ሰፈር ሪፖርት', d:'Safety, transport, flood risk — full area intelligence for Addis.', p:'$14.99', pc:'#7c3aed', bg:'#f5f3ff', bc:'#ddd6fe', ic:'#7c3aed', ib:'rgba(124,58,237,0.08)' },
+  { icon: <Target size={20}/>, t:'Smart property matching', a:'ስማርት ፍለጋ', d:'Describe what you want in Amharic — Claude finds your top 5 matches.', p:'Free', pc:'#16a34a', bg:'#f0fdf4', bc:'#bbf7d0', ic:'#16a34a', ib:'rgba(22,163,74,0.1)' },
 ]
 
 export function AIFeatures() {
@@ -65,15 +65,15 @@ export function AIFeatures() {
           <AIPill label="Claude AI — speaks Amharic 24/7"/>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 18 }}>
-          {AI_FEATURES.map(({ e, t, a, d, p, pc, bg, bc }) => (
-            <div key={t} style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 16, padding: 22, transition: 'all .2s' }}
-              onMouseEnter={el => { (el.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 32px rgba(0,0,0,0.09)'; (el.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)' }}
+          {AI_FEATURES.map(({ icon, t, a, d, p, pc, bg, bc, ic, ib }) => (
+            <div key={t} style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 16, padding: 24, transition: 'all .2s' }}
+              onMouseEnter={el => { (el.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 32px rgba(0,0,0,0.09)'; (el.currentTarget as HTMLDivElement).style.transform = 'translateY(-3px)' }}
               onMouseLeave={el => { (el.currentTarget as HTMLDivElement).style.boxShadow = ''; (el.currentTarget as HTMLDivElement).style.transform = '' }}
             >
-              <div style={{ fontSize: 32, marginBottom: 14 }}>{e}</div>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: ib, display: 'flex', alignItems: 'center', justifyContent: 'center', color: ic, marginBottom: 16 }}>{icon}</div>
               <div style={{ fontWeight: 700, fontSize: 15, color: '#111', marginBottom: 2 }}>{t}</div>
               <div style={{ fontSize: 12, color: '#aaa', marginBottom: 10 }}>{a}</div>
-              <div style={{ fontSize: 13, color: '#666', lineHeight: 1.6, marginBottom: 14 }}>{d}</div>
+              <div style={{ fontSize: 13, color: '#666', lineHeight: 1.6, marginBottom: 16 }}>{d}</div>
               <span style={{ fontSize: 12, fontWeight: 700, color: pc, background: bg, border: `1px solid ${bc}`, padding: '4px 12px', borderRadius: 20 }}>{p}</span>
             </div>
           ))}

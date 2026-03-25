@@ -3,7 +3,10 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import type { PropertyFilters } from '@/types'
+import type { PropertyFilters, PropertyType, ListingIntent } from '@/types'
+
+const VALID_INTENTS: ListingIntent[] = ['sale', 'rent', 'both']
+const VALID_TYPES: PropertyType[] = ['apartment','villa','house','condominium','commercial','land','office','warehouse']
 
 export async function GET(request: NextRequest) {
   const supabase = createClient()
@@ -14,11 +17,14 @@ export async function GET(request: NextRequest) {
   const per_page = Math.min(parseInt(searchParams.get('per_page') || '20'), 50)
   const offset = (page - 1) * per_page
 
+  const intentRaw = searchParams.get('intent')
+  const typesRaw = searchParams.get('types')?.split(',').filter(Boolean) ?? []
+
   const filters: PropertyFilters = {
     query: searchParams.get('q') || undefined,
     neighborhoods: searchParams.get('neighborhoods')?.split(',').filter(Boolean),
-    property_types: searchParams.get('types')?.split(',').filter(Boolean) as any,
-    listing_intent: searchParams.get('intent') as any || undefined,
+    property_types: typesRaw.filter((t): t is PropertyType => VALID_TYPES.includes(t as PropertyType)),
+    listing_intent: VALID_INTENTS.includes(intentRaw as ListingIntent) ? (intentRaw as ListingIntent) : undefined,
     min_price_etb: searchParams.get('min_price') ? parseInt(searchParams.get('min_price')!) : undefined,
     max_price_etb: searchParams.get('max_price') ? parseInt(searchParams.get('max_price')!) : undefined,
     min_bedrooms: searchParams.get('min_beds') ? parseInt(searchParams.get('min_beds')!) : undefined,
@@ -74,11 +80,10 @@ export async function GET(request: NextRequest) {
     if (filters.min_bedrooms) query = query.gte('bedrooms', filters.min_bedrooms)
     if (filters.is_featured) query = query.eq('is_featured', true)
     if (filters.is_verified) query = query.eq('title_verified', true)
-    if ((filters as any).furnished && (filters as any).furnished !== 'any') {
-      const f = (filters as any).furnished.toLowerCase()
+    if (filters.furnished && filters.furnished !== 'any') {
+      const f = filters.furnished.toLowerCase()
       if (f === 'furnished') query = query.eq('is_furnished', true)
       else if (f === 'unfurnished') query = query.eq('is_furnished', false)
-      else if (f === 'semi-furnished') query = query.eq('furnished_status', 'semi')
     }
 
     // Sorting
@@ -102,13 +107,22 @@ export async function GET(request: NextRequest) {
 
     if (error) throw error
 
-    return NextResponse.json({
-      data: properties || [],
-      total: count || 0,
-      page,
-      per_page,
-      has_more: (count || 0) > offset + per_page
-    })
+    return NextResponse.json(
+      {
+        data: properties || [],
+        total: count || 0,
+        page,
+        per_page,
+        has_more: (count || 0) > offset + per_page,
+      },
+      {
+        headers: {
+          // Cache at the CDN edge for 60s; serve stale for up to 5min while revalidating
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+          'Vary': 'Accept-Encoding',
+        },
+      }
+    )
 
   } catch (error) {
     console.error('Properties search error:', error)

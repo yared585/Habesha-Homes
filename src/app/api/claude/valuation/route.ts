@@ -3,9 +3,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { generateValuation } from '@/lib/claude'
+import { rateLimit, getIP } from '@/lib/rate-limit'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
+
+const ETB_RATE = parseFloat(process.env.USD_TO_ETB_RATE || '56.5')
 
 // Current Addis Ababa market data (ETB per m²)
 // In production: fetch from your database, updated by admin
@@ -26,6 +29,13 @@ const MARKET_DATA: Record<string, number> = {
 }
 
 export async function POST(request: NextRequest) {
+  const { success } = rateLimit(getIP(request), { limit: 5, windowMs: 60_000 })
+  if (!success) {
+    return NextResponse.json({ error: 'Too many requests. Please wait a minute.' }, {
+      status: 429, headers: { 'Retry-After': '60' }
+    })
+  }
+
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -57,7 +67,7 @@ export async function POST(request: NextRequest) {
       summary: result.market_analysis,
       summary_amharic: result.market_analysis_amharic,
       is_paid: false,
-      price_etb: Math.round(25 * 56.5),
+      price_etb: Math.round(25 * ETB_RATE),
       price_usd: 25
     }).select().single()
 

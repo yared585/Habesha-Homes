@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Eye, EyeOff, Sparkles, Mail, Lock, ArrowRight } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, ArrowRight, Sparkles } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [showPw, setShowPw] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
   const [error, setError] = useState('')
 
   async function handleLogin(e: React.FormEvent) {
@@ -25,6 +26,7 @@ export default function LoginPage() {
   }
 
   async function handleGoogle() {
+    setGoogleLoading(true)
     const sb = createClient()
     await sb.auth.signInWithOAuth({
       provider: 'google',
@@ -32,101 +34,125 @@ export default function LoginPage() {
     })
   }
 
-  const inp = (val: string, set: (v:string)=>void, placeholder: string, type: string, icon: React.ReactNode, right?: React.ReactNode) => (
-    <div style={{ position:'relative' }}>
-      <div style={{ position:'absolute',left:14,top:'50%',transform:'translateY(-50%)',color:'#aaa',display:'flex' }}>{icon}</div>
-      <input type={type} placeholder={placeholder} value={val} onChange={e=>set(e.target.value)} required
-        style={{ width:'100%',padding:'13px 16px 13px 42px',border:'1.5px solid #e0dfd9',borderRadius:10,fontSize:14,outline:'none',color:'#111',background:'#fff',transition:'border .15s',paddingRight: right ? 44 : 16 }}
-        onFocus={e=>(e.target as HTMLInputElement).style.borderColor='#16a34a'}
-        onBlur={e=>(e.target as HTMLInputElement).style.borderColor='#e0dfd9'}
-      />
-      {right && <div style={{ position:'absolute',right:14,top:'50%',transform:'translateY(-50%)',cursor:'pointer',color:'#aaa',display:'flex' }} onClick={()=>setShowPw(!showPw)}>{right}</div>}
-    </div>
-  )
-
   return (
-    <div style={{ minHeight:'100vh',background:'#f5f4f0',display:'flex',alignItems:'center',justifyContent:'center',padding:'24px' }}>
-      <div style={{ width:'100%',maxWidth:420 }}>
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #0d2318 0%, #0f2d1e 40%, #111 100%)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: '24px', position: 'relative', overflow: 'hidden'
+    }}>
+      <div style={{ position: 'absolute', top: -100, right: -100, width: 400, height: 400, borderRadius: '50%', background: 'rgba(22,163,74,0.06)', pointerEvents: 'none' }}/>
+      <div style={{ position: 'absolute', bottom: -150, left: -100, width: 500, height: 500, borderRadius: '50%', background: 'rgba(22,163,74,0.04)', pointerEvents: 'none' }}/>
+
+      <div style={{ width: '100%', maxWidth: 420, position: 'relative', zIndex: 1 }}>
 
         {/* Logo */}
-        <div style={{ textAlign:'center',marginBottom:32 }}>
-          <Link href="/" style={{ textDecoration:'none',display:'inline-flex',flexDirection:'column',alignItems:'center',gap:10 }}>
-            <svg width="52" height="52" viewBox="0 0 40 40" fill="none">
-              <rect width="40" height="40" rx="11" fill="#0d2318"/>
-              <path d="M6 22L20 9L34 22" stroke="#16a34a" strokeWidth="2.2" strokeLinecap="round"/>
-              <path d="M10 20v13h7v-7h6v7h7V20" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <circle cx="31" cy="12" r="5.5" stroke="#4ade80" strokeWidth="2.5" fill="rgba(74,222,128,0.15)"/>
-              <circle cx="31" cy="12" r="2" fill="#4ade80"/>
-              <path d="M31 17.5v8" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round"/>
-              <path d="M28.5 22h5M28.5 25h5" stroke="#4ade80" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
+        <div style={{ textAlign: 'center', marginBottom: 36 }}>
+          <Link href="/" style={{ textDecoration: 'none', display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 56, height: 56, borderRadius: 16, background: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 24px rgba(22,163,74,0.35)' }}>
+              <svg width="30" height="30" viewBox="0 0 40 40" fill="none">
+                <path d="M6 22L20 9L34 22" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+                <path d="M10 20v12h7v-6h6v6h7V20" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
             <div>
-              <div style={{ fontSize:20,fontWeight:800,color:'#111',letterSpacing:'-.02em' }}>Habesha Homes</div>
-              <div style={{ fontSize:10,color:'#aaa',letterSpacing:'.08em' }}>ETHIOPIA</div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: '#fff', letterSpacing: '-.02em' }}>Habesha Homes</div>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 4, marginTop: 5 }}>
+                {['#078930','#FCDD09','#DA121A'].map(c => <div key={c} style={{ width: 16, height: 2.5, borderRadius: 2, background: c }}/>)}
+              </div>
             </div>
           </Link>
         </div>
 
         {/* Card */}
-        <div style={{ background:'#fff',border:'1px solid #eae9e4',borderRadius:20,padding:32,boxShadow:'0 4px 24px rgba(0,0,0,0.06)' }}>
-          <h1 style={{ fontSize:24,fontWeight:800,color:'#111',margin:'0 0 6px',letterSpacing:'-.02em' }}>Welcome back</h1>
-          <p style={{ fontSize:14,color:'#888',margin:'0 0 24px' }}>Sign in to your account · እንኳን ደህና መጡ</p>
+        <div style={{ background: '#fff', borderRadius: 24, padding: '36px 32px', boxShadow: '0 32px 80px rgba(0,0,0,0.4)' }}>
+          <h1 style={{ fontSize: 26, fontWeight: 900, color: '#111', margin: '0 0 4px', letterSpacing: '-.025em', textAlign: 'center' }}>
+            Welcome back
+          </h1>
+          <p style={{ fontSize: 14, color: '#aaa', margin: '0 0 28px', textAlign: 'center' }}>
+            Sign in to your Habesha Homes account
+          </p>
 
           {/* Google */}
-          <button onClick={handleGoogle}
-            style={{ width:'100%',display:'flex',alignItems:'center',justifyContent:'center',gap:10,padding:'12px',border:'1.5px solid #e0dfd9',borderRadius:10,background:'#fff',fontSize:14,fontWeight:600,color:'#333',cursor:'pointer',marginBottom:20,transition:'all .15s' }}
-            onMouseEnter={e=>(e.currentTarget as HTMLButtonElement).style.borderColor='#16a34a'}
-            onMouseLeave={e=>(e.currentTarget as HTMLButtonElement).style.borderColor='#e0dfd9'}
-          >
-            <svg width="18" height="18" viewBox="0 0 18 18">
-              <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
-              <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/>
-              <path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
-              <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+          <button onClick={handleGoogle} disabled={googleLoading} className="auth-btn-google" style={{ marginBottom: 20 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
             </svg>
-            Continue with Google
+            {googleLoading ? 'Redirecting...' : 'Continue with Google'}
           </button>
 
-          <div style={{ display:'flex',alignItems:'center',gap:12,marginBottom:20 }}>
-            <div style={{ flex:1,height:1,background:'#eae9e4' }}/>
-            <span style={{ fontSize:12,color:'#bbb',fontWeight:500 }}>or email</span>
-            <div style={{ flex:1,height:1,background:'#eae9e4' }}/>
+          {/* Divider */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+            <div style={{ flex: 1, height: 1, background: '#f0f0ec' }}/>
+            <span style={{ fontSize: 12, color: '#ccc', fontWeight: 500 }}>or</span>
+            <div style={{ flex: 1, height: 1, background: '#f0f0ec' }}/>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleLogin} style={{ display:'flex',flexDirection:'column',gap:14 }}>
-            {inp(email, setEmail, 'Email address', 'email', <Mail size={16}/>)}
-            {inp(password, setPassword, 'Password', showPw ? 'text' : 'password', <Lock size={16}/>, showPw ? <EyeOff size={16}/> : <Eye size={16}/>)}
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div>
+              <label style={{ fontSize: 12, fontWeight: 600, color: '#555', display: 'block', marginBottom: 6 }}>Email address</label>
+              <div style={{ position: 'relative' }}>
+                <div style={{ position: 'absolute', left: 13, top: '50%', transform: 'translateY(-50%)', color: '#ccc', display: 'flex', pointerEvents: 'none' }}>
+                  <Mail size={15}/>
+                </div>
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  required
+                  className="auth-input"
+                />
+              </div>
+            </div>
 
-            <div style={{ display:'flex',justifyContent:'flex-end' }}>
-              <Link href="/auth/reset" style={{ fontSize:13,color:'#16a34a',textDecoration:'none',fontWeight:500 }}>Forgot password?</Link>
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <label style={{ fontSize: 12, fontWeight: 600, color: '#555' }}>Password</label>
+                <Link href="/auth/reset" style={{ fontSize: 12, color: '#16a34a', textDecoration: 'none', fontWeight: 500 }}>Forgot password?</Link>
+              </div>
+              <div style={{ position: 'relative' }}>
+                <div style={{ position: 'absolute', left: 13, top: '50%', transform: 'translateY(-50%)', color: '#ccc', display: 'flex', pointerEvents: 'none' }}>
+                  <Lock size={15}/>
+                </div>
+                <input
+                  type={showPw ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  required
+                  className="auth-input auth-input-pw"
+                />
+                <div onClick={() => setShowPw(!showPw)} style={{ position: 'absolute', right: 13, top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: '#ccc', display: 'flex' }}>
+                  {showPw ? <EyeOff size={15}/> : <Eye size={15}/>}
+                </div>
+              </div>
             </div>
 
             {error && (
-              <div style={{ background:'#fef2f2',border:'1px solid #fecaca',borderRadius:8,padding:'10px 14px',fontSize:13,color:'#dc2626' }}>
+              <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 9, padding: '10px 14px', fontSize: 13, color: '#dc2626' }}>
                 {error}
               </div>
             )}
 
-            <button type="submit" disabled={loading}
-              style={{ display:'flex',alignItems:'center',justifyContent:'center',gap:8,background: loading ? '#9ca3af' : '#16a34a',color:'#fff',border:'none',padding:'14px',borderRadius:10,fontSize:15,fontWeight:700,cursor: loading ? 'not-allowed' : 'pointer',transition:'all .15s' }}
-              onMouseEnter={e=>{ if(!loading)(e.currentTarget as HTMLButtonElement).style.background='#15803d' }}
-              onMouseLeave={e=>{ if(!loading)(e.currentTarget as HTMLButtonElement).style.background='#16a34a' }}
-            >
-              {loading ? 'Signing in...' : <><ArrowRight size={16}/> Sign in</>}
+            <button type="submit" disabled={loading} className="auth-btn-primary" style={{ marginTop: 4 }}>
+              {loading ? 'Signing in...' : <><span>Sign in</span><ArrowRight size={16}/></>}
             </button>
           </form>
+
+          <p style={{ textAlign: 'center', fontSize: 13, color: '#aaa', marginTop: 22, marginBottom: 0 }}>
+            Don't have an account?{' '}
+            <Link href="/auth/signup" style={{ color: '#16a34a', fontWeight: 700, textDecoration: 'none' }}>Create account</Link>
+          </p>
         </div>
 
-        {/* Footer */}
-        <p style={{ textAlign:'center',fontSize:13,color:'#888',marginTop:20 }}>
-          Don't have an account?{' '}
-          <Link href="/auth/signup" style={{ color:'#16a34a',fontWeight:700,textDecoration:'none' }}>Create one free</Link>
-        </p>
-
-        <div style={{ display:'flex',alignItems:'center',justifyContent:'center',gap:5,marginTop:16 }}>
-          <Sparkles size={11} color="#16a34a"/>
-          <span style={{ fontSize:11,color:'#bbb' }}>Powered by Claude AI · Secured by Supabase</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, marginTop: 20 }}>
+          <Sparkles size={11} color="rgba(255,255,255,0.3)"/>
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Secured by Supabase · Powered by Claude AI</span>
         </div>
       </div>
     </div>

@@ -4,11 +4,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { analyzeTitleDocument } from '@/lib/claude'
+import { rateLimit, getIP } from '@/lib/rate-limit'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
 
 export async function POST(request: NextRequest) {
+  const { success } = rateLimit(getIP(request), { limit: 5, windowMs: 60_000 })
+  if (!success) {
+    return NextResponse.json({ error: 'Too many requests. Please wait a minute.' }, {
+      status: 429, headers: { 'Retry-After': '60' }
+    })
+  }
+
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()

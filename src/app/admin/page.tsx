@@ -199,8 +199,9 @@ export default function AdminPage() {
   ]
 
   if (loading) return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: '#aaa', fontSize: 14 }}>
-      Loading admin panel...
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', gap: 14 }}>
+      <div style={{ width: 36, height: 36, border: '3px solid var(--surface-3)', borderTopColor: 'var(--green)', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }}/>
+      <span style={{ fontSize: 13, color: 'var(--text-3)' }}>Loading admin panel...</span>
     </div>
   )
 
