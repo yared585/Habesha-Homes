@@ -30,6 +30,18 @@ function SearchContent() {
     furnished: searchParams.get('furnished') || undefined,
   })
 
+  // Sync filters when URL changes (e.g. clicking Buy/Rent in navbar)
+  useEffect(() => {
+    setFilters(f => ({
+      ...f,
+      query: searchParams.get('q') || '',
+      listing_intent: (searchParams.get('intent') as any) || undefined,
+      neighborhoods: searchParams.get('neighborhoods')?.split(',').filter(Boolean) || [],
+      furnished: searchParams.get('furnished') || undefined,
+    }))
+    setPage(1)
+  }, [searchParams.get('intent'), searchParams.get('q')])
+
   useEffect(() => {
     loadNeighborhoods()
   }, [])

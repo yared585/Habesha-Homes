@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 import { Search, LogOut, LayoutDashboard, Plus, User, Sparkles, Home, Building2, Globe, TrendingUp, ChevronDown, Menu, X, Shield } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { SearchOverlay } from '@/components/layout/SearchOverlay'
@@ -25,9 +26,16 @@ function HabeshaLogo({ size = 38 }: { size?: number }) {
 // ── Nav link ──────────────────────────────────────────────────────────────────
 function NavLink({ label, href }: { label: string; href: string }) {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const [hov, setHov] = useState(false)
   const base = href.split('?')[0]
-  const active = pathname === base || (base !== '/' && pathname.startsWith(base))
+  const hrefParams = new URLSearchParams(href.split('?')[1] || '')
+  // Check if pathname matches AND query params match (for Buy/Rent distinction)
+  const pathnameMatch = pathname === base || (base !== '/' && pathname.startsWith(base))
+  const intentParam = hrefParams.get('intent')
+  const active = pathnameMatch && (
+    !intentParam || searchParams.get('intent') === intentParam
+  )
   return (
     <Link href={href} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)} style={{
       padding: '6px 11px', borderRadius: 8, fontSize: 13, fontWeight: active ? 600 : 400,
@@ -175,7 +183,9 @@ export function Navbar() {
 
           {/* Desktop nav - hidden on mobile */}
           <div className="nav-links-desktop" style={{ display: 'flex', gap: 1, flex: 1, overflow: 'hidden' }}>
-            {NAV_LINKS.map(l => <NavLink key={l.label} label={l.label} href={l.href}/>)}
+            <Suspense fallback={null}>
+              {NAV_LINKS.map(l => <NavLink key={l.label} label={l.label} href={l.href}/>)}
+            </Suspense>
           </div>
 
           {/* Right */}

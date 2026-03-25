@@ -196,14 +196,8 @@ img { max-width: 100%; display: block; }
 }
 
 /* ── Image loading ──────────────────────────────────────────────────── */
-img {
+/* Only fade in lazy-loaded images - don't hide all images globally */
+img[loading="lazy"] {
   opacity: 0;
   transition: opacity 0.3s ease;
-}
-img.loaded, img[loading="eager"] {
-  opacity: 1;
-}
-/* Hero images should show immediately */
-.hero-image img {
-  opacity: 1 !important;
 }
