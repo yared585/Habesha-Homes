@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(grep -rn \"useProperties\\\\|useLiveStats\" \"C:\\\\Users\\\\User\\\\OneDrive\\\\Desktop\\\\All Projects\\\\habesha-homes\\\\habesha-homes\\\\src\\\\hooks\"\" --include=\"*.ts\" --include=\"*.tsx \" -l)"
     ]
   }
 }

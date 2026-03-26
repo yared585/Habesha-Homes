@@ -125,7 +125,8 @@ export default function AdminPage() {
   }
 
   async function updateListingStatus(id: string, status: string) {
-    await createClient().from('properties').update({ status, updated_at: new Date().toISOString() }).eq('id', id)
+    const { error } = await createClient().from('properties').update({ status, updated_at: new Date().toISOString() }).eq('id', id)
+    if (error) { alert('Failed to update: ' + error.message); return }
     setProperties(p => p.map(x => x.id === id ? { ...x, status } : x))
 
     // Send approval email to agent
@@ -154,7 +155,13 @@ export default function AdminPage() {
 
   async function deleteProperty(id: string) {
     if (!confirm('Delete this listing permanently? This cannot be undone.')) return
-    await createClient().from('properties').delete().eq('id', id)
+    const sb = createClient()
+    // Delete related records first
+    await sb.from('ai_chat_sessions').delete().eq('property_id', id)
+    await sb.from('saved_properties').delete().eq('property_id', id)
+    await sb.from('inquiries').delete().eq('property_id', id)
+    const { error } = await sb.from('properties').delete().eq('id', id)
+    if (error) { alert('Failed to delete: ' + error.message); return }
     setProperties(p => p.filter(x => x.id !== id))
   }
 
@@ -179,7 +186,8 @@ export default function AdminPage() {
 
   async function featureProperty(id: string, featured: boolean) {
     const until = featured ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() : null
-    await createClient().from('properties').update({ is_featured: featured, featured_until: until }).eq('id', id)
+    const { error } = await createClient().from('properties').update({ is_featured: featured, featured_until: until }).eq('id', id)
+    if (error) { alert('Failed to feature: ' + error.message); return }
     setProperties(p => p.map(x => x.id === id ? { ...x, is_featured: featured } : x))
   }
 
@@ -199,9 +207,8 @@ export default function AdminPage() {
   ]
 
   if (loading) return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', gap: 14 }}>
-      <div style={{ width: 36, height: 36, border: '3px solid var(--surface-3)', borderTopColor: 'var(--green)', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }}/>
-      <span style={{ fontSize: 13, color: 'var(--text-3)' }}>Loading admin panel...</span>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: '#aaa', fontSize: 14 }}>
+      Loading admin panel...
     </div>
   )
 
