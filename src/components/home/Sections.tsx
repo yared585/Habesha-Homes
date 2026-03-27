@@ -61,9 +61,6 @@ export function AIFeatures() {
           title="The most intelligent platform in Ethiopian real estate"
           subtitle="Claude AI helps you make better property decisions — in Amharic or English, any time"
         />
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <AIPill label="Claude AI — speaks Amharic 24/7"/>
-        </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 18 }}>
           {AI_FEATURES.map(({ icon, t, a, d, p, pc, bg, bc, ic, ib }) => (
             <div key={t} style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 16, padding: 24, transition: 'all .2s' }}

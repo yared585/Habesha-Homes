@@ -22,13 +22,13 @@ export function FeaturedProperties() {
   })
 
   return (
-    <section style={{ padding: 'clamp(56px, 7vw, 80px) 24px', background: '#fafaf8' }}>
+    <section style={{ padding: 'clamp(28px, 3vw, 40px) 24px', background: '#fafaf8' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
 
         {/* ── Section header ────────────────────────────────── */}
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 20, padding: '4px 12px', marginBottom: 12 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 20, padding: '4px 12px', marginBottom: 6 }}>
               <TrendingUp size={11} color="#16a34a"/>
               <span style={{ fontSize: 11, fontWeight: 700, color: '#16a34a', letterSpacing: '.07em', textTransform: 'uppercase' }}>Featured listings</span>
             </div>
@@ -53,7 +53,7 @@ export function FeaturedProperties() {
         </div>
 
         {/* ── Filter tabs ───────────────────────────────────── */}
-        <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #e5e4df', marginBottom: 32, gap: 2 }}>
+        <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #e5e4df', marginBottom: 20, gap: 2 }}>
           {TABS.map(t => (
             <button
               key={t.id}

@@ -110,7 +110,7 @@ export function Hero() {
   return (
     <section style={{
       background: 'linear-gradient(165deg, #0c2016 0%, #0d2318 50%, #091b0e 100%)',
-      padding: 'clamp(44px, 6vw, 72px) 24px clamp(40px, 5vw, 60px)',
+      padding: 'clamp(24px, 3vw, 36px) 24px clamp(20px, 2.5vw, 28px)',
       position: 'relative', overflow: 'visible',
     }}>
       {/* Dot grid */}
@@ -126,32 +126,12 @@ export function Hero() {
       <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative' }}>
 
         {/* ── Headline ────────────────────────────────────────── */}
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
-
-          {/* Feature pills */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 22 }}>
-            {[
-              { dot: '#4ade80', text: 'AI Fraud Detection' },
-              { dot: '#60a5fa', text: 'Instant Valuations' },
-              { dot: '#fbbf24', text: 'Verified Agents' },
-              { dot: '#e879f9', text: 'ቤት ፈልጉ' },
-            ].map(({ dot, text }) => (
-              <span key={text} style={{
-                display: 'inline-flex', alignItems: 'center', gap: 5,
-                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: 20, padding: '4px 12px', fontSize: 11,
-                color: 'rgba(255,255,255,0.5)', fontWeight: 500,
-              }}>
-                <span style={{ width: 5, height: 5, borderRadius: '50%', background: dot, flexShrink: 0 }}/>
-                {text}
-              </span>
-            ))}
-          </div>
+        <div style={{ textAlign: 'center', marginBottom: 20 }}>
 
           {/* Serif headline */}
           <h1 style={{
             fontFamily: "'Instrument Serif', Georgia, serif",
-            fontSize: 'clamp(40px, 7vw, 76px)',
+            fontSize: 'clamp(28px, 4.5vw, 52px)',
             fontWeight: 400, color: '#fff',
             lineHeight: 1.08, letterSpacing: '-.01em', margin: 0,
           }}>
@@ -166,7 +146,7 @@ export function Hero() {
           background: '#fff',
           borderRadius: 16,
           boxShadow: '0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.04)',
-          marginBottom: 40,
+          marginBottom: 0,
         }}>
           {/* Buy / Rent tabs */}
           <div style={{ display: 'flex', padding: '12px 14px 0', gap: 4 }}>

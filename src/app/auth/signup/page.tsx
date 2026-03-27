@@ -262,10 +262,6 @@ export default function SignupPage() {
           Already have an account?{' '}
           <Link href="/auth/login" style={{ color:'#16a34a',fontWeight:700,textDecoration:'none' }}>Sign in</Link>
         </p>
-        <div style={{ display:'flex',alignItems:'center',justifyContent:'center',gap:5,marginTop:14 }}>
-          <Sparkles size={11} color="#16a34a"/>
-          <span style={{ fontSize:11,color:'#bbb' }}>Powered by Claude AI · Secured by Supabase</span>
-        </div>
       </div>
     </div>
   )
