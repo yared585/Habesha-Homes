@@ -41,7 +41,7 @@ export function Footer() {
           ))}
         </div>
 
-        <div style={{ borderTop: '1px solid var(--border)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+        <div className="footer-bottom" style={{ borderTop: '1px solid var(--border)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
           <span style={{ fontSize: 12, color: 'var(--text-4)' }}>© 2026 Habesha Homes · Powered by Claude AI · Built for Ethiopia 🇪🇹</span>
           <div style={{ display: 'flex', gap: 20 }}>
             {['Privacy', 'Terms', 'Contact'].map(l => (

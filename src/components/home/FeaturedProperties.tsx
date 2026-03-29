@@ -45,8 +45,8 @@ function ScrollRow({
   const { properties, loading, count } = useProperties({ limit: 6, intent, sortBy })
 
   const cardSlot = {
-    flex: '0 0 calc((100% - 48px) / 3.3)',
-    minWidth: 250,
+    flex: '0 0 clamp(220px, calc((100% - 48px) / 3.8), 300px)',
+    minWidth: 0,
     scrollSnapAlign: 'start' as const,
   }
 
@@ -89,7 +89,7 @@ function ScrollRow({
       {/* Scroll row */}
       {!loading && properties.length > 0 && (
         <div className="scroll-hide" style={{
-          display: 'flex', gap: 16,
+          display: 'flex', gap: 12,
           overflowX: 'auto', paddingBottom: 6,
           scrollSnapType: 'x mandatory',
         }}>

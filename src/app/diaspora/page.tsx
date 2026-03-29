@@ -45,7 +45,7 @@ export default function DiasporaPage() {
           <div style={{ display: 'flex', gap: 5, marginBottom: 20 }}>
             {['#078930','#FCDD09','#DA121A'].map(c => <div key={c} style={{ width: 32, height: 4, borderRadius: 2, background: c }}/>)}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center' }}>
+          <div className="diaspora-hero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center' }}>
             <div>
               <div style={{ fontSize: 13, fontWeight: 700, color: '#4ade80', letterSpacing: '.08em', textTransform: 'uppercase', marginBottom: 14 }}>
                 🌍 For the Ethiopian diaspora

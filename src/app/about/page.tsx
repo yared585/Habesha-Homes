@@ -28,7 +28,7 @@ export default function AboutPage() {
       {/* Mission */}
       <section style={{ padding: '72px 24px' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center' }}>
+          <div className="about-mission-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center' }}>
             <div>
               <div style={{ fontSize: 12, fontWeight: 700, color: '#16a34a', letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 12 }}>Our mission</div>
               <h2 style={{ fontSize: 'clamp(22px,4vw,32px)', fontWeight: 900, color: '#111', margin: '0 0 16px', letterSpacing: '-.02em', lineHeight: 1.2 }}>

@@ -78,7 +78,7 @@ function SearchBtn({ onClick }: { onClick: () => void }) {
     >
       <Search size={13} color="#999"/>
       <span style={{ fontSize: 13, color: '#999' }}>Search</span>
-      <kbd style={{ fontSize: 10, color: '#bbb', background: '#efefed', padding: '1px 5px', borderRadius: 4, fontFamily: 'monospace', border: '1px solid #e0dfd9' }}>⌘K</kbd>
+      <kbd className="nav-search-kbd" style={{ fontSize: 10, color: '#bbb', background: '#efefed', padding: '1px 5px', borderRadius: 4, fontFamily: 'monospace', border: '1px solid #e0dfd9' }}>⌘K</kbd>
     </button>
   )
 }
@@ -187,7 +187,7 @@ export function Navbar() {
         boxShadow: scrolled ? '0 4px 24px rgba(0,0,0,0.08)' : '0 1px 0 #e8e7e2',
         transition: 'all .25s',
       }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', height: 82, padding: '0 28px', display: 'flex', alignItems: 'center', gap: 4 }}>
+        <div className="nav-inner" style={{ maxWidth: 1280, margin: '0 auto', height: 82, padding: '0 28px', display: 'flex', alignItems: 'center', gap: 4 }}>
 
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginRight: 16, flexShrink: 0 }}>
             <HabeshaLogo/>

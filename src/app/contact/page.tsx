@@ -44,7 +44,7 @@ export default function ContactPage() {
       </div>
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '48px 24px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 32, alignItems: 'start' }}>
+        <div className="contact-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 32, alignItems: 'start' }}>
 
           {/* Left */}
           <div>
@@ -96,7 +96,7 @@ export default function ContactPage() {
                 <h2 style={{ fontSize: 20, fontWeight: 800, color: '#111', marginBottom: 4 }}>Send us a message</h2>
                 <p style={{ fontSize: 13, color: '#aaa', marginBottom: 22 }}>We usually respond within 24 hours</p>
                 <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 14 }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <div className="contact-name-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                     <div>
                       <label style={{ fontSize: 12, fontWeight: 600, color: '#555', display: 'block', marginBottom: 5 }}>Full name *</label>
                       <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required placeholder="Your name" style={inputStyle}

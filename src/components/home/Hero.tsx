@@ -145,8 +145,8 @@ export function Hero() {
           boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
           overflow: 'visible',
         }}>
-          {/* Single filter row */}
-          <div style={{ display: 'flex', alignItems: 'center', overflow: 'visible' }}>
+          {/* Single filter row — desktop */}
+          <div className="hero-filter-bar-desktop" style={{ alignItems: 'center', overflow: 'visible' }}>
 
             {/* Buy / Rent inline toggle */}
             <div style={{ display: 'flex', alignItems: 'center', padding: '0 6px 0 10px', gap: 2, flexShrink: 0 }}>
@@ -194,6 +194,24 @@ export function Hero() {
                 onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#15803d'; (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-1px)' }}
                 onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#16a34a'; (e.currentTarget as HTMLAnchorElement).style.transform = 'none' }}
               ><Search size={14}/> Search</Link>
+            </div>
+          </div>
+
+          {/* Mobile search button */}
+          <div className="hero-filter-bar-mobile" style={{ padding: '12px' }}>
+            <Link href="/search"
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                background: '#16a34a', color: '#fff', borderRadius: 10,
+                padding: '14px', fontSize: 16, fontWeight: 700, textDecoration: 'none',
+              }}
+            >
+              <Search size={18}/> Search properties in Ethiopia
+            </Link>
+            <div style={{ display: 'flex', gap: 8, marginTop: 10, justifyContent: 'center' }}>
+              <Link href="/search?intent=sale" style={{ flex: 1, textAlign: 'center', padding: '10px', background: '#f0fdf4', color: '#16a34a', borderRadius: 8, fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid #bbf7d0' }}>Buy</Link>
+              <Link href="/search?intent=rent" style={{ flex: 1, textAlign: 'center', padding: '10px', background: '#f0fdf4', color: '#16a34a', borderRadius: 8, fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid #bbf7d0' }}>Rent</Link>
+              <Link href="/search?view=map" style={{ flex: 1, textAlign: 'center', padding: '10px', background: '#f5f5f2', color: '#555', borderRadius: 8, fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid #e8e7e2' }}>Map</Link>
             </div>
           </div>
 

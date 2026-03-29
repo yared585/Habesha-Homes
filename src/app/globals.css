@@ -144,6 +144,11 @@ img { max-width: 100%; display: block; }
 .mapboxgl-ctrl-attrib { font-size: 10px !important; }
 
 /* ── Mobile Responsiveness ─────────────────────────────────────────── */
+
+/* Hero — default state (desktop shows bar, mobile shows button) */
+.hero-filter-bar-desktop { display: flex !important; }
+.hero-filter-bar-mobile  { display: none !important; }
+
 @media (max-width: 768px) {
 
   /* Property detail page — stack sidebar below content */
@@ -162,11 +167,6 @@ img { max-width: 100%; display: block; }
   /* Admin / dashboard grids */
   .admin-grid {
     grid-template-columns: 1fr !important;
-  }
-
-  /* Hero search bar — stack on mobile */
-  .hero-filters {
-    flex-direction: column !important;
   }
 
   /* Listing cards grid */
@@ -208,14 +208,92 @@ img { max-width: 100%; display: block; }
   .map-mobile {
     height: 300px !important;
   }
+
+  /* Hero — swap filter bar for simple button on mobile */
+  .hero-filter-bar-desktop { display: none !important; }
+  .hero-filter-bar-mobile  { display: block !important; }
+
+  /* Contact page — stack 2-col layout */
+  .contact-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .contact-name-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* About — mission section 2-col to 1-col */
+  .about-mission-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Diaspora — hero 2-col to 1-col */
+  .diaspora-hero-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Sections — DiasporaCTA 2-col to 1-col */
+  .diaspora-cta-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Sections — HowItWorks: remove right borders when stacked */
+  .how-it-works-step {
+    border-right: none !important;
+    border-bottom: 1px solid #eae9e4 !important;
+  }
+  .how-it-works-step:last-child {
+    border-bottom: none !important;
+  }
+
+  /* Stats bar — 2 per row on mobile */
+  .stats-bar-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  /* Hide search kbd hint in navbar on mobile */
+  .nav-search-kbd {
+    display: none !important;
+  }
+
+  /* Footer bottom — stack on mobile */
+  .footer-bottom {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  /* Pricing grids — single column on narrow screens */
+  .pricing-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) !important;
+  }
+
+  /* Property card grid — single column on mobile */
+  .property-card-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* Navbar height reduction on mobile */
+  .nav-inner {
+    height: 64px !important;
+    padding: 0 16px !important;
+  }
 }
 
 @media (max-width: 480px) {
   .stats-grid {
     grid-template-columns: 1fr 1fr !important;
   }
+  .stats-bar-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
   .hide-mobile {
     display: none !important;
+  }
+  /* On very small screens, property cards go single column */
+  .property-card-grid {
+    grid-template-columns: 1fr !important;
   }
 }
 

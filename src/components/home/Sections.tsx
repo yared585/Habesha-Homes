@@ -25,7 +25,7 @@ export function StatsBar() {
   ]
   return (
     <section style={{ background: '#0d2318', padding: '28px 24px' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(150px,1fr))', gap: 24 }}>
+      <div className="stats-bar-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(150px,1fr))', gap: 24 }}>
         {items.map(({ icon, val, suffix, label }) => (
           <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ color: '#4ade80' }}>{icon}</div>
@@ -141,7 +141,7 @@ export function HowItWorks() {
         <SectionHeader centered title="How it works" subtitle="Find and secure your property in 4 simple steps"/>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 0 }}>
           {HOW_STEPS.map(({ n, icon, t, d }, i) => (
-            <div key={n} style={{ padding: 28, textAlign: 'center', borderRight: i < 3 ? '1px solid #eae9e4' : 'none' }}>
+            <div key={n} className="how-it-works-step" style={{ padding: 28, textAlign: 'center', borderRight: i < 3 ? '1px solid #eae9e4' : 'none' }}>
               <div style={{ width: 54, height: 54, borderRadius: '50%', background: '#f0fdf4', border: '2px solid #bbf7d0', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#16a34a' }}>{icon}</div>
               <div style={{ fontSize: 11, fontWeight: 800, color: '#d0d0cc', letterSpacing: '.1em', marginBottom: 8 }}>{n}</div>
               <div style={{ fontSize: 16, fontWeight: 700, color: '#111', marginBottom: 8 }}>{t}</div>
@@ -166,7 +166,7 @@ const DIASPORA_STEPS = [
 export function DiasporaCTA() {
   return (
     <section style={{ padding: '80px 24px', background: '#0d2318' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr auto', gap: 40, alignItems: 'center', flexWrap: 'wrap' }}>
+      <div className="diaspora-cta-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr auto', gap: 40, alignItems: 'center' }}>
         <div>
           <div style={{ marginBottom: 22 }}><EthiopianFlag size="md"/></div>
           <h2 style={{ fontSize: 'clamp(26px,4vw,46px)', fontWeight: 900, color: '#fff', lineHeight: 1.1, margin: '0 0 16px', letterSpacing: '-.025em' }}>
