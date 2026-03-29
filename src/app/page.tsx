@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     type: 'website',
   }
 }
-import { AIFeatures, NeighborhoodGrid, HowItWorks, DiasporaCTA, ContactStrip, StatsBar } from '@/components/home/Sections'
+import { NeighborhoodGrid, DiasporaCTA } from '@/components/home/Sections'
 import { FeaturedProperties } from '@/components/home/FeaturedProperties'
 
 export default function HomePage() {
@@ -19,12 +19,8 @@ export default function HomePage() {
     <>
       <Hero/>
       <FeaturedProperties/>
-      <StatsBar/>
-      <AIFeatures/>
       <NeighborhoodGrid/>
-      <HowItWorks/>
       <DiasporaCTA/>
-      <ContactStrip/>
     </>
   )
 }

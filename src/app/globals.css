@@ -136,6 +136,9 @@ img { max-width: 100%; display: block; }
 ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
 
+/* Hide scrollbar on horizontal scroll rows */
+.scroll-hide::-webkit-scrollbar { display: none; }
+
 /* Mapbox */
 .mapboxgl-ctrl-logo { display: none !important; }
 .mapboxgl-ctrl-attrib { font-size: 10px !important; }

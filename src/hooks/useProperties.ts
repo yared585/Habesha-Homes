@@ -9,6 +9,7 @@ interface UsePropertiesOptions {
   intent?: 'sale' | 'rent'
   featured?: boolean
   agentId?: string
+  sortBy?: 'recent' | 'views' | 'price_asc' | 'price_desc'
 }
 
 export function useProperties(opts: UsePropertiesOptions = {}) {
@@ -26,17 +27,26 @@ export function useProperties(opts: UsePropertiesOptions = {}) {
     if (opts.featured) query = query.eq('is_featured', true)
     if (opts.agentId) query = query.eq('agent_id', opts.agentId)
 
-    query = query
-      .order('is_featured', { ascending: false })
-      .order('listed_at', { ascending: false })
-      .limit(opts.limit || 6)
+    if (opts.sortBy === 'views') {
+      query = query.order('views', { ascending: false })
+    } else if (opts.sortBy === 'price_asc') {
+      query = query.order('price_etb', { ascending: true })
+    } else if (opts.sortBy === 'price_desc') {
+      query = query.order('price_etb', { ascending: false })
+    } else {
+      query = query
+        .order('is_featured', { ascending: false })
+        .order('listed_at', { ascending: false })
+    }
+
+    query = query.limit(opts.limit || 6)
 
     query.then(({ data, count: c }) => {
       setProperties((data || []) as unknown as Property[])
       setCount(c || 0)
       setLoading(false)
     })
-  }, [opts.intent, opts.featured, opts.agentId, opts.limit])
+  }, [opts.intent, opts.featured, opts.agentId, opts.limit, opts.sortBy])
 
   return { properties, loading, count }
 }

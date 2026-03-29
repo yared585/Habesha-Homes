@@ -41,11 +41,11 @@ function NavLink({ label, href, badge }: { label: string; href: string; badge?: 
         display: 'inline-flex', alignItems: 'center', gap: 5,
         padding: '7px 13px', borderRadius: 8,
         textDecoration: 'none', fontSize: 13.5,
-        fontWeight: active ? 600 : 400,
-        color: active ? '#fff' : hov ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.55)',
-        background: active ? 'rgba(255,255,255,0.12)' : hov ? 'rgba(255,255,255,0.07)' : 'transparent',
+        fontWeight: active ? 600 : 500,
+        color: active ? '#2563eb' : hov ? '#2563eb' : '#1a1a18',
+        background: active ? 'rgba(37,99,235,0.07)' : hov ? 'rgba(37,99,235,0.06)' : 'transparent',
         transition: 'all .15s', whiteSpace: 'nowrap',
-        boxShadow: active ? 'inset 0 0 0 1px rgba(255,255,255,0.1)' : 'none',
+        boxShadow: 'none',
       }}
     >
       {label}
@@ -70,15 +70,15 @@ function SearchBtn({ onClick }: { onClick: () => void }) {
       onMouseLeave={() => setHov(false)}
       style={{
         display: 'flex', alignItems: 'center', gap: 7, cursor: 'pointer',
-        background: hov ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.07)',
-        border: `1px solid ${hov ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)'}`,
+        background: hov ? '#f5f5f2' : '#f9f9f7',
+        border: `1px solid ${hov ? '#d0cfc9' : '#e8e7e2'}`,
         borderRadius: 9, padding: '7px 12px',
         transition: 'all .15s', fontFamily: 'inherit',
       }}
     >
-      <Search size={13} color="rgba(255,255,255,0.6)"/>
-      <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>Search</span>
-      <kbd style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.06)', padding: '1px 5px', borderRadius: 4, fontFamily: 'monospace', border: '1px solid rgba(255,255,255,0.1)' }}>⌘K</kbd>
+      <Search size={13} color="#999"/>
+      <span style={{ fontSize: 13, color: '#999' }}>Search</span>
+      <kbd style={{ fontSize: 10, color: '#bbb', background: '#efefed', padding: '1px 5px', borderRadius: 4, fontFamily: 'monospace', border: '1px solid #e0dfd9' }}>⌘K</kbd>
     </button>
   )
 }
@@ -108,18 +108,21 @@ function UserMenu({ profile, signOut }: { profile: any; signOut: () => void }) {
       <button onClick={() => setOpen(!open)}
         style={{
           display: 'flex', alignItems: 'center', gap: 8,
-          background: 'rgba(255,255,255,0.09)', border: '1px solid rgba(255,255,255,0.12)',
+          background: '#f5f5f2', border: '1px solid #e8e7e2',
           borderRadius: 24, padding: '5px 10px 5px 5px',
           cursor: 'pointer', transition: 'all .15s', fontFamily: 'inherit',
         }}
-        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(74,222,128,0.12)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(74,222,128,0.3)' }}
-        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.09)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.12)' }}
+        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(22,163,74,0.08)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(22,163,74,0.3)' }}
+        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#f5f5f2'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#e8e7e2' }}
       >
         <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#16a34a,#15803d)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#fff', fontWeight: 700 }}>
           {profile.full_name?.[0]?.toUpperCase() || 'U'}
         </div>
-        <span style={{ fontSize: 13, color: '#fff', fontWeight: 600 }}>{profile.full_name?.split(' ')[0]}</span>
-        <ChevronDown size={12} color="rgba(255,255,255,0.4)" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}/>
+        <div>
+          <div style={{ fontSize: 13, color: '#111', fontWeight: 600, lineHeight: 1.2 }}>{profile.full_name?.split(' ')[0]}</div>
+          <div style={{ fontSize: 10, color: '#16a34a', fontWeight: 700, letterSpacing: '.04em', textTransform: 'capitalize' }}>{profile.role}</div>
+        </div>
+        <ChevronDown size={12} color="#aaa" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}/>
       </button>
       {open && (
         <>
@@ -178,19 +181,19 @@ export function Navbar() {
       <nav style={{
         position: 'sticky', top: 0, zIndex: 100,
         /* Charcoal — clearly distinct from the green hero */
-        background: scrolled ? 'rgba(18,20,28,0.98)' : '#12141c',
+        background: scrolled ? 'rgba(255,255,255,0.98)' : '#ffffff',
         backdropFilter: 'blur(20px)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
-        boxShadow: scrolled ? '0 4px 32px rgba(0,0,0,0.5)' : 'none',
+        borderBottom: '1px solid #e8e7e2',
+        boxShadow: scrolled ? '0 4px 24px rgba(0,0,0,0.08)' : '0 1px 0 #e8e7e2',
         transition: 'all .25s',
       }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', height: 70, padding: '0 28px', display: 'flex', alignItems: 'center', gap: 4 }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', height: 82, padding: '0 28px', display: 'flex', alignItems: 'center', gap: 4 }}>
 
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginRight: 16, flexShrink: 0 }}>
             <HabeshaLogo/>
             <div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', lineHeight: 1.15, letterSpacing: '-.02em' }}>Habesha Homes</div>
-              <div style={{ fontSize: 8.5, color: 'rgba(255,255,255,0.28)', letterSpacing: '.14em', fontWeight: 600 }}>ETHIOPIA</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#111', lineHeight: 1.15, letterSpacing: '-.02em' }}>Habesha Homes</div>
+              <div style={{ fontSize: 8.5, color: '#bbb', letterSpacing: '.14em', fontWeight: 600 }}>ETHIOPIA</div>
             </div>
           </Link>
 
@@ -207,9 +210,9 @@ export function Navbar() {
             ) : (
               <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                 <Link href="/auth/login"
-                  style={{ padding: '7px 13px', fontSize: 13.5, fontWeight: 500, color: 'rgba(255,255,255,0.55)', textDecoration: 'none', borderRadius: 8, transition: 'all .15s' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#fff'; (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.08)' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.55)'; (e.currentTarget as HTMLAnchorElement).style.background = 'transparent' }}
+                  style={{ padding: '7px 13px', fontSize: 13.5, fontWeight: 500, color: '#555', textDecoration: 'none', borderRadius: 8, transition: 'all .15s' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#111'; (e.currentTarget as HTMLAnchorElement).style.background = '#f5f5f2' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#555'; (e.currentTarget as HTMLAnchorElement).style.background = 'transparent' }}
                 >Log in</Link>
                 <Link href="/auth/signup"
                   style={{ padding: '8px 20px', fontSize: 13.5, fontWeight: 600, background: '#16a34a', color: '#fff', borderRadius: 9, textDecoration: 'none', transition: 'all .18s', boxShadow: '0 2px 10px rgba(22,163,74,0.4)' }}
@@ -219,17 +222,17 @@ export function Navbar() {
               </div>
             )}
             <button onClick={() => setMobileOpen(!mobileOpen)} className="mobile-menu-btn"
-              style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: 7, cursor: 'pointer', color: 'rgba(255,255,255,0.7)', display: 'none', alignItems: 'center', fontFamily: 'inherit' }}>
+              style={{ background: '#f5f5f2', border: '1px solid #e8e7e2', borderRadius: 8, padding: 7, cursor: 'pointer', color: '#555', display: 'none', alignItems: 'center', fontFamily: 'inherit' }}>
               {mobileOpen ? <X size={18}/> : <Menu size={18}/>}
             </button>
           </div>
         </div>
 
         {mobileOpen && (
-          <div style={{ background: '#12141c', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '8px 20px 24px' }}>
+          <div style={{ background: '#fff', borderTop: '1px solid #e8e7e2', padding: '8px 20px 24px' }}>
             {NAV_LINKS.map(l => (
               <Link key={l.label} href={l.href} onClick={() => setMobileOpen(false)}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '13px 4px', fontSize: 15, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '13px 4px', fontSize: 15, color: '#333', textDecoration: 'none', borderBottom: '1px solid #f0f0ee' }}
               >
                 {l.label}
                 {l.badge && <span style={{ fontSize: 10, fontWeight: 700, color: '#4ade80', background: 'rgba(74,222,128,0.15)', border: '1px solid rgba(74,222,128,0.3)', padding: '2px 7px', borderRadius: 20 }}>{l.badge}</span>}
@@ -237,15 +240,15 @@ export function Navbar() {
             ))}
             {profile ? (
               <div style={{ marginTop: 16 }}>
-                <div style={{ padding: '12px 4px', borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: 4 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>{profile.full_name}</div>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{profile.email}</div>
+                <div style={{ padding: '12px 4px', borderBottom: '1px solid #f0f0ee', marginBottom: 4 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: '#111' }}>{profile.full_name}</div>
+                  <div style={{ fontSize: 12, color: '#aaa', marginTop: 2 }}>{profile.email}</div>
                 </div>
                 {(profile.role === 'agent' || profile.role === 'admin') && (
-                  <Link href="/dashboard" onClick={() => setMobileOpen(false)} style={{ display: 'block', padding: '12px 4px', fontSize: 14, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Dashboard</Link>
+                  <Link href="/dashboard" onClick={() => setMobileOpen(false)} style={{ display: 'block', padding: '12px 4px', fontSize: 14, color: '#333', textDecoration: 'none', borderBottom: '1px solid #f0f0ee' }}>Dashboard</Link>
                 )}
                 {profile.role === 'buyer' && (
-                  <Link href="/saved" onClick={() => setMobileOpen(false)} style={{ display: 'block', padding: '12px 4px', fontSize: 14, color: 'rgba(255,255,255,0.75)', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Saved properties</Link>
+                  <Link href="/saved" onClick={() => setMobileOpen(false)} style={{ display: 'block', padding: '12px 4px', fontSize: 14, color: '#333', textDecoration: 'none', borderBottom: '1px solid #f0f0ee' }}>Saved properties</Link>
                 )}
                 <button onClick={() => { setMobileOpen(false); signOut() }}
                   style={{ display: 'block', width: '100%', textAlign: 'left', padding: '13px 4px', fontSize: 14, color: '#f87171', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', marginTop: 4 }}
@@ -253,7 +256,7 @@ export function Navbar() {
               </div>
             ) : (
               <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
-                <Link href="/auth/login" onClick={() => setMobileOpen(false)} style={{ flex: 1, textAlign: 'center', padding: 12, background: 'rgba(255,255,255,0.07)', color: '#fff', borderRadius: 10, textDecoration: 'none', fontSize: 14, border: '1px solid rgba(255,255,255,0.1)' }}>Log in</Link>
+                <Link href="/auth/login" onClick={() => setMobileOpen(false)} style={{ flex: 1, textAlign: 'center', padding: 12, background: '#f5f5f2', color: '#333', borderRadius: 10, textDecoration: 'none', fontSize: 14, border: '1px solid #e8e7e2' }}>Log in</Link>
                 <Link href="/auth/signup" onClick={() => setMobileOpen(false)} style={{ flex: 1, textAlign: 'center', padding: 12, background: '#16a34a', color: '#fff', borderRadius: 10, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>Get started</Link>
               </div>
             )}

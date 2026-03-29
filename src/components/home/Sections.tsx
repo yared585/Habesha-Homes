@@ -117,7 +117,7 @@ export function NeighborhoodGrid() {
   return (
     <section style={{ padding: '80px 24px', background: '#fafaf8' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <SectionHeader title="Browse by neighborhood" subtitle="ሰፈር ይምረጡ — Live price trends with 12-month sparkline charts"/>
+        <SectionHeader title="Browse by neighborhood" subtitle="Explore price trends across Addis Ababa and beyond"/>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 14 }}>
           {display.map((n: any) => <NeighborhoodCard key={n.id || n.name} n={n}/>)}
         </div>
