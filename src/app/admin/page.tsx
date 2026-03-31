@@ -628,7 +628,6 @@ export default function AdminPage() {
                   <PhotoUpload
                     onUpload={(urls) => setNewProject((p: any) => ({ ...p, cover_image_url: urls[0] || '', images: urls }))}
                     existingPhotos={newProject.images || (newProject.cover_image_url ? [newProject.cover_image_url] : [])}
-                    bucket="properties"
                   />
                 </div>
 

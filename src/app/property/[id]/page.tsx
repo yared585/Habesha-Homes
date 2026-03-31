@@ -101,7 +101,7 @@ function InquiryForm({ property }: { property: Property }) {
 
   return (
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+      <div className="contact-name-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         {inp('name', 'Full name', 'text', true, 'Your full name')}
         {inp('email', 'Email', 'email', true, 'your@email.com')}
       </div>
@@ -291,47 +291,70 @@ export default function PropertyDetailPage() {
           <div>
 
             {/* Gallery */}
-            <div style={{ borderRadius: 16, overflow: 'hidden', marginBottom: 20, background: '#111', position: 'relative' }}>
-              {images.length > 0 ? (
-                <>
-                  <img src={images[activeImage]?.url} alt={title} style={{ width: '100%', height: 520, objectFit: 'cover', display: 'block' }}/>
-                  <div style={{ position: 'absolute', bottom: 14, right: 14, background: 'rgba(0,0,0,0.55)', color: '#fff', fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 20 }}>
-                    {activeImage + 1} / {images.length}
-                  </div>
-                  {images.length > 1 && activeImage > 0 && (
-                    <button onClick={() => setActiveImage(i => i - 1)} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 38, height: 38, borderRadius: '50%', background: 'rgba(0,0,0,0.5)', border: 'none', color: '#fff', fontSize: 20, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>‹</button>
-                  )}
-                  {images.length > 1 && activeImage < images.length - 1 && (
-                    <button onClick={() => setActiveImage(i => i + 1)} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', width: 38, height: 38, borderRadius: '50%', background: 'rgba(0,0,0,0.5)', border: 'none', color: '#fff', fontSize: 20, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>›</button>
-                  )}
-                  {/* Badges */}
-                  <div style={{ position: 'absolute', top: 14, left: 14, display: 'flex', gap: 7 }}>
-                    {property.is_featured && <span style={{ background: '#16a34a', color: '#fff', fontSize: 11, fontWeight: 700, padding: '4px 11px', borderRadius: 20 }}>Featured</span>}
-                    {property.title_verified && <span style={{ background: 'rgba(255,255,255,0.95)', color: '#15803d', fontSize: 11, fontWeight: 700, padding: '4px 11px', borderRadius: 20 }}>✓ Verified</span>}
-                  </div>
-                  {/* Action buttons on image */}
-                  <div style={{ position: 'absolute', top: 14, right: 14, display: 'flex', gap: 8 }}>
-                    <button onClick={toggleSave} style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.9)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Heart size={16} fill={saved ? '#dc2626' : 'none'} color={saved ? '#dc2626' : '#555'}/>
-                    </button>
-                    <button onClick={shareProperty} style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.9)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Share2 size={16} color="#555"/>
-                    </button>
-                  </div>
-                  {copied && <div style={{ position: 'absolute', bottom: 50, right: 14, background: '#111', color: '#fff', fontSize: 12, padding: '6px 12px', borderRadius: 8 }}>Link copied!</div>}
-                </>
+            {lightboxOpen && images.length > 0 && (
+              <Lightbox images={images} startIndex={lightboxStart} onClose={() => setLightboxOpen(false)}/>
+            )}
+            <div style={{ borderRadius: 16, overflow: 'hidden', marginBottom: 20, position: 'relative' }}>
+              {images.length === 0 ? (
+                <div style={{ height: 380, background: '#f0f0ec', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aaa', fontSize: 14 }}>No photos available</div>
+              ) : images.length === 1 ? (
+                /* Single image — full width */
+                <div style={{ position: 'relative', cursor: 'zoom-in' }} onClick={() => openLightbox(0)}>
+                  <img src={images[0].url} alt={title} style={{ width: '100%', height: 460, objectFit: 'cover', display: 'block' }}/>
+                </div>
               ) : (
-                <div style={{ height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aaa', fontSize: 14 }}>No photos</div>
-              )}
-              {images.length > 1 && (
-                <div style={{ display: 'flex', gap: 6, padding: '8px 8px', background: '#111', overflowX: 'auto' }}>
-                  {images.map((img, i) => (
-                    <img key={i} src={img.url} onClick={() => setActiveImage(i)}
-                      style={{ width: 90, height: 60, objectFit: 'cover', borderRadius: 8, cursor: 'pointer', flexShrink: 0, opacity: i === activeImage ? 1 : 0.45, border: i === activeImage ? '2px solid #16a34a' : '2px solid transparent', transition: 'all .15s' }}
+                /* Zillow-style: main left + 2 stacked right */
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '230px 230px', gap: 3 }}>
+                  {/* Main large image — spans 2 rows */}
+                  <div style={{ gridRow: '1 / 3', position: 'relative', cursor: 'zoom-in', overflow: 'hidden' }} onClick={() => openLightbox(0)}>
+                    <img src={images[0].url} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform .3s' }}
+                      onMouseEnter={e => (e.currentTarget as HTMLImageElement).style.transform = 'scale(1.02)'}
+                      onMouseLeave={e => (e.currentTarget as HTMLImageElement).style.transform = 'scale(1)'}
                     />
-                  ))}
+                  </div>
+                  {/* Top-right image */}
+                  <div style={{ position: 'relative', cursor: 'zoom-in', overflow: 'hidden' }} onClick={() => openLightbox(1)}>
+                    <img src={images[1].url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform .3s' }}
+                      onMouseEnter={e => (e.currentTarget as HTMLImageElement).style.transform = 'scale(1.02)'}
+                      onMouseLeave={e => (e.currentTarget as HTMLImageElement).style.transform = 'scale(1)'}
+                    />
+                  </div>
+                  {/* Bottom-right image */}
+                  <div style={{ position: 'relative', cursor: 'zoom-in', overflow: 'hidden' }} onClick={() => openLightbox(images.length > 2 ? 2 : 1)}>
+                    <img src={images[Math.min(2, images.length - 1)].url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform .3s' }}
+                      onMouseEnter={e => (e.currentTarget as HTMLImageElement).style.transform = 'scale(1.02)'}
+                      onMouseLeave={e => (e.currentTarget as HTMLImageElement).style.transform = 'scale(1)'}
+                    />
+                    {/* "See all photos" button overlaid on bottom-right */}
+                    {images.length > 3 && (
+                      <button onClick={e => { e.stopPropagation(); openLightbox(0) }}
+                        style={{ position: 'absolute', bottom: 14, right: 14, display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.95)', border: 'none', borderRadius: 8, padding: '8px 14px', fontSize: 13, fontWeight: 600, color: '#111', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.2)', transition: 'all .15s' }}
+                        onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = '#fff'}
+                        onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.95)'}
+                      >
+                        <Grid size={14}/> See all {images.length} photos
+                      </button>
+                    )}
+                  </div>
                 </div>
               )}
+
+              {/* Badges */}
+              <div style={{ position: 'absolute', top: 14, left: 14, display: 'flex', gap: 7, zIndex: 2 }}>
+                {property.is_featured && <span style={{ background: '#16a34a', color: '#fff', fontSize: 11, fontWeight: 700, padding: '4px 11px', borderRadius: 20 }}>Featured</span>}
+                {property.title_verified && <span style={{ background: 'rgba(255,255,255,0.95)', color: '#15803d', fontSize: 11, fontWeight: 700, padding: '4px 11px', borderRadius: 20 }}>✓ Verified</span>}
+              </div>
+
+              {/* Action buttons */}
+              <div style={{ position: 'absolute', top: 14, right: 14, display: 'flex', gap: 8, zIndex: 2 }}>
+                <button onClick={toggleSave} style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.92)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }}>
+                  <Heart size={16} fill={saved ? '#dc2626' : 'none'} color={saved ? '#dc2626' : '#555'}/>
+                </button>
+                <button onClick={shareProperty} style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.92)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }}>
+                  <Share2 size={16} color="#555"/>
+                </button>
+              </div>
+              {copied && <div style={{ position: 'absolute', bottom: 14, left: '50%', transform: 'translateX(-50%)', background: '#111', color: '#fff', fontSize: 12, padding: '6px 14px', borderRadius: 8, zIndex: 2, whiteSpace: 'nowrap' }}>Link copied!</div>}
             </div>
 
             {/* Title + price */}

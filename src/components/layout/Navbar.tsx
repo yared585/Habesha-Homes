@@ -135,7 +135,7 @@ const NAV_LINKS = [
   { label: 'Buy',          href: '/search?intent=sale' },
   { label: 'Rent',         href: '/search?intent=rent' },
   { label: 'Diaspora',     href: '/diaspora' },
-  { label: 'Developments', href: '/developments' },
+  { label: 'Real Estates', href: '/developments' },
   { label: 'AI Reports',   href: '/ai-reports', badge: 'AI' },
   { label: 'About',        href: '/about' },
   { label: 'Contact',      href: '/contact' },
