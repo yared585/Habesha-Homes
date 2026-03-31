@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Plus } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { AgentDashboard } from '@/components/dashboard/AgentDashboard'
@@ -12,6 +13,7 @@ import type { Property } from '@/types'
 
 export default function DashboardPage() {
   const { profile, loading } = useAuth(true)
+  const router = useRouter()
   const [properties, setProperties] = useState<Property[]>([])
   const [saved, setSaved] = useState<Property[]>([])
   const [stats, setStats] = useState({ listings: 0, views: 0, inquiries: 0, saved: 0, reports: 0 })
