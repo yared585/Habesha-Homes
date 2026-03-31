@@ -11,7 +11,7 @@ export type ListingStatus =
   | 'rented' | 'withdrawn' | 'expired'
 
 export type ListingIntent = 'sale' | 'rent' | 'both'
-export type UserRole = 'buyer' | 'seller' | 'agent' | 'admin'
+export type UserRole = 'buyer' | 'seller' | 'agent' | 'admin' | 'developer'
 export type Language = 'en' | 'am'
 export type ReportType = 'valuation' | 'fraud_check' | 'contract_analysis' | 'neighborhood' | 'investment_roi'
 
