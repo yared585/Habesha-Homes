@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
-import { Search, LogOut, LayoutDashboard, Plus, User, Home, Building2, ChevronDown, Menu, X, Shield } from 'lucide-react'
+import { Search, LogOut, LayoutDashboard, Plus, User, Home, Building2, ChevronDown, Menu, X, Shield, Heart } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { SearchOverlay } from '@/components/layout/SearchOverlay'
 
@@ -33,30 +33,18 @@ function NavLink({ label, href, badge }: { label: string; href: string; badge?: 
   const active = pathnameMatch && (!intentParam || searchParams.get('intent') === intentParam)
 
   return (
-    <Link
-      href={href}
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
+    <Link href={href} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
       style={{
         display: 'inline-flex', alignItems: 'center', gap: 5,
-        padding: '7px 13px', borderRadius: 8,
-        textDecoration: 'none', fontSize: 13.5,
+        padding: '7px 13px', borderRadius: 8, textDecoration: 'none', fontSize: 13.5,
         fontWeight: active ? 600 : 500,
         color: active ? '#2563eb' : hov ? '#2563eb' : '#1a1a18',
         background: active ? 'rgba(37,99,235,0.07)' : hov ? 'rgba(37,99,235,0.06)' : 'transparent',
         transition: 'all .15s', whiteSpace: 'nowrap',
-        boxShadow: 'none',
       }}
     >
       {label}
-      {badge && (
-        <span style={{
-          fontSize: 9, fontWeight: 700, letterSpacing: '.06em',
-          color: '#4ade80', background: 'rgba(74,222,128,0.15)',
-          border: '1px solid rgba(74,222,128,0.3)',
-          padding: '1px 5px', borderRadius: 20,
-        }}>{badge}</span>
-      )}
+      {badge && <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.06em', color: '#4ade80', background: 'rgba(74,222,128,0.15)', border: '1px solid rgba(74,222,128,0.3)', padding: '1px 5px', borderRadius: 20 }}>{badge}</span>}
     </Link>
   )
 }
@@ -64,17 +52,8 @@ function NavLink({ label, href, badge }: { label: string; href: string; badge?: 
 function SearchBtn({ onClick }: { onClick: () => void }) {
   const [hov, setHov] = useState(false)
   return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
-      style={{
-        display: 'flex', alignItems: 'center', gap: 7, cursor: 'pointer',
-        background: hov ? '#f5f5f2' : '#f9f9f7',
-        border: `1px solid ${hov ? '#d0cfc9' : '#e8e7e2'}`,
-        borderRadius: 9, padding: '7px 12px',
-        transition: 'all .15s', fontFamily: 'inherit',
-      }}
+    <button onClick={onClick} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+      style={{ display: 'flex', alignItems: 'center', gap: 7, cursor: 'pointer', background: hov ? '#f5f5f2' : '#f9f9f7', border: `1px solid ${hov ? '#d0cfc9' : '#e8e7e2'}`, borderRadius: 9, padding: '7px 12px', transition: 'all .15s', fontFamily: 'inherit' }}
     >
       <Search size={13} color="#999"/>
       <span style={{ fontSize: 13, color: '#999' }}>Search</span>
@@ -87,6 +66,8 @@ function UserMenu({ profile, signOut }: { profile: any; signOut: () => void }) {
   const [open, setOpen] = useState(false)
   const isAgent = profile.role === 'agent'
   const isAdmin = profile.role === 'admin'
+  const isDeveloper = profile.role === 'developer'
+
   const agentLinks = [
     { icon: <LayoutDashboard size={14}/>, label: 'Dashboard', href: '/dashboard' },
     { icon: <Plus size={14}/>, label: 'Add listing', href: '/dashboard/listings/new' },
@@ -97,21 +78,20 @@ function UserMenu({ profile, signOut }: { profile: any; signOut: () => void }) {
     { icon: <Shield size={14}/>, label: 'Admin panel', href: '/admin' },
     { icon: <User size={14}/>, label: 'My profile', href: '/profile' },
   ]
+  const developerLinks = [
+    { icon: <Building2 size={14}/>, label: 'Developer dashboard', href: '/dashboard/developer' },
+    { icon: <User size={14}/>, label: 'My profile', href: '/profile' },
+  ]
   const buyerLinks = [
-    { icon: <Home size={14}/>, label: 'Saved properties', href: '/saved' },
+    { icon: <Heart size={14}/>, label: 'Saved properties', href: '/saved' },
     { icon: <User size={14}/>, label: 'Profile', href: '/profile' },
   ]
-  const menuLinks = isAdmin ? adminLinks : isAgent ? agentLinks : buyerLinks
+  const menuLinks = isAdmin ? adminLinks : isDeveloper ? developerLinks : isAgent ? agentLinks : buyerLinks
 
   return (
     <div style={{ position: 'relative' }}>
       <button onClick={() => setOpen(!open)}
-        style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          background: '#f5f5f2', border: '1px solid #e8e7e2',
-          borderRadius: 24, padding: '5px 10px 5px 5px',
-          cursor: 'pointer', transition: 'all .15s', fontFamily: 'inherit',
-        }}
+        style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f5f5f2', border: '1px solid #e8e7e2', borderRadius: 24, padding: '5px 10px 5px 5px', cursor: 'pointer', transition: 'all .15s', fontFamily: 'inherit' }}
         onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(22,163,74,0.08)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(22,163,74,0.3)' }}
         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#f5f5f2'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#e8e7e2' }}
       >
@@ -152,12 +132,13 @@ function UserMenu({ profile, signOut }: { profile: any; signOut: () => void }) {
 }
 
 const NAV_LINKS = [
-  { label: 'Buy',        href: '/search?intent=sale' },
-  { label: 'Rent',       href: '/search?intent=rent' },
-  { label: 'Diaspora',   href: '/diaspora' },
-  { label: 'AI Reports', href: '/ai-reports', badge: 'AI' },
-  { label: 'About',      href: '/about' },
-  { label: 'Contact',    href: '/contact' },
+  { label: 'Buy',          href: '/search?intent=sale' },
+  { label: 'Rent',         href: '/search?intent=rent' },
+  { label: 'Diaspora',     href: '/diaspora' },
+  { label: 'Developments', href: '/developments' },
+  { label: 'AI Reports',   href: '/ai-reports', badge: 'AI' },
+  { label: 'About',        href: '/about' },
+  { label: 'Contact',      href: '/contact' },
 ]
 
 export function Navbar() {
@@ -178,15 +159,7 @@ export function Navbar() {
 
   return (
     <>
-      <nav style={{
-        position: 'sticky', top: 0, zIndex: 100,
-        /* Charcoal — clearly distinct from the green hero */
-        background: scrolled ? 'rgba(255,255,255,0.98)' : '#ffffff',
-        backdropFilter: 'blur(20px)',
-        borderBottom: '1px solid #e8e7e2',
-        boxShadow: scrolled ? '0 4px 24px rgba(0,0,0,0.08)' : '0 1px 0 #e8e7e2',
-        transition: 'all .25s',
-      }}>
+      <nav style={{ position: 'sticky', top: 0, zIndex: 100, background: scrolled ? 'rgba(255,255,255,0.98)' : '#ffffff', backdropFilter: 'blur(20px)', borderBottom: '1px solid #e8e7e2', boxShadow: scrolled ? '0 4px 24px rgba(0,0,0,0.08)' : '0 1px 0 #e8e7e2', transition: 'all .25s' }}>
         <div className="nav-inner" style={{ maxWidth: 1280, margin: '0 auto', height: 82, padding: '0 28px', display: 'flex', alignItems: 'center', gap: 4 }}>
 
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginRight: 16, flexShrink: 0 }}>
@@ -199,7 +172,7 @@ export function Navbar() {
 
           <div className="nav-links-desktop" style={{ display: 'flex', gap: 1, flex: 1, alignItems: 'center' }}>
             <Suspense fallback={null}>
-              {NAV_LINKS.map(l => <NavLink key={l.label} label={l.label} href={l.href} badge={l.badge}/>)}
+              {NAV_LINKS.map(l => <NavLink key={l.label} label={l.label} href={l.href} badge={(l as any).badge}/>)}
             </Suspense>
           </div>
 
@@ -235,7 +208,7 @@ export function Navbar() {
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '13px 4px', fontSize: 15, color: '#333', textDecoration: 'none', borderBottom: '1px solid #f0f0ee' }}
               >
                 {l.label}
-                {l.badge && <span style={{ fontSize: 10, fontWeight: 700, color: '#4ade80', background: 'rgba(74,222,128,0.15)', border: '1px solid rgba(74,222,128,0.3)', padding: '2px 7px', borderRadius: 20 }}>{l.badge}</span>}
+                {(l as any).badge && <span style={{ fontSize: 10, fontWeight: 700, color: '#4ade80', background: 'rgba(74,222,128,0.15)', border: '1px solid rgba(74,222,128,0.3)', padding: '2px 7px', borderRadius: 20 }}>{(l as any).badge}</span>}
               </Link>
             ))}
             {profile ? (
@@ -244,8 +217,9 @@ export function Navbar() {
                   <div style={{ fontSize: 14, fontWeight: 600, color: '#111' }}>{profile.full_name}</div>
                   <div style={{ fontSize: 12, color: '#aaa', marginTop: 2 }}>{profile.email}</div>
                 </div>
-                {(profile.role === 'agent' || profile.role === 'admin') && (
-                  <Link href="/dashboard" onClick={() => setMobileOpen(false)} style={{ display: 'block', padding: '12px 4px', fontSize: 14, color: '#333', textDecoration: 'none', borderBottom: '1px solid #f0f0ee' }}>Dashboard</Link>
+                {['agent', 'admin', 'developer'].includes(profile.role) && (
+                  <Link href={profile.role === 'developer' ? '/dashboard/developer' : '/dashboard'} onClick={() => setMobileOpen(false)}
+                    style={{ display: 'block', padding: '12px 4px', fontSize: 14, color: '#333', textDecoration: 'none', borderBottom: '1px solid #f0f0ee' }}>Dashboard</Link>
                 )}
                 {profile.role === 'buyer' && (
                   <Link href="/saved" onClick={() => setMobileOpen(false)} style={{ display: 'block', padding: '12px 4px', fontSize: 14, color: '#333', textDecoration: 'none', borderBottom: '1px solid #f0f0ee' }}>Saved properties</Link>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { MapPin, Bed, Bath, Square, Calendar, Heart, Share2, Phone, Mail, TrendingUp, Shield, BarChart3, CheckCircle, ChevronDown, ChevronUp, Eye, Star, Clock } from 'lucide-react'
+import { MapPin, Bed, Bath, Square, Calendar, Heart, Share2, Phone, Mail, TrendingUp, Shield, BarChart3, CheckCircle, ChevronDown, ChevronUp, Eye, Star, Clock, X, ChevronLeft, ChevronRight, Grid } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { PropertyChat } from '@/components/ai/PropertyChat'
 import { FraudCheckUpload } from '@/components/ai/FraudCheckUpload'
@@ -136,6 +136,64 @@ function InquiryForm({ property }: { property: Property }) {
   )
 }
 
+// ── Lightbox ──────────────────────────────────────────────────────────────
+function Lightbox({ images, startIndex, onClose }: { images: { url: string }[], startIndex: number, onClose: () => void }) {
+  const [idx, setIdx] = useState(startIndex)
+  const prev = () => setIdx(i => Math.max(0, i - 1))
+  const next = () => setIdx(i => Math.min(images.length - 1, i + 1))
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+      if (e.key === 'ArrowLeft') prev()
+      if (e.key === 'ArrowRight') next()
+    }
+    window.addEventListener('keydown', onKey)
+    document.body.style.overflow = 'hidden'
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = '' }
+  }, [])
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.95)', zIndex: 1000, display: 'flex', flexDirection: 'column' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 20px', flexShrink: 0 }}>
+        <span style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>{idx + 1} / {images.length}</span>
+        <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', width: 38, height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff' }}>
+          <X size={18}/>
+        </button>
+      </div>
+
+      {/* Main image */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', minHeight: 0, padding: '0 60px' }}>
+        <img src={images[idx].url} alt="" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: 8 }}/>
+        {idx > 0 && (
+          <button onClick={prev} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background .15s' }}
+            onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.25)'}
+            onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.12)'}
+          ><ChevronLeft size={22}/></button>
+        )}
+        {idx < images.length - 1 && (
+          <button onClick={next} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background .15s' }}
+            onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.25)'}
+            onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.12)'}
+          ><ChevronRight size={22}/></button>
+        )}
+      </div>
+
+      {/* Thumbnail strip */}
+      {images.length > 1 && (
+        <div style={{ display: 'flex', gap: 6, padding: '14px 20px', overflowX: 'auto', flexShrink: 0, justifyContent: 'center' }}>
+          {images.map((img, i) => (
+            <img key={i} src={img.url} onClick={() => setIdx(i)} alt=""
+              style={{ width: 72, height: 52, objectFit: 'cover', borderRadius: 6, cursor: 'pointer', flexShrink: 0, opacity: i === idx ? 1 : 0.45, border: i === idx ? '2px solid #16a34a' : '2px solid transparent', transition: 'all .15s' }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ── Main page ──────────────────────────────────────────────────────────────
 export default function PropertyDetailPage() {
   const params = useParams()
@@ -147,6 +205,10 @@ export default function PropertyDetailPage() {
   const [tab, setTab] = useState<'overview' | 'ai' | 'fraud' | 'valuation'>('overview')
   const [showAllAmenities, setShowAllAmenities] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [lightboxStart, setLightboxStart] = useState(0)
+
+  function openLightbox(i: number) { setLightboxStart(i); setLightboxOpen(true) }
 
   useEffect(() => {
     if (params.id) load(params.id as string)

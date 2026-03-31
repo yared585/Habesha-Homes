@@ -4,17 +4,16 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { PhotoUpload } from '@/components/property/PhotoUpload'
 import {
   CheckCircle, XCircle, Eye, Users, Home, TrendingUp, Shield,
   Clock, Search, Star, AlertTriangle, DollarSign, Activity,
-  BarChart3, Building2, Globe, Trash2, RefreshCw, Download
+  BarChart3, Building2, Globe, Trash2, RefreshCw, Download, Plus, Save
 } from 'lucide-react'
 
-// ── Types ─────────────────────────────────────────────────────────────────
-type Tab = 'overview' | 'listings' | 'agents' | 'users' | 'reports' | 'inquiries'
+type Tab = 'overview' | 'listings' | 'agents' | 'users' | 'reports' | 'inquiries' | 'developments'
 type ListingFilter = 'all' | 'pending_review' | 'active' | 'rejected'
 
-// ── Stat card ─────────────────────────────────────────────────────────────
 function StatCard({ icon, label, value, sub, color = '#16a34a' }: { icon: React.ReactNode; label: string; value: number | string; sub?: string; color?: string }) {
   return (
     <div style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 12, padding: '18px 20px' }}>
@@ -26,7 +25,6 @@ function StatCard({ icon, label, value, sub, color = '#16a34a' }: { icon: React.
   )
 }
 
-// ── Badge ─────────────────────────────────────────────────────────────────
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, { bg: string; color: string }> = {
     active:         { bg: '#f0fdf4', color: '#16a34a' },
@@ -43,6 +41,14 @@ function StatusBadge({ status }: { status: string }) {
   )
 }
 
+const BLANK_PROJECT = {
+  name: '', city: 'Addis Ababa', neighborhood: '', developer_id: '', developer_display_name: '',
+  cover_image_url: '', images: [] as string[], video_url: '',
+  total_units: '', available_units: '', min_price_etb: '', max_price_etb: '',
+  construction_status: 'under_construction', completion_date: '',
+  description: '', amenities: '', status: 'active',
+}
+
 export default function AdminPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
@@ -54,6 +60,11 @@ export default function AdminPage() {
   const [users, setUsers] = useState<any[]>([])
   const [inquiries, setInquiries] = useState<any[]>([])
   const [reports, setReports] = useState<any[]>([])
+  const [projects, setProjects] = useState<any[]>([])
+  const [developers, setDevelopers] = useState<any[]>([])
+  const [showNewProject, setShowNewProject] = useState(false)
+  const [newProject, setNewProject] = useState<any>({ ...BLANK_PROJECT })
+  const [savingProject, setSavingProject] = useState(false)
   const [stats, setStats] = useState({
     totalListings: 0, activeListings: 0, pendingListings: 0, rejectedListings: 0,
     totalAgents: 0, verifiedAgents: 0,
@@ -87,6 +98,7 @@ export default function AdminPage() {
       { data: inqData, count: inqCount },
       { data: repsData, count: repCount },
       { data: payments },
+      { data: projectsData },
     ] = await Promise.all([
       sb.from('properties').select('*,agent:agents(agency_name,is_verified,profile:profiles(full_name,email))', { count: 'exact' }).order('created_at', { ascending: false }).limit(200),
       sb.from('properties').select('*', { count: 'exact', head: true }).eq('status', 'active'),
@@ -99,15 +111,19 @@ export default function AdminPage() {
       sb.from('inquiries').select('*,property:properties(title),agent:profiles!inquiries_agent_id_fkey(full_name,email)', { count: 'exact' }).order('created_at', { ascending: false }).limit(100),
       sb.from('ai_reports').select('*,user:profiles(full_name,email)', { count: 'exact' }).order('created_at', { ascending: false }).limit(100),
       sb.from('payments').select('amount_usd,status').eq('status', 'completed'),
+      sb.from('projects').select('*,developer:profiles(full_name,email)').order('created_at', { ascending: false }),
     ])
 
     const revenue = (payments || []).reduce((sum: number, p: any) => sum + (p.amount_usd || 0), 0)
+    const devUsers = (usersData || []).filter((u: any) => u.role === 'developer')
 
     setProperties(props || [])
     setAgents(agentsData || [])
     setUsers(usersData || [])
     setInquiries(inqData || [])
     setReports(repsData || [])
+    setProjects(projectsData || [])
+    setDevelopers(devUsers)
     setStats({
       totalListings: totalProps || 0,
       activeListings: activeCount || 0,
@@ -128,8 +144,6 @@ export default function AdminPage() {
     const { error } = await createClient().from('properties').update({ status, updated_at: new Date().toISOString() }).eq('id', id)
     if (error) { alert('Failed to update: ' + error.message); return }
     setProperties(p => p.map(x => x.id === id ? { ...x, status } : x))
-
-    // Send approval email to agent
     if (status === 'active') {
       const property = properties.find(p => p.id === id)
       const agentEmail = property?.agent?.profile?.email
@@ -138,11 +152,7 @@ export default function AdminPage() {
         await fetch('/api/email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type: 'listing_approved',
-            to: agentEmail,
-            data: { agentName, propertyTitle: property?.title, propertyId: id }
-          })
+          body: JSON.stringify({ type: 'listing_approved', to: agentEmail, data: { agentName, propertyTitle: property?.title, propertyId: id } })
         }).catch(() => {})
       }
     }
@@ -156,7 +166,6 @@ export default function AdminPage() {
   async function deleteProperty(id: string) {
     if (!confirm('Delete this listing permanently? This cannot be undone.')) return
     const sb = createClient()
-    // Delete related records first
     await sb.from('ai_chat_sessions').delete().eq('property_id', id)
     await sb.from('saved_properties').delete().eq('property_id', id)
     await sb.from('inquiries').delete().eq('property_id', id)
@@ -172,15 +181,8 @@ export default function AdminPage() {
   }
 
   async function changeUserRole(id: string, role: string) {
-    const { error } = await createClient()
-      .from('profiles')
-      .update({ role: role as any })
-      .eq('id', id)
-    if (error) {
-      console.error('Role change error:', error)
-      alert('Failed to change role: ' + error.message)
-      return
-    }
+    const { error } = await createClient().from('profiles').update({ role: role as any }).eq('id', id)
+    if (error) { console.error('Role change error:', error); alert('Failed to change role: ' + error.message); return }
     setUsers(u => u.map(x => x.id === id ? { ...x, role } : x))
   }
 
@@ -189,6 +191,42 @@ export default function AdminPage() {
     const { error } = await createClient().from('properties').update({ is_featured: featured, featured_until: until }).eq('id', id)
     if (error) { alert('Failed to feature: ' + error.message); return }
     setProperties(p => p.map(x => x.id === id ? { ...x, is_featured: featured } : x))
+  }
+
+  async function createProject() {
+    if (!newProject.name) { alert('Project name is required'); return }
+    setSavingProject(true)
+    const { data, error } = await createClient().from('projects').insert({
+      name: newProject.name,
+      city: newProject.city,
+      neighborhood: newProject.neighborhood || null,
+      developer_id: newProject.developer_id,
+      developer_name: newProject.developer_display_name || null,
+      cover_image_url: newProject.cover_image_url || null,
+      images: newProject.images?.length ? newProject.images : [],
+      video_url: newProject.video_url || null,
+      total_units: newProject.total_units ? parseInt(newProject.total_units) : 0,
+      available_units: newProject.available_units ? parseInt(newProject.available_units) : parseInt(newProject.total_units) || 0,
+      min_price_etb: newProject.min_price_etb ? parseFloat(newProject.min_price_etb) : null,
+      max_price_etb: newProject.max_price_etb ? parseFloat(newProject.max_price_etb) : null,
+      construction_status: newProject.construction_status,
+      completion_date: newProject.completion_date || null,
+      description: newProject.description || null,
+      amenities: newProject.amenities ? newProject.amenities.split(',').map((s: string) => s.trim()).filter(Boolean) : [],
+      status: newProject.status,
+    }).select('*,developer:profiles(full_name,email)').single()
+    if (error) { alert('Failed to create: ' + error.message); setSavingProject(false); return }
+    setProjects(p => [data, ...p])
+    setNewProject({ ...BLANK_PROJECT })
+    setShowNewProject(false)
+    setSavingProject(false)
+    alert('✓ Project created! The developer can now see it in their dashboard.')
+  }
+
+  async function deleteProject(id: string) {
+    if (!confirm('Delete this project? This cannot be undone.')) return
+    await createClient().from('projects').delete().eq('id', id)
+    setProjects(p => p.filter(x => x.id !== id))
   }
 
   const filteredProps = properties.filter(p => {
@@ -204,7 +242,20 @@ export default function AdminPage() {
     { id: 'users', label: 'Users', count: stats.totalUsers },
     { id: 'inquiries', label: 'Inquiries', count: stats.totalInquiries },
     { id: 'reports', label: 'AI Reports', count: stats.totalReports },
+    { id: 'developments', label: 'Developments', count: projects.length },
   ]
+
+  const inp = (key: string, label: string, placeholder = '', type = 'text') => (
+    <div>
+      <label style={{ fontSize: 12, fontWeight: 600, color: '#555', display: 'block', marginBottom: 5 }}>{label}</label>
+      <input type={type} placeholder={placeholder} value={newProject[key]}
+        onChange={e => setNewProject((p: any) => ({ ...p, [key]: e.target.value }))}
+        style={{ width: '100%', padding: '9px 12px', border: '1.5px solid #e0dfd9', borderRadius: 8, fontSize: 13, outline: 'none', fontFamily: 'inherit' }}
+        onFocus={e => (e.target as HTMLInputElement).style.borderColor = '#16a34a'}
+        onBlur={e => (e.target as HTMLInputElement).style.borderColor = '#e0dfd9'}
+      />
+    </div>
+  )
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: '#aaa', fontSize: 14 }}>
@@ -272,15 +323,12 @@ export default function AdminPage() {
               <StatCard icon={<DollarSign size={16}/>} label="Revenue" value={`$${stats.totalRevenue.toFixed(0)}`} sub="AI reports sold" color="#16a34a"/>
             </div>
 
-            {/* Pending listings quick view */}
             {stats.pendingListings > 0 && (
               <div style={{ background: '#fff', border: '1px solid #fde68a', borderRadius: 14, padding: 20, marginBottom: 20 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
                   <AlertTriangle size={16} color="#d97706"/>
                   <span style={{ fontSize: 14, fontWeight: 700, color: '#d97706' }}>{stats.pendingListings} listing{stats.pendingListings > 1 ? 's' : ''} waiting for approval</span>
-                  <button onClick={() => setTab('listings')} style={{ marginLeft: 'auto', fontSize: 12, color: '#16a34a', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, fontFamily: 'inherit' }}>
-                    Review all →
-                  </button>
+                  <button onClick={() => setTab('listings')} style={{ marginLeft: 'auto', fontSize: 12, color: '#16a34a', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, fontFamily: 'inherit' }}>Review all →</button>
                 </div>
                 {properties.filter(p => p.status === 'pending_review').slice(0, 3).map(p => (
                   <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderTop: '1px solid #f5f5f2' }}>
@@ -292,19 +340,14 @@ export default function AdminPage() {
                       <div style={{ fontSize: 11, color: '#888' }}>{p.agent?.agency_name} · {p.city} · ETB {((p.price_etb || p.rent_per_month_etb) || 0).toLocaleString()}</div>
                     </div>
                     <div style={{ display: 'flex', gap: 6 }}>
-                      <button onClick={() => updateListingStatus(p.id, 'active')}
-                        style={{ fontSize: 12, padding: '5px 12px', borderRadius: 7, border: 'none', background: '#f0fdf4', color: '#16a34a', cursor: 'pointer', fontWeight: 600, fontFamily: 'inherit' }}
-                      >✓ Approve</button>
-                      <button onClick={() => updateListingStatus(p.id, 'rejected')}
-                        style={{ fontSize: 12, padding: '5px 12px', borderRadius: 7, border: 'none', background: '#fef2f2', color: '#dc2626', cursor: 'pointer', fontWeight: 600, fontFamily: 'inherit' }}
-                      >✗ Reject</button>
+                      <button onClick={() => updateListingStatus(p.id, 'active')} style={{ fontSize: 12, padding: '5px 12px', borderRadius: 7, border: 'none', background: '#f0fdf4', color: '#16a34a', cursor: 'pointer', fontWeight: 600, fontFamily: 'inherit' }}>✓ Approve</button>
+                      <button onClick={() => updateListingStatus(p.id, 'rejected')} style={{ fontSize: 12, padding: '5px 12px', borderRadius: 7, border: 'none', background: '#fef2f2', color: '#dc2626', cursor: 'pointer', fontWeight: 600, fontFamily: 'inherit' }}>✗ Reject</button>
                     </div>
                   </div>
                 ))}
               </div>
             )}
 
-            {/* Recent activity */}
             <div className="admin-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               <div style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 14, padding: 18 }}>
                 <div style={{ fontSize: 14, fontWeight: 700, color: '#111', marginBottom: 14 }}>Recent listings</div>
@@ -358,7 +401,6 @@ export default function AdminPage() {
               </div>
               <span style={{ fontSize: 12, color: '#aaa', marginLeft: 'auto' }}>{filteredProps.length} listings</span>
             </div>
-
             {filteredProps.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '48px 0', background: '#fff', borderRadius: 14, border: '1px solid #eae9e4', color: '#aaa', fontSize: 14 }}>No listings found</div>
             ) : (
@@ -373,36 +415,16 @@ export default function AdminPage() {
                       {p.agent?.agency_name || p.agent?.profile?.full_name || 'Unknown'} · {p.city} · ETB {((p.price_etb || p.rent_per_month_etb) || 0).toLocaleString()}
                       {p.bedrooms ? ` · ${p.bedrooms}bed` : ''}{p.size_sqm ? ` · ${p.size_sqm}m²` : ''}
                     </div>
-                    <div style={{ fontSize: 11, color: '#bbb', marginTop: 2 }}>
-                      {new Date(p.created_at).toLocaleDateString()} · {p.views || 0} views · {p.is_featured ? '⭐ Featured' : ''}
-                    </div>
+                    <div style={{ fontSize: 11, color: '#bbb', marginTop: 2 }}>{new Date(p.created_at).toLocaleDateString()} · {p.views || 0} views · {p.is_featured ? '⭐ Featured' : ''}</div>
                   </div>
                   <StatusBadge status={p.status}/>
                   <div style={{ display: 'flex', gap: 6, flexShrink: 0, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                    <Link href={`/property/${p.id}`} target="_blank" style={{ fontSize: 11, padding: '5px 10px', borderRadius: 7, border: '1px solid #e0dfd9', color: '#555', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <Eye size={11}/> View
-                    </Link>
-                    {p.status !== 'active' && (
-                      <button onClick={() => updateListingStatus(p.id, 'active')}
-                        style={{ fontSize: 11, padding: '5px 10px', borderRadius: 7, border: 'none', background: '#f0fdf4', color: '#16a34a', cursor: 'pointer', fontWeight: 600, fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 4 }}
-                      ><CheckCircle size={11}/> Approve</button>
-                    )}
-                    {p.status === 'active' && (
-                      <button onClick={() => updateListingStatus(p.id, 'pending_review')}
-                        style={{ fontSize: 11, padding: '5px 10px', borderRadius: 7, border: 'none', background: '#fef9ec', color: '#d97706', cursor: 'pointer', fontWeight: 600, fontFamily: 'inherit' }}
-                      >Suspend</button>
-                    )}
-                    {p.status !== 'rejected' && (
-                      <button onClick={() => updateListingStatus(p.id, 'rejected')}
-                        style={{ fontSize: 11, padding: '5px 10px', borderRadius: 7, border: 'none', background: '#fef2f2', color: '#dc2626', cursor: 'pointer', fontWeight: 600, fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 4 }}
-                      ><XCircle size={11}/> Reject</button>
-                    )}
-                    <button onClick={() => featureProperty(p.id, !p.is_featured)}
-                      style={{ fontSize: 11, padding: '5px 10px', borderRadius: 7, border: 'none', background: p.is_featured ? '#fef9ec' : '#fffbeb', color: '#d97706', cursor: 'pointer', fontFamily: 'inherit' }}
-                    >{p.is_featured ? '★ Unfeature' : '☆ Feature'}</button>
-                    <button onClick={() => deleteProperty(p.id)}
-                      style={{ fontSize: 11, padding: '5px 10px', borderRadius: 7, border: 'none', background: '#fef2f2', color: '#dc2626', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 4 }}
-                    ><Trash2 size={11}/></button>
+                    <Link href={`/property/${p.id}`} target="_blank" style={{ fontSize: 11, padding: '5px 10px', borderRadius: 7, border: '1px solid #e0dfd9', color: '#555', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}><Eye size={11}/> View</Link>
+                    {p.status !== 'active' && <button onClick={() => updateListingStatus(p.id, 'active')} style={{ fontSize: 11, padding: '5px 10px', borderRadius: 7, border: 'none', background: '#f0fdf4', color: '#16a34a', cursor: 'pointer', fontWeight: 600, fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 4 }}><CheckCircle size={11}/> Approve</button>}
+                    {p.status === 'active' && <button onClick={() => updateListingStatus(p.id, 'pending_review')} style={{ fontSize: 11, padding: '5px 10px', borderRadius: 7, border: 'none', background: '#fef9ec', color: '#d97706', cursor: 'pointer', fontWeight: 600, fontFamily: 'inherit' }}>Suspend</button>}
+                    {p.status !== 'rejected' && <button onClick={() => updateListingStatus(p.id, 'rejected')} style={{ fontSize: 11, padding: '5px 10px', borderRadius: 7, border: 'none', background: '#fef2f2', color: '#dc2626', cursor: 'pointer', fontWeight: 600, fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 4 }}><XCircle size={11}/> Reject</button>}
+                    <button onClick={() => featureProperty(p.id, !p.is_featured)} style={{ fontSize: 11, padding: '5px 10px', borderRadius: 7, border: 'none', background: p.is_featured ? '#fef9ec' : '#fffbeb', color: '#d97706', cursor: 'pointer', fontFamily: 'inherit' }}>{p.is_featured ? '★ Unfeature' : '☆ Feature'}</button>
+                    <button onClick={() => deleteProperty(p.id)} style={{ fontSize: 11, padding: '5px 10px', borderRadius: 7, border: 'none', background: '#fef2f2', color: '#dc2626', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 4 }}><Trash2 size={11}/></button>
                   </div>
                 </div>
               ))
@@ -436,12 +458,10 @@ export default function AdminPage() {
                   {a.is_verified ? '✓ Verified' : 'Unverified'}
                 </span>
                 <div style={{ display: 'flex', gap: 7, flexShrink: 0 }}>
-                  <Link href={`/agent/${a.id}`} target="_blank" style={{ fontSize: 12, padding: '6px 11px', borderRadius: 7, border: '1px solid #e0dfd9', color: '#555', textDecoration: 'none' }}>
-                    Profile
-                  </Link>
-                  <button onClick={() => verifyAgent(a.id, !a.is_verified)}
-                    style={{ fontSize: 12, padding: '6px 11px', borderRadius: 7, border: 'none', background: a.is_verified ? '#fef2f2' : '#f0fdf4', color: a.is_verified ? '#dc2626' : '#16a34a', cursor: 'pointer', fontWeight: 600, fontFamily: 'inherit' }}
-                  >{a.is_verified ? 'Unverify' : '✓ Verify'}</button>
+                  <Link href={`/agent/${a.id}`} target="_blank" style={{ fontSize: 12, padding: '6px 11px', borderRadius: 7, border: '1px solid #e0dfd9', color: '#555', textDecoration: 'none' }}>Profile</Link>
+                  <button onClick={() => verifyAgent(a.id, !a.is_verified)} style={{ fontSize: 12, padding: '6px 11px', borderRadius: 7, border: 'none', background: a.is_verified ? '#fef2f2' : '#f0fdf4', color: a.is_verified ? '#dc2626' : '#16a34a', cursor: 'pointer', fontWeight: 600, fontFamily: 'inherit' }}>
+                    {a.is_verified ? 'Unverify' : '✓ Verify'}
+                  </button>
                 </div>
               </div>
             ))}
@@ -468,9 +488,7 @@ export default function AdminPage() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 600, fontSize: 14, color: '#111' }}>{u.full_name || 'No name'}</div>
                   <div style={{ fontSize: 12, color: '#888', marginTop: 2 }}>{u.email} {u.phone ? `· ${u.phone}` : ''}</div>
-                  <div style={{ fontSize: 11, color: '#bbb', marginTop: 2 }}>
-                    Joined {new Date(u.created_at || Date.now()).toLocaleDateString()} {u.is_diaspora ? '· 🌍 Diaspora' : ''}
-                  </div>
+                  <div style={{ fontSize: 11, color: '#bbb', marginTop: 2 }}>Joined {new Date(u.created_at || Date.now()).toLocaleDateString()} {u.is_diaspora ? '· 🌍 Diaspora' : ''}</div>
                 </div>
                 <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 20, flexShrink: 0,
                   background: u.role === 'admin' ? '#fef2f2' : u.role === 'agent' ? '#f0fdf4' : '#eff6ff',
@@ -481,8 +499,8 @@ export default function AdminPage() {
                 >
                   <option value="buyer">Buyer</option>
                   <option value="agent">Agent</option>
+                  <option value="developer">Developer</option>
                   <option value="admin">Admin</option>
-                  <option value="seller">Seller</option>
                 </select>
               </div>
             ))}
@@ -531,12 +549,130 @@ export default function AdminPage() {
                     <div style={{ fontSize: 12, color: '#888', marginTop: 2 }}>{r.user?.email || 'Unknown user'}</div>
                     <div style={{ fontSize: 11, color: '#bbb', marginTop: 2 }}>{new Date(r.created_at).toLocaleDateString()}</div>
                   </div>
-                  <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 20, background: r.is_paid ? '#f0fdf4' : '#fef9ec', color: r.is_paid ? '#16a34a' : '#d97706' }}>
-                    {r.is_paid ? 'Paid' : 'Free'}
-                  </span>
-                  <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 20, background: r.status === 'completed' ? '#f0fdf4' : '#fef9ec', color: r.status === 'completed' ? '#16a34a' : '#d97706' }}>
-                    {r.status}
-                  </span>
+                  <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 20, background: r.is_paid ? '#f0fdf4' : '#fef9ec', color: r.is_paid ? '#16a34a' : '#d97706' }}>{r.is_paid ? 'Paid' : 'Free'}</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 20, background: r.status === 'completed' ? '#f0fdf4' : '#fef9ec', color: r.status === 'completed' ? '#16a34a' : '#d97706' }}>{r.status}</span>
+                </div>
+              ))
+            )}
+          </>
+        )}
+
+        {/* ── DEVELOPMENTS ── */}
+        {tab === 'developments' && (
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <div style={{ fontSize: 13, color: '#888' }}>{projects.length} projects · {developers.length} developer accounts</div>
+              <button onClick={() => setShowNewProject(!showNewProject)}
+                style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#16a34a', color: '#fff', border: 'none', padding: '9px 16px', borderRadius: 9, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
+              ><Plus size={14}/> Create project</button>
+            </div>
+
+            {showNewProject && (
+              <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 14, padding: 22, marginBottom: 20 }}>
+                <div style={{ fontSize: 15, fontWeight: 700, color: '#15803d', marginBottom: 16 }}>New development project</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 12, marginBottom: 14 }}>
+                  {inp('name', 'Project name', 'e.g. Bole Heights Residences')}
+                  {inp('city', 'City', 'Addis Ababa')}
+                  {inp('neighborhood', 'Neighborhood', 'e.g. Bole')}
+                  {inp('total_units', 'Total units', '24', 'number')}
+                  {inp('available_units', 'Available units', '20', 'number')}
+                  {inp('min_price_etb', 'Min price (ETB)', '3000000', 'number')}
+                  {inp('max_price_etb', 'Max price (ETB)', '8000000', 'number')}
+                  {inp('completion_date', 'Completion date', 'Q4 2026')}
+                  <div>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: '#555', display: 'block', marginBottom: 5 }}>Developer account</label>
+                    <select value={newProject.developer_id} onChange={e => setNewProject((p: any) => ({ ...p, developer_id: e.target.value }))}
+                      style={{ width: '100%', padding: '9px 12px', border: '1.5px solid #e0dfd9', borderRadius: 8, fontSize: 13, outline: 'none', fontFamily: 'inherit', background: '#fff' }}
+                    >
+                      <option value="">— Select developer account —</option>
+                      {developers.map(d => <option key={d.id} value={d.id}>{d.full_name} ({d.email})</option>)}
+                    </select>
+                    {developers.length === 0 && <div style={{ fontSize: 11, color: '#d97706', marginTop: 4 }}>⚠ No developer accounts yet. Go to Users tab → change a user role to Developer first.</div>}
+                  </div>
+                  {inp('developer_display_name', 'Developer / company name (shown publicly)', 'e.g. Sunshine Real Estate')}
+                  <div>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: '#555', display: 'block', marginBottom: 5 }}>Construction status</label>
+                    <select value={newProject.construction_status} onChange={e => setNewProject((p: any) => ({ ...p, construction_status: e.target.value }))}
+                      style={{ width: '100%', padding: '9px 12px', border: '1.5px solid #e0dfd9', borderRadius: 8, fontSize: 13, outline: 'none', fontFamily: 'inherit', background: '#fff' }}
+                    >
+                      {['planned', 'under_construction', 'completed'].map(s => <option key={s}>{s}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: '#555', display: 'block', marginBottom: 5 }}>Visibility</label>
+                    <select value={newProject.status} onChange={e => setNewProject((p: any) => ({ ...p, status: e.target.value }))}
+                      style={{ width: '100%', padding: '9px 12px', border: '1.5px solid #e0dfd9', borderRadius: 8, fontSize: 13, outline: 'none', fontFamily: 'inherit', background: '#fff' }}
+                    >
+                      <option value="active">Active — visible to buyers</option>
+                      <option value="pending_review">Draft — hidden from buyers</option>
+                    </select>
+                  </div>
+                </div>
+                <div style={{ marginBottom: 12 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: '#555', display: 'block', marginBottom: 5 }}>Description</label>
+                  <textarea value={newProject.description} onChange={e => setNewProject((p: any) => ({ ...p, description: e.target.value }))} rows={2} placeholder="Brief description of the project..."
+                    style={{ width: '100%', padding: '9px 12px', border: '1.5px solid #e0dfd9', borderRadius: 8, fontSize: 13, outline: 'none', fontFamily: 'inherit', resize: 'vertical' }}
+                    onFocus={e => (e.target as HTMLTextAreaElement).style.borderColor = '#16a34a'}
+                    onBlur={e => (e.target as HTMLTextAreaElement).style.borderColor = '#e0dfd9'}
+                  />
+                </div>
+                <div style={{ marginBottom: 16 }}>
+                  {inp('amenities', 'Amenities (comma separated)', 'Generator, Parking, Swimming pool, Gym')}
+                </div>
+
+                {/* Photos */}
+                <div style={{ marginBottom: 14 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: '#555', display: 'block', marginBottom: 8 }}>
+                    Project photos
+                  </label>
+                  <PhotoUpload
+                    onUpload={(urls) => setNewProject((p: any) => ({ ...p, cover_image_url: urls[0] || '', images: urls }))}
+                    existingPhotos={newProject.images || (newProject.cover_image_url ? [newProject.cover_image_url] : [])}
+                    bucket="properties"
+                  />
+                </div>
+
+                {/* Video URL */}
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: '#555', display: 'block', marginBottom: 5 }}>
+                    Video URL (YouTube or Vimeo link)
+                  </label>
+                  <input type="url" placeholder="https://youtube.com/watch?v=..." value={newProject.video_url}
+                    onChange={e => setNewProject((p: any) => ({ ...p, video_url: e.target.value }))}
+                    style={{ width: '100%', padding: '9px 12px', border: '1.5px solid #e0dfd9', borderRadius: 8, fontSize: 13, outline: 'none', fontFamily: 'inherit' }}
+                    onFocus={e => (e.target as HTMLInputElement).style.borderColor = '#16a34a'}
+                    onBlur={e => (e.target as HTMLInputElement).style.borderColor = '#e0dfd9'}
+                  />
+                  <div style={{ fontSize: 11, color: '#aaa', marginTop: 4 }}>Upload your video to YouTube first, then paste the link here</div>
+                </div>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <button onClick={createProject} disabled={savingProject}
+                    style={{ display: 'flex', alignItems: 'center', gap: 6, background: savingProject ? '#9ca3af' : '#16a34a', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: 9, fontSize: 14, fontWeight: 600, cursor: savingProject ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}
+                  ><Save size={14}/> {savingProject ? 'Creating...' : 'Create project'}</button>
+                  <button onClick={() => { setShowNewProject(false); setNewProject({ ...BLANK_PROJECT }) }}
+                    style={{ background: '#fff', border: '1px solid #e0dfd9', padding: '10px 16px', borderRadius: 9, fontSize: 13, color: '#555', cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
+                </div>
+              </div>
+            )}
+
+            {projects.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '48px', background: '#fff', borderRadius: 14, border: '1px solid #eae9e4', color: '#aaa', fontSize: 14 }}>
+                No projects yet. Click "Create project" to add one.
+              </div>
+            ) : (
+              projects.map(p => (
+                <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 16px', background: '#fff', border: '1px solid #eae9e4', borderRadius: 12, marginBottom: 8 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 700, fontSize: 15, color: '#111', marginBottom: 4 }}>{p.name}</div>
+                    <div style={{ fontSize: 12, color: '#888' }}>{p.developer_name || p.developer?.full_name || 'No developer'} · {p.city}{p.neighborhood ? ` · ${p.neighborhood}` : ''}</div>
+                    <div style={{ fontSize: 11, color: '#bbb', marginTop: 2 }}>{p.total_units || 0} units · {p.available_units || 0} available · {p.construction_status}</div>
+                  </div>
+                  <StatusBadge status={p.status}/>
+                  <div style={{ display: 'flex', gap: 7, flexShrink: 0 }}>
+                    <Link href={`/project/${p.id}`} target="_blank" style={{ fontSize: 12, padding: '6px 11px', borderRadius: 7, border: '1px solid #e0dfd9', color: '#555', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}><Eye size={12}/> View</Link>
+                    <Link href={`/dashboard/developer/project/${p.id}`} target="_blank" style={{ fontSize: 12, padding: '6px 11px', borderRadius: 7, border: 'none', background: '#f0fdf4', color: '#16a34a', textDecoration: 'none', fontWeight: 600 }}>Manage units</Link>
+                    <button onClick={() => deleteProject(p.id)} style={{ fontSize: 12, padding: '6px 10px', borderRadius: 7, border: 'none', background: '#fef2f2', color: '#dc2626', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center' }}><Trash2 size={12}/></button>
+                  </div>
                 </div>
               ))
             )}

@@ -27,6 +27,10 @@ export default function DashboardPage() {
     const { data: { user } } = await sb.auth.getUser()
     if (!user) return
 
+    if (profile?.role === 'developer') {
+      router.push('/dashboard/developer')
+      return
+    }
     if (profile?.role === 'agent') {
       const [{ data: props, count }, { count: inqCount }] = await Promise.all([
         sb.from('properties').select('*', { count: 'exact' }).eq('agent_id', user.id).order('created_at', { ascending: false }).limit(20),

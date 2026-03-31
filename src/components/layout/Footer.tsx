@@ -23,7 +23,7 @@ export function Footer() {
           </div>
 
           {[
-            { title: 'Properties', links: [['Buy a home', '/search?intent=sale'], ['Rent a home', '/search?intent=rent'], ['Diaspora investing', '/diaspora'], ['New developments', '/search?types=condominium']] },
+            { title: 'Properties', links: [['Buy a home', '/search?intent=sale'], ['Rent a home', '/search?intent=rent'], ['Diaspora investing', '/diaspora'], ['New developments', '/developments']] },
             { title: 'AI Tools', links: [['Property assistant', '/ai-reports'], ['Fraud detection', '/ai-reports'], ['Valuation report', '/ai-reports'], ['Contract analyzer', '/ai-reports']] },
             { title: 'For agents', links: [['List properties', '/auth/signup'], ['Dashboard', '/dashboard'], ['Pricing plans', '/pricing'], ['AI listing writer', '/dashboard/listings/new']] },
           ].map(({ title, links }) => (
@@ -41,7 +41,7 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="footer-bottom" style={{ borderTop: '1px solid var(--border)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+        <div style={{ borderTop: '1px solid var(--border)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
           <span style={{ fontSize: 12, color: 'var(--text-4)' }}>© 2026 Habesha Homes · Powered by Claude AI · Built for Ethiopia 🇪🇹</span>
           <div style={{ display: 'flex', gap: 20 }}>
             {['Privacy', 'Terms', 'Contact'].map(l => (
