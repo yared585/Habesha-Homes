@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Home, Users, Award, Shield, Clock, Zap, ArrowRight, Search, Star, Check, Phone, TrendingUp, Bot, ShieldCheck, BarChart3, FileText, MapPin, Target } from 'lucide-react'
-import { EthiopianFlag, AIPill, SectionHeader } from '@/components/ui'
+import { AIPill, SectionHeader } from '@/components/ui'
 import { Counter, Sparkline } from '@/components/ui/DataViz'
 import { useLiveStats, useNeighborhoods } from '@/hooks/useProperties'
 
@@ -168,7 +168,6 @@ export function DiasporaCTA() {
     <section style={{ padding: '80px 24px', background: '#0d2318' }}>
       <div className="diaspora-cta-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr auto', gap: 40, alignItems: 'center' }}>
         <div>
-          <div style={{ marginBottom: 22 }}><EthiopianFlag size="md"/></div>
           <h2 style={{ fontSize: 'clamp(26px,4vw,46px)', fontWeight: 900, color: '#fff', lineHeight: 1.1, margin: '0 0 16px', letterSpacing: '-.025em' }}>
             Investing from abroad?<br/><span style={{ color: '#4ade80' }}>We handle everything.</span>
           </h2>

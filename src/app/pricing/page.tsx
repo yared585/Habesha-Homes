@@ -2,8 +2,8 @@ import Link from 'next/link'
 import { Check, ArrowRight, Sparkles } from 'lucide-react'
 
 export const metadata = {
-  title: 'Pricing — Habesha Homes',
-  description: 'Transparent pricing for Habesha Homes AI reports and agent plans',
+  title: 'Pricing — Habesha Properties',
+  description: 'Transparent pricing for Habesha Properties AI reports and agent plans',
 }
 
 const AI_REPORTS = [

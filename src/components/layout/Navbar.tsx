@@ -8,16 +8,18 @@ import { Search, LogOut, LayoutDashboard, Plus, User, Home, Building2, ChevronDo
 import { useAuth } from '@/hooks/useAuth'
 import { SearchOverlay } from '@/components/layout/SearchOverlay'
 
-function HabeshaLogo({ size = 34 }: { size?: number }) {
+function HabeshaLogo({ size = 40 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
-      <rect width="40" height="40" rx="10" fill="#16a34a"/>
-      <path d="M6 22L20 9L34 22" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"/>
-      <path d="M10 20v13h7v-7h6v7h7V20" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <circle cx="31" cy="12" r="5" stroke="#bbf7d0" strokeWidth="2" fill="rgba(187,247,208,0.2)"/>
-      <circle cx="31" cy="12" r="2" fill="#bbf7d0"/>
-      <path d="M31 17v7" stroke="#bbf7d0" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M29 21h4M29 24h4" stroke="#bbf7d0" strokeWidth="1.8" strokeLinecap="round"/>
+      <rect width="40" height="40" rx="10" fill="#1a3d2b"/>
+      <path d="M7 22L20 9L33 22" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <rect x="14" y="22" width="12" height="11" rx="2" fill="white" opacity="0.95"/>
+      <rect x="17" y="25" width="6" height="8" rx="1.5" fill="#1a3d2b"/>
+      <circle cx="31" cy="13" r="4" fill="none" stroke="white" strokeWidth="1.8"/>
+      <circle cx="31" cy="13" r="1.5" fill="white" opacity="0.4"/>
+      <line x1="35" y1="13" x2="38" y2="13" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
+      <line x1="37.2" y1="13" x2="37.2" y2="15.5" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
+      <line x1="35.8" y1="13" x2="35.8" y2="16" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
     </svg>
   )
 }
@@ -38,8 +40,8 @@ function NavLink({ label, href, badge }: { label: string; href: string; badge?: 
         display: 'inline-flex', alignItems: 'center', gap: 5,
         padding: '7px 13px', borderRadius: 8, textDecoration: 'none', fontSize: 13.5,
         fontWeight: active ? 600 : 500,
-        color: active ? '#2563eb' : hov ? '#2563eb' : '#1a1a18',
-        background: active ? 'rgba(37,99,235,0.07)' : hov ? 'rgba(37,99,235,0.06)' : 'transparent',
+        color: active ? '#1a3d2b' : hov ? '#1a3d2b' : '#1a1a18',
+        background: active ? 'rgba(26,61,43,0.08)' : hov ? 'rgba(26,61,43,0.06)' : 'transparent',
         transition: 'all .15s', whiteSpace: 'nowrap',
       }}
     >
@@ -92,15 +94,15 @@ function UserMenu({ profile, signOut }: { profile: any; signOut: () => void }) {
     <div style={{ position: 'relative' }}>
       <button onClick={() => setOpen(!open)}
         style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f5f5f2', border: '1px solid #e8e7e2', borderRadius: 24, padding: '5px 10px 5px 5px', cursor: 'pointer', transition: 'all .15s', fontFamily: 'inherit' }}
-        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(37,99,235,0.08)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(37,99,235,0.3)' }}
+        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(26,61,43,0.08)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(26,61,43,0.3)' }}
         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#f5f5f2'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#e8e7e2' }}
       >
-        <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#fff', fontWeight: 700 }}>
+        <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#1a3d2b,#2d5a3d)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#fff', fontWeight: 700 }}>
           {profile.full_name?.[0]?.toUpperCase() || 'U'}
         </div>
         <div>
           <div style={{ fontSize: 13, color: '#111', fontWeight: 600, lineHeight: 1.2 }}>{profile.full_name?.split(' ')[0]}</div>
-          <div style={{ fontSize: 10, color: '#2563eb', fontWeight: 700, letterSpacing: '.04em', textTransform: 'capitalize' }}>{profile.role}</div>
+          <div style={{ fontSize: 10, color: '#1a3d2b', fontWeight: 700, letterSpacing: '.04em', textTransform: 'capitalize' }}>{profile.role}</div>
         </div>
         <ChevronDown size={12} color="#aaa" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}/>
       </button>
@@ -165,7 +167,7 @@ export function Navbar() {
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginRight: 16, flexShrink: 0 }}>
             <HabeshaLogo/>
             <div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#111', lineHeight: 1.15, letterSpacing: '-.02em' }}>Habesha Homes</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#111', lineHeight: 1.15, letterSpacing: '-.02em' }}>Habesha Properties</div>
               <div style={{ fontSize: 8.5, color: '#bbb', letterSpacing: '.14em', fontWeight: 600 }}>ETHIOPIA</div>
             </div>
           </Link>
@@ -188,9 +190,9 @@ export function Navbar() {
                   onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#555'; (e.currentTarget as HTMLAnchorElement).style.background = 'transparent' }}
                 >Log in</Link>
                 <Link href="/auth/signup"
-                  style={{ padding: '8px 20px', fontSize: 13.5, fontWeight: 600, background: '#2563eb', color: '#fff', borderRadius: 9, textDecoration: 'none', transition: 'all .18s', boxShadow: '0 2px 10px rgba(37,99,235,0.4)' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#1d4ed8'; (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-1px)'; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 6px 20px rgba(37,99,235,0.5)' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#2563eb'; (e.currentTarget as HTMLAnchorElement).style.transform = 'none'; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 2px 10px rgba(37,99,235,0.4)' }}
+                  style={{ padding: '8px 20px', fontSize: 13.5, fontWeight: 600, background: '#1a3d2b', color: '#fff', borderRadius: 9, textDecoration: 'none', transition: 'all .18s', boxShadow: '0 2px 10px rgba(26,61,43,0.4)' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#2d5a3d'; (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-1px)'; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 6px 20px rgba(26,61,43,0.5)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#1a3d2b'; (e.currentTarget as HTMLAnchorElement).style.transform = 'none'; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 2px 10px rgba(26,61,43,0.4)' }}
                 >Get started</Link>
               </div>
             )}
@@ -231,7 +233,7 @@ export function Navbar() {
             ) : (
               <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
                 <Link href="/auth/login" onClick={() => setMobileOpen(false)} style={{ flex: 1, textAlign: 'center', padding: 12, background: '#f5f5f2', color: '#333', borderRadius: 10, textDecoration: 'none', fontSize: 14, border: '1px solid #e8e7e2' }}>Log in</Link>
-                <Link href="/auth/signup" onClick={() => setMobileOpen(false)} style={{ flex: 1, textAlign: 'center', padding: 12, background: '#2563eb', color: '#fff', borderRadius: 10, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>Get started</Link>
+                <Link href="/auth/signup" onClick={() => setMobileOpen(false)} style={{ flex: 1, textAlign: 'center', padding: 12, background: '#1a3d2b', color: '#fff', borderRadius: 10, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>Get started</Link>
               </div>
             )}
           </div>

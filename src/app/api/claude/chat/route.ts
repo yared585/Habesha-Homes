@@ -21,8 +21,8 @@ export async function POST(request: NextRequest) {
 
     const isAmharic = language === 'am'
     const systemPrompt = isAmharic
-      ? `አንተ የሀበሻ ሆምስ AI ረዳት ነህ። ስለ ቤት ዋጋ፣ ሰፈር፣ ሕጋዊ ሂደት ጥያቄዎችን መልስ ስጥ። አጠር ያሉ መልሶችን ስጥ።`
-      : `You are the Habesha Homes AI assistant for Ethiopian real estate. Answer questions about pricing, neighborhoods, legal steps, buying/renting process, and investment potential. Be concise and helpful. Prices in Ethiopian Birr (ETB). Key areas: Bole, Kazanchis, Megenagna, CMC, Sarbet, Gerji, Piassa.`
+      ? `አንተ የሀበሻ ፕሮፐርቲስ AI ረዳት ነህ። ስለ ቤት ዋጋ፣ ሰፈር፣ ሕጋዊ ሂደት ጥያቄዎችን መልስ ስጥ። አጠር ያሉ መልሶችን ስጥ።`
+      : `You are the Habesha Properties AI assistant for Ethiopian real estate. Answer questions about pricing, neighborhoods, legal steps, buying/renting process, and investment potential. Be concise and helpful. Prices in Ethiopian Birr (ETB). Key areas: Bole, Kazanchis, Megenagna, CMC, Sarbet, Gerji, Piassa.`
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',

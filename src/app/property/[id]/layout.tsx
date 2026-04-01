@@ -16,13 +16,13 @@ export async function generateMetadata(
   }
 
   const desc = data.description?.slice(0, 155) ||
-    `${data.bedrooms ? `${data.bedrooms}-bedroom ` : ''}${data.property_type} in ${data.city}. View photos, AI fraud check, and valuation on Habesha Homes.`
+    `${data.bedrooms ? `${data.bedrooms}-bedroom ` : ''}${data.property_type} in ${data.city}. View photos, AI fraud check, and valuation on Habesha Properties.`
 
   return {
     title: data.title,
     description: desc,
     openGraph: {
-      title: `${data.title} — Habesha Homes`,
+      title: `${data.title} — Habesha Properties`,
       description: desc,
       images: data.cover_image_url ? [{ url: data.cover_image_url, width: 1200, height: 630 }] : [],
       type: 'website',

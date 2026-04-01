@@ -117,7 +117,7 @@ async function handleTelebirrPayment(
       appKey: process.env.TELEBIRR_APP_KEY || '',
       shortCode: process.env.TELEBIRR_SHORT_CODE || '',
       outTradeNo: payment.id,
-      subject: payment.description || 'Habesha Homes Payment',
+      subject: payment.description || 'Habesha Properties Payment',
       totalAmount: pricing.etb.toString(),
       timeoutExpress: '30',
       notifyUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/payments/telebirr-webhook`,

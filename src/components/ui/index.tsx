@@ -202,20 +202,6 @@ export function SectionHeader({ title, subtitle, action, centered = false }: Sec
   )
 }
 
-// ── Flag accent ───────────────────────────────────────────────────────────────
-export function EthiopianFlag({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
-  const widths = { sm: 20, md: 32, lg: 44 }
-  const heights = { sm: 2, md: 3, lg: 4 }
-  const w = widths[size], h = heights[size]
-  return (
-    <div style={{ display: 'flex', gap: size === 'sm' ? 3 : 5 }}>
-      {['#078930','#FCDD09','#DA121A'].map(c => (
-        <div key={c} style={{ width: w, height: h, borderRadius: h, background: c }}/>
-      ))}
-    </div>
-  )
-}
-
 // ── AI pill ───────────────────────────────────────────────────────────────────
 export function AIPill({ label = 'CLAUDE AI' }: { label?: string }) {
   return (

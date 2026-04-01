@@ -6,7 +6,7 @@ import { Footer } from '@/components/layout/Footer'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: { default: 'Habesha Homes — Ethiopian Property Marketplace', template: '%s | Habesha Homes' },
+  title: { default: 'Habesha Properties — Ethiopian Property Marketplace', template: '%s | Habesha Properties' },
   description: "Ethiopia's smartest property marketplace. Buy, sell and rent homes in Addis Ababa and across Ethiopia. AI fraud detection, valuations, and Amharic support.",
   keywords: [
     'Ethiopian real estate', 'Addis Ababa property', 'Ethiopia homes for sale',
@@ -14,18 +14,18 @@ export const metadata: Metadata = {
     'Bole apartments', 'Ethiopia property market', 'diaspora real estate Ethiopia',
     'buy house Ethiopia', 'Ethiopian property investment'
   ],
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://habesha-homes.vercel.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://habeshaproperties.com'),
   openGraph: {
-    title: 'Habesha Homes — Ethiopian Property Marketplace',
+    title: 'Habesha Properties — Ethiopian Property Marketplace',
     description: "Buy, sell and rent properties across Ethiopia. AI-powered fraud detection and valuations.",
     type: 'website',
     locale: 'en_US',
-    siteName: 'Habesha Homes',
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Habesha Homes' }],
+    siteName: 'Habesha Properties',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Habesha Properties' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Habesha Homes — Ethiopian Property Marketplace',
+    title: 'Habesha Properties — Ethiopian Property Marketplace',
     description: "Buy, sell and rent properties across Ethiopia with AI assistance.",
     images: ['/og-image.png'],
   },
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
   },
   alternates: {
-    canonical: process.env.NEXT_PUBLIC_APP_URL || 'https://habesha-homes.vercel.app',
+    canonical: process.env.NEXT_PUBLIC_APP_URL || 'https://habeshaproperties.com',
   },
 }
 

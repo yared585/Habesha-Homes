@@ -19,8 +19,8 @@ const TRENDING_TITLES = [
 const FORYOU_TITLES = [
   { title: 'Homes for You',         subtitle: 'Freshest listings added to the platform' },
   { title: 'Recommended for You',   subtitle: 'New properties you should not miss' },
-  { title: 'Just Added',            subtitle: 'The latest listings on Habesha Homes' },
-  { title: 'New on Habesha Homes',  subtitle: 'Recently listed — be the first to inquire' },
+  { title: 'Just Added',            subtitle: 'The latest listings on Habesha Properties' },
+  { title: 'New on Habesha Properties',  subtitle: 'Recently listed — be the first to inquire' },
   { title: 'You Might Like These',  subtitle: 'Handpicked from our latest listings' },
 ]
 

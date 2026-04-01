@@ -270,11 +270,8 @@ export default function AdminPage() {
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
           <div>
-            <div style={{ display: 'flex', gap: 5, marginBottom: 8 }}>
-              {['#078930','#FCDD09','#DA121A'].map(c => <div key={c} style={{ width: 22, height: 2.5, borderRadius: 2, background: c }}/>)}
-            </div>
             <h1 style={{ fontSize: 24, fontWeight: 900, color: '#111', margin: '0 0 2px', letterSpacing: '-.02em' }}>Admin Panel</h1>
-            <p style={{ fontSize: 12, color: '#888', margin: 0 }}>Habesha Homes · Platform Management</p>
+            <p style={{ fontSize: 12, color: '#888', margin: 0 }}>Habesha Properties · Platform Management</p>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={loadAll} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#fff', border: '1px solid #eae9e4', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontSize: 13, color: '#555', fontFamily: 'inherit' }}>

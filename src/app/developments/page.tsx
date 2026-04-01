@@ -23,9 +23,6 @@ export default function DevelopmentsPage() {
     <div style={{ background: '#f9f9f7', minHeight: '100vh' }}>
       <div style={{ background: '#0d2318', padding: '48px 24px' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ display: 'flex', gap: 5, marginBottom: 16 }}>
-            {['#078930','#FCDD09','#DA121A'].map(c => <div key={c} style={{ width: 28, height: 3, borderRadius: 2, background: c }}/>)}
-          </div>
           <h1 style={{ fontSize: 'clamp(28px,5vw,42px)', fontWeight: 900, color: '#fff', margin: '0 0 10px', letterSpacing: '-.025em' }}>
             New Developments
           </h1>

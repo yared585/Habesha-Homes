@@ -21,7 +21,7 @@ const MODEL = 'claude-sonnet-4-6'
 // ============================================================
 
 const PROPERTY_ASSISTANT_SYSTEM = (property: Property, lang: Language) => `
-You are an expert Ethiopian real estate assistant for Habesha Homes — the most trusted property marketplace in Ethiopia.
+You are an expert Ethiopian real estate assistant for Habesha Properties — the most trusted property marketplace in Ethiopia.
 
 ${lang === 'am' ? `
 IMPORTANT: The user is writing in Amharic (አማርኛ). You MUST respond entirely in Amharic. 

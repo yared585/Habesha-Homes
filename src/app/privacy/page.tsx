@@ -1,8 +1,8 @@
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'Privacy Policy — Habesha Homes',
-  description: 'Privacy Policy for Habesha Homes Ethiopian property marketplace',
+  title: 'Privacy Policy — Habesha Properties',
+  description: 'Privacy Policy for Habesha Properties Ethiopian property marketplace',
 }
 
 export default function PrivacyPage() {
@@ -10,9 +10,6 @@ export default function PrivacyPage() {
     <div style={{ background: '#fff', minHeight: '100vh' }}>
       <div style={{ background: '#0d2318', padding: '48px 24px' }}>
         <div style={{ maxWidth: 760, margin: '0 auto' }}>
-          <div style={{ display: 'flex', gap: 5, marginBottom: 20 }}>
-            {['#078930','#FCDD09','#DA121A'].map(c => <div key={c} style={{ width: 28, height: 3, borderRadius: 2, background: c }}/>)}
-          </div>
           <h1 style={{ fontSize: 36, fontWeight: 900, color: '#fff', margin: '0 0 8px', letterSpacing: '-.02em' }}>Privacy Policy</h1>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', margin: 0 }}>Last updated: March 2026</p>
         </div>

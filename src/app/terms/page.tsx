@@ -1,8 +1,8 @@
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'Terms of Service — Habesha Homes',
-  description: 'Terms of Service for Habesha Homes Ethiopian property marketplace',
+  title: 'Terms of Service — Habesha Properties',
+  description: 'Terms of Service for Habesha Properties Ethiopian property marketplace',
 }
 
 export default function TermsPage() {
@@ -11,9 +11,6 @@ export default function TermsPage() {
       {/* Header */}
       <div style={{ background: '#0d2318', padding: '48px 24px' }}>
         <div style={{ maxWidth: 760, margin: '0 auto' }}>
-          <div style={{ display: 'flex', gap: 5, marginBottom: 20 }}>
-            {['#078930','#FCDD09','#DA121A'].map(c => <div key={c} style={{ width: 28, height: 3, borderRadius: 2, background: c }}/>)}
-          </div>
           <h1 style={{ fontSize: 36, fontWeight: 900, color: '#fff', margin: '0 0 8px', letterSpacing: '-.02em' }}>Terms of Service</h1>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', margin: 0 }}>Last updated: March 2026</p>
         </div>
@@ -24,19 +21,19 @@ export default function TermsPage() {
         {[
           {
             title: '1. Acceptance of Terms',
-            content: 'By accessing or using Habesha Homes ("the Platform"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services. These terms apply to all users including buyers, renters, agents, and visitors.'
+            content: 'By accessing or using Habesha Properties ("the Platform"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services. These terms apply to all users including buyers, renters, agents, and visitors.'
           },
           {
             title: '2. Description of Service',
-            content: 'Habesha Homes is an online real estate marketplace connecting property buyers, renters, and sellers in Ethiopia. We provide AI-powered tools including property valuations, fraud detection, contract analysis, and neighborhood reports powered by Anthropic\'s Claude AI.'
+            content: 'Habesha Properties is an online real estate marketplace connecting property buyers, renters, and sellers in Ethiopia. We provide AI-powered tools including property valuations, fraud detection, contract analysis, and neighborhood reports powered by Anthropic\'s Claude AI.'
           },
           {
             title: '3. User Accounts',
-            content: 'You must create an account to access certain features. You are responsible for maintaining the confidentiality of your account credentials. You agree to provide accurate and complete information when creating your account. Habesha Homes reserves the right to suspend or terminate accounts that violate these terms.'
+            content: 'You must create an account to access certain features. You are responsible for maintaining the confidentiality of your account credentials. You agree to provide accurate and complete information when creating your account. Habesha Properties reserves the right to suspend or terminate accounts that violate these terms.'
           },
           {
             title: '4. Property Listings',
-            content: 'Agents and sellers are responsible for the accuracy of all listing information. Habesha Homes does not verify the accuracy of listings and is not responsible for errors or omissions. All listings are subject to review and approval. We reserve the right to remove listings that violate our policies or applicable Ethiopian law.'
+            content: 'Agents and sellers are responsible for the accuracy of all listing information. Habesha Properties does not verify the accuracy of listings and is not responsible for errors or omissions. All listings are subject to review and approval. We reserve the right to remove listings that violate our policies or applicable Ethiopian law.'
           },
           {
             title: '5. AI Reports and Services',
@@ -44,7 +41,7 @@ export default function TermsPage() {
           },
           {
             title: '6. Payments',
-            content: 'Payments for AI reports are processed securely through Stripe. All prices are listed in USD. Habesha Homes does not store credit card information. Fees for AI reports are non-refundable once the report has been generated. Agent subscription fees are billed monthly and can be cancelled at any time.'
+            content: 'Payments for AI reports are processed securely through Stripe. All prices are listed in USD. Habesha Properties does not store credit card information. Fees for AI reports are non-refundable once the report has been generated. Agent subscription fees are billed monthly and can be cancelled at any time.'
           },
           {
             title: '7. Prohibited Activities',
@@ -52,11 +49,11 @@ export default function TermsPage() {
           },
           {
             title: '8. Limitation of Liability',
-            content: 'Habesha Homes is not liable for any property transactions conducted through the platform. We are a marketplace connecting buyers and sellers — all transactions are between the parties involved. We are not liable for losses arising from reliance on AI-generated reports.'
+            content: 'Habesha Properties is not liable for any property transactions conducted through the platform. We are a marketplace connecting buyers and sellers — all transactions are between the parties involved. We are not liable for losses arising from reliance on AI-generated reports.'
           },
           {
             title: '9. Privacy',
-            content: 'Your use of Habesha Homes is also governed by our Privacy Policy, which is incorporated into these Terms. Please review our Privacy Policy to understand our data practices.'
+            content: 'Your use of Habesha Properties is also governed by our Privacy Policy, which is incorporated into these Terms. Please review our Privacy Policy to understand our data practices.'
           },
           {
             title: '10. Changes to Terms',
@@ -79,7 +76,7 @@ export default function TermsPage() {
 
         <div style={{ borderTop: '1px solid #eae9e4', paddingTop: 32, marginTop: 16 }}>
           <p style={{ fontSize: 14, color: '#888', marginBottom: 16 }}>
-            By using Habesha Homes you agree to these terms.
+            By using Habesha Properties you agree to these terms.
           </p>
           <div style={{ display: 'flex', gap: 12 }}>
             <Link href="/privacy" style={{ fontSize: 14, color: '#16a34a', textDecoration: 'none', fontWeight: 600 }}>Privacy Policy →</Link>

@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
-const FROM = 'Habesha Homes <onboarding@resend.dev>'
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://habesha-homes.vercel.app'
+const FROM = 'Habesha Properties <onboarding@resend.dev>'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://habeshaproperties.com'
 // Until domain is verified, all emails go to admin email
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'yohanesy585@gmail.com'
 
@@ -19,11 +19,6 @@ function inquiryEmailHtml({ agentName, buyerName, buyerEmail, buyerPhone, messag
     
     <!-- Header -->
     <div style="background:#0d2318;border-radius:14px 14px 0 0;padding:28px 32px;text-align:center;">
-      <div style="display:flex;justify-content:center;gap:6px;margin-bottom:14px;">
-        <div style="width:28px;height:3px;border-radius:2px;background:#078930;display:inline-block;"></div>
-        <div style="width:28px;height:3px;border-radius:2px;background:#FCDD09;display:inline-block;"></div>
-        <div style="width:28px;height:3px;border-radius:2px;background:#DA121A;display:inline-block;"></div>
-      </div>
       <h1 style="color:#fff;font-size:22px;font-weight:800;margin:0 0 6px;letter-spacing:-0.02em;">New Inquiry</h1>
       <p style="color:rgba(255,255,255,0.6);font-size:14px;margin:0;">Someone is interested in your property</p>
     </div>
@@ -32,7 +27,7 @@ function inquiryEmailHtml({ agentName, buyerName, buyerEmail, buyerPhone, messag
     <div style="background:#fff;padding:32px;border:1px solid #eae9e4;border-top:none;">
       <p style="font-size:15px;color:#333;margin:0 0 20px;">Hi <strong>${agentName}</strong>,</p>
       <p style="font-size:15px;color:#333;margin:0 0 24px;">
-        A potential buyer has sent an inquiry about your listing on Habesha Homes.
+        A potential buyer has sent an inquiry about your listing on Habesha Properties.
       </p>
 
       <!-- Property -->
@@ -73,7 +68,7 @@ function inquiryEmailHtml({ agentName, buyerName, buyerEmail, buyerPhone, messag
     <!-- Footer -->
     <div style="background:#f9f9f7;border:1px solid #eae9e4;border-top:none;border-radius:0 0 14px 14px;padding:20px 32px;text-align:center;">
       <p style="font-size:12px;color:#aaa;margin:0;">
-        Habesha Homes · Ethiopian Property Marketplace<br/>
+        Habesha Properties · Ethiopian Property Marketplace<br/>
         <a href="${APP_URL}" style="color:#16a34a;text-decoration:none;">${APP_URL}</a>
       </p>
     </div>
@@ -91,12 +86,12 @@ function listingApprovedHtml({ agentName, propertyTitle, propertyUrl }: any) {
   <div style="max-width:560px;margin:0 auto;padding:32px 16px;">
     <div style="background:#0d2318;border-radius:14px 14px 0 0;padding:28px 32px;text-align:center;">
       <h1 style="color:#fff;font-size:22px;font-weight:800;margin:0 0 6px;">Listing Approved! ✓</h1>
-      <p style="color:rgba(255,255,255,0.6);font-size:14px;margin:0;">Your property is now live on Habesha Homes</p>
+      <p style="color:rgba(255,255,255,0.6);font-size:14px;margin:0;">Your property is now live on Habesha Properties</p>
     </div>
     <div style="background:#fff;padding:32px;border:1px solid #eae9e4;border-top:none;">
       <p style="font-size:15px;color:#333;margin:0 0 20px;">Hi <strong>${agentName}</strong>,</p>
       <p style="font-size:15px;color:#333;margin:0 0 24px;">
-        Great news! Your property listing has been reviewed and approved. It is now live and visible to buyers on Habesha Homes.
+        Great news! Your property listing has been reviewed and approved. It is now live and visible to buyers on Habesha Properties.
       </p>
       <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:16px;margin-bottom:28px;">
         <div style="font-size:16px;font-weight:700;color:#111;">${propertyTitle}</div>
@@ -109,7 +104,7 @@ function listingApprovedHtml({ agentName, propertyTitle, propertyUrl }: any) {
       </div>
     </div>
     <div style="background:#f9f9f7;border:1px solid #eae9e4;border-top:none;border-radius:0 0 14px 14px;padding:16px 32px;text-align:center;">
-      <p style="font-size:12px;color:#aaa;margin:0;">Habesha Homes · <a href="${APP_URL}" style="color:#16a34a;">${APP_URL}</a></p>
+      <p style="font-size:12px;color:#aaa;margin:0;">Habesha Properties · <a href="${APP_URL}" style="color:#16a34a;">${APP_URL}</a></p>
     </div>
   </div>
 </body>
@@ -124,7 +119,7 @@ function welcomeEmailHtml({ name, role }: any) {
 <body style="margin:0;padding:0;background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;">
   <div style="max-width:560px;margin:0 auto;padding:32px 16px;">
     <div style="background:#0d2318;border-radius:14px 14px 0 0;padding:28px 32px;text-align:center;">
-      <h1 style="color:#fff;font-size:22px;font-weight:800;margin:0 0 6px;">Welcome to Habesha Homes! 🇪🇹</h1>
+      <h1 style="color:#fff;font-size:22px;font-weight:800;margin:0 0 6px;">Welcome to Habesha Properties! 🇪🇹</h1>
       <p style="color:rgba(255,255,255,0.6);font-size:14px;margin:0;">Ethiopia's smartest property marketplace</p>
     </div>
     <div style="background:#fff;padding:32px;border:1px solid #eae9e4;border-top:none;">
@@ -142,7 +137,7 @@ function welcomeEmailHtml({ name, role }: any) {
       </div>
     </div>
     <div style="background:#f9f9f7;border:1px solid #eae9e4;border-top:none;border-radius:0 0 14px 14px;padding:16px 32px;text-align:center;">
-      <p style="font-size:12px;color:#aaa;margin:0;">Habesha Homes · <a href="${APP_URL}" style="color:#16a34a;">${APP_URL}</a></p>
+      <p style="font-size:12px;color:#aaa;margin:0;">Habesha Properties · <a href="${APP_URL}" style="color:#16a34a;">${APP_URL}</a></p>
     </div>
   </div>
 </body>
@@ -164,7 +159,7 @@ export async function POST(req: NextRequest) {
 
     switch (type) {
       case 'inquiry':
-        subject = `New inquiry for "${data.propertyTitle}" — Habesha Homes`
+        subject = `New inquiry for "${data.propertyTitle}" — Habesha Properties`
         html = inquiryEmailHtml({
           ...data,
           propertyUrl: `${APP_URL}/property/${data.propertyId}`,
@@ -180,7 +175,7 @@ export async function POST(req: NextRequest) {
         break
 
       case 'welcome':
-        subject = `Welcome to Habesha Homes, ${data.name}! 🇪🇹`
+        subject = `Welcome to Habesha Properties, ${data.name}! 🇪🇹`
         html = welcomeEmailHtml(data)
         break
 

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { ArrowRight, Shield, TrendingUp, Globe, FileText, CheckCircle, Phone, DollarSign, MapPin, Star, AlertTriangle } from 'lucide-react'
 
 export const metadata = {
-  title: 'Diaspora Investing — Buy Property in Ethiopia from Abroad | Habesha Homes',
+  title: 'Diaspora Investing — Buy Property in Ethiopia from Abroad | Habesha Properties',
   description: 'Buy Ethiopian property safely from anywhere in the world. AI fraud detection, remote due diligence, USD pricing. Trusted by Ethiopian diaspora worldwide.',
 }
 
@@ -26,10 +26,10 @@ const RISKS = [
 
 const FAQS = [
   { q: 'Can Ethiopians abroad legally buy property in Ethiopia?', a: 'Yes. Ethiopian citizens abroad have full rights to own property in Ethiopia. Foreign nationals of Ethiopian origin also have property rights under Ethiopian law.' },
-  { q: 'Do I need to visit Ethiopia to buy?', a: 'No. With Habesha Homes you can complete the entire process remotely — from property search to title transfer — without visiting Ethiopia.' },
+  { q: 'Do I need to visit Ethiopia to buy?', a: 'No. With Habesha Properties you can complete the entire process remotely — from property search to title transfer — without visiting Ethiopia.' },
   { q: 'How does the AI fraud check work?', a: 'You upload a photo of the title document. Claude AI analyzes the stamps, signatures, ownership chain, and registration details to detect forgeries. Takes 30 seconds.' },
   { q: 'What is the typical rental yield in Addis Ababa?', a: 'Rental yields in Addis Ababa average 7-9% annually, with prime areas like Bole reaching up to 10%. This compares favorably to most Western real estate markets.' },
-  { q: 'How do I send money to pay for property?', a: 'International wire transfer or through your bank. We recommend using a verified Ethiopian bank account. Habesha Homes does not handle money transfers directly.' },
+  { q: 'How do I send money to pay for property?', a: 'International wire transfer or through your bank. We recommend using a verified Ethiopian bank account. Habesha Properties does not handle money transfers directly.' },
   { q: 'What documents do I need?', a: 'Ethiopian passport or Kebele ID, Power of Attorney for your local agent (notarized), and proof of funds. Our verified agents guide you through every document.' },
   { q: 'What languages does the AI assistant support?', a: 'Both Amharic and English. You can ask questions and receive explanations in whichever language you prefer — 24 hours a day.' },
   { q: 'How much does the Diaspora Due Diligence package cost?', a: 'The full diaspora package — fraud check, valuation, contract analysis, and neighborhood report — costs $99. Individually, reports range from $9.99 to $49.' },
@@ -42,9 +42,6 @@ export default function DiasporaPage() {
       {/* Hero */}
       <section style={{ background: '#0d2318', padding: '80px 24px' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
-          <div style={{ display: 'flex', gap: 5, marginBottom: 20 }}>
-            {['#078930','#FCDD09','#DA121A'].map(c => <div key={c} style={{ width: 32, height: 4, borderRadius: 2, background: c }}/>)}
-          </div>
           <div className="diaspora-hero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center' }}>
             <div>
               <div style={{ fontSize: 13, fontWeight: 700, color: '#4ade80', letterSpacing: '.08em', textTransform: 'uppercase', marginBottom: 14 }}>

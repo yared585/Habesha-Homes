@@ -22,11 +22,6 @@ export default async function Image({ params }: { params: { id: string } }) {
       )}
       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(13,35,24,0.95) 50%, rgba(13,35,24,0.6))' }}/>
       <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '60px 80px', width: '100%' }}>
-        <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
-          {['#078930','#FCDD09','#DA121A'].map(c => (
-            <div key={c} style={{ width: 40, height: 4, borderRadius: 2, background: c }}/>
-          ))}
-        </div>
         <div style={{ fontSize: 18, color: '#4ade80', fontWeight: 600, marginBottom: 12 }}>
           {property?.listing_intent === 'rent' ? 'For Rent' : 'For Sale'} · {property?.city || 'Addis Ababa'}
         </div>
@@ -37,7 +32,7 @@ export default async function Image({ params }: { params: { id: string } }) {
           <div style={{ fontSize: 36, fontWeight: 800, color: '#4ade80' }}>{priceStr}</div>
         )}
         <div style={{ position: 'absolute', bottom: 40, right: 80, fontSize: 20, color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>
-          Habesha Homes
+          Habesha Properties
         </div>
       </div>
     </div>

@@ -2,8 +2,8 @@ import Link from 'next/link'
 import { ArrowRight, Shield, TrendingUp, Globe, Sparkles, Heart, Users, Home } from 'lucide-react'
 
 export const metadata = {
-  title: 'About — Habesha Homes',
-  description: "Learn about Habesha Homes — Ethiopia's smartest AI-powered property marketplace",
+  title: 'About — Habesha Properties',
+  description: "Learn about Habesha Properties — Ethiopia's smartest AI-powered property marketplace",
 }
 
 export default function AboutPage() {
@@ -13,9 +13,6 @@ export default function AboutPage() {
       {/* Hero */}
       <section style={{ background: '#0d2318', padding: '72px 24px' }}>
         <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginBottom: 24 }}>
-            {['#078930','#FCDD09','#DA121A'].map(c => <div key={c} style={{ width: 36, height: 4, borderRadius: 2, background: c }}/>)}
-          </div>
           <h1 style={{ fontSize: 'clamp(32px,6vw,52px)', fontWeight: 900, color: '#fff', margin: '0 0 16px', letterSpacing: '-.025em', lineHeight: 1.1 }}>
             Ethiopia's smartest<br/><span style={{ color: '#4ade80' }}>property marketplace</span>
           </h1>
@@ -38,7 +35,7 @@ export default function AboutPage() {
                 Ethiopia's property market has long been plagued by fraud, opacity, and information asymmetry. Buyers lose millions to fake titles. Diaspora investors are deceived from abroad. Agents operate without accountability.
               </p>
               <p style={{ fontSize: 15, color: '#666', lineHeight: 1.8 }}>
-                We built Habesha Homes to change that. With AI-powered fraud detection, instant valuations, and Amharic support — we're giving every Ethiopian buyer the tools they deserve.
+                We built Habesha Properties to change that. With AI-powered fraud detection, instant valuations, and Amharic support — we're giving every Ethiopian buyer the tools they deserve.
               </p>
             </div>
             <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 20, padding: 32 }}>

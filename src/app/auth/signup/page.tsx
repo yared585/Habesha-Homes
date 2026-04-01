@@ -146,7 +146,7 @@ export default function SignupPage() {
               <path d="M31 17.5v8" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round"/>
               <path d="M28.5 22h5M28.5 25h5" stroke="#4ade80" strokeWidth="2" strokeLinecap="round"/>
             </svg>
-            <div style={{ fontSize:18,fontWeight:800,color:'#111',letterSpacing:'-.02em' }}>Habesha Homes</div>
+            <div style={{ fontSize:18,fontWeight:800,color:'#111',letterSpacing:'-.02em' }}>Habesha Properties</div>
           </Link>
         </div>
 

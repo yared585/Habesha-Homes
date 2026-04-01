@@ -7,7 +7,6 @@ import { Plus } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { AgentDashboard } from '@/components/dashboard/AgentDashboard'
 import { BuyerDashboard } from '@/components/dashboard/BuyerDashboard'
-import { EthiopianFlag } from '@/components/ui'
 import { createClient } from '@/lib/supabase/client'
 import type { Property } from '@/types'
 
@@ -68,7 +67,6 @@ export default function DashboardPage() {
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32, flexWrap: 'wrap', gap: 16 }}>
           <div>
-            <EthiopianFlag size="sm"/>
             <h1 style={{ fontSize: 28, fontWeight: 900, color: '#111', margin: '12px 0 4px', letterSpacing: '-.02em' }}>
               Welcome back, {profile.full_name?.split(' ')[0] || 'there'} 👋
             </h1>
