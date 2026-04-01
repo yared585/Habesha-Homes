@@ -185,14 +185,14 @@ export function Hero() {
               <Link href={buildUrl()}
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 7,
-                  background: '#16a34a', color: '#fff',
+                  background: '#2563eb', color: '#fff',
                   padding: '10px 22px', borderRadius: 9,
                   fontSize: 14, fontWeight: 700, textDecoration: 'none',
                   transition: 'all .18s', whiteSpace: 'nowrap',
-                  boxShadow: '0 2px 10px rgba(22,163,74,0.35)',
+                  boxShadow: '0 2px 10px rgba(37,99,235,0.4)',
                 }}
-                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#15803d'; (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-1px)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#16a34a'; (e.currentTarget as HTMLAnchorElement).style.transform = 'none' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#1d4ed8'; (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-1px)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#2563eb'; (e.currentTarget as HTMLAnchorElement).style.transform = 'none' }}
               ><Search size={14}/> Search</Link>
             </div>
           </div>
@@ -202,7 +202,7 @@ export function Hero() {
             <Link href="/search"
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                background: '#16a34a', color: '#fff', borderRadius: 10,
+                background: '#2563eb', color: '#fff', borderRadius: 10,
                 padding: '14px', fontSize: 16, fontWeight: 700, textDecoration: 'none',
               }}
             >

@@ -6,10 +6,10 @@
   --font-mono: 'Geist Mono', monospace;
 
   /* Brand */
-  --green: #16a34a;
-  --green-light: #dcfce7;
-  --green-mid: #4ade80;
-  --green-dark: #166534;
+  --green: #2563eb;
+  --green-light: #dbeafe;
+  --green-mid: #60a5fa;
+  --green-dark: #1d4ed8;
   --gold: #b45309;
   --gold-light: #fef3c7;
 
@@ -278,6 +278,24 @@ img { max-width: 100%; display: block; }
   .nav-inner {
     height: 64px !important;
     padding: 0 16px !important;
+  }
+
+  /* Show sticky contact bar on mobile */
+  .mobile-sticky-bar {
+    display: block !important;
+  }
+
+  /* Add padding-bottom so sticky bar doesn't overlap content */
+  .property-page-body {
+    padding-bottom: 80px !important;
+  }
+
+  /* Property detail — stack sidebar below content */
+  .property-detail-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .property-detail-sidebar {
+    position: static !important;
   }
 }
 

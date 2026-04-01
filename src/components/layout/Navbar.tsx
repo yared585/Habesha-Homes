@@ -92,15 +92,15 @@ function UserMenu({ profile, signOut }: { profile: any; signOut: () => void }) {
     <div style={{ position: 'relative' }}>
       <button onClick={() => setOpen(!open)}
         style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f5f5f2', border: '1px solid #e8e7e2', borderRadius: 24, padding: '5px 10px 5px 5px', cursor: 'pointer', transition: 'all .15s', fontFamily: 'inherit' }}
-        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(22,163,74,0.08)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(22,163,74,0.3)' }}
+        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(37,99,235,0.08)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(37,99,235,0.3)' }}
         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#f5f5f2'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#e8e7e2' }}
       >
-        <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#16a34a,#15803d)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#fff', fontWeight: 700 }}>
+        <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#fff', fontWeight: 700 }}>
           {profile.full_name?.[0]?.toUpperCase() || 'U'}
         </div>
         <div>
           <div style={{ fontSize: 13, color: '#111', fontWeight: 600, lineHeight: 1.2 }}>{profile.full_name?.split(' ')[0]}</div>
-          <div style={{ fontSize: 10, color: '#16a34a', fontWeight: 700, letterSpacing: '.04em', textTransform: 'capitalize' }}>{profile.role}</div>
+          <div style={{ fontSize: 10, color: '#2563eb', fontWeight: 700, letterSpacing: '.04em', textTransform: 'capitalize' }}>{profile.role}</div>
         </div>
         <ChevronDown size={12} color="#aaa" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}/>
       </button>
@@ -188,9 +188,9 @@ export function Navbar() {
                   onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#555'; (e.currentTarget as HTMLAnchorElement).style.background = 'transparent' }}
                 >Log in</Link>
                 <Link href="/auth/signup"
-                  style={{ padding: '8px 20px', fontSize: 13.5, fontWeight: 600, background: '#16a34a', color: '#fff', borderRadius: 9, textDecoration: 'none', transition: 'all .18s', boxShadow: '0 2px 10px rgba(22,163,74,0.4)' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#22c55e'; (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-1px)'; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 6px 20px rgba(22,163,74,0.5)' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#16a34a'; (e.currentTarget as HTMLAnchorElement).style.transform = 'none'; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 2px 10px rgba(22,163,74,0.4)' }}
+                  style={{ padding: '8px 20px', fontSize: 13.5, fontWeight: 600, background: '#2563eb', color: '#fff', borderRadius: 9, textDecoration: 'none', transition: 'all .18s', boxShadow: '0 2px 10px rgba(37,99,235,0.4)' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#1d4ed8'; (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-1px)'; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 6px 20px rgba(37,99,235,0.5)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#2563eb'; (e.currentTarget as HTMLAnchorElement).style.transform = 'none'; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 2px 10px rgba(37,99,235,0.4)' }}
                 >Get started</Link>
               </div>
             )}
@@ -231,7 +231,7 @@ export function Navbar() {
             ) : (
               <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
                 <Link href="/auth/login" onClick={() => setMobileOpen(false)} style={{ flex: 1, textAlign: 'center', padding: 12, background: '#f5f5f2', color: '#333', borderRadius: 10, textDecoration: 'none', fontSize: 14, border: '1px solid #e8e7e2' }}>Log in</Link>
-                <Link href="/auth/signup" onClick={() => setMobileOpen(false)} style={{ flex: 1, textAlign: 'center', padding: 12, background: '#16a34a', color: '#fff', borderRadius: 10, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>Get started</Link>
+                <Link href="/auth/signup" onClick={() => setMobileOpen(false)} style={{ flex: 1, textAlign: 'center', padding: 12, background: '#2563eb', color: '#fff', borderRadius: 10, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>Get started</Link>
               </div>
             )}
           </div>

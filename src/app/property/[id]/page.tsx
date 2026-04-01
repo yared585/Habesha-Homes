@@ -207,6 +207,7 @@ export default function PropertyDetailPage() {
   const [copied, setCopied] = useState(false)
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxStart, setLightboxStart] = useState(0)
+  const [similar, setSimilar] = useState<Property[]>([])
 
   function openLightbox(i: number) { setLightboxStart(i); setLightboxOpen(true) }
 
@@ -223,6 +224,15 @@ export default function PropertyDetailPage() {
     if (data) {
       setProperty(data as unknown as Property)
       await sb.from('properties').update({ views: (data.views || 0) + 1 }).eq('id', id)
+      // Fetch similar properties
+      const { data: sim } = await sb.from('properties')
+        .select('*,neighborhood:neighborhoods(*),agent:agents(*,profile:profiles(full_name,avatar_url))')
+        .eq('city', data.city)
+        .eq('listing_intent', data.listing_intent)
+        .eq('status', 'approved')
+        .neq('id', id)
+        .limit(4)
+      if (sim) setSimilar(sim as unknown as Property[])
       // Check if saved
       const { data: { user } } = await sb.auth.getUser()
       if (user) {
@@ -271,7 +281,7 @@ export default function PropertyDetailPage() {
   ]
 
   return (
-    <div style={{ background: '#f9f9f7', minHeight: '100vh' }}>
+    <div className="property-page-body" style={{ background: '#f9f9f7', minHeight: '100vh' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '24px 16px' }}>
 
         {/* Breadcrumb */}
@@ -285,7 +295,7 @@ export default function PropertyDetailPage() {
           <span style={{ color: '#555' }}>{title}</span>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 28, alignItems: 'start' }}>
+        <div className="property-detail-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 28, alignItems: 'start' }}>
 
           {/* ── LEFT COLUMN ── */}
           <div>
@@ -358,45 +368,69 @@ export default function PropertyDetailPage() {
             </div>
 
             {/* Title + price */}
-            <div style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 14, padding: '20px 22px', marginBottom: 16 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 10, marginBottom: 10 }}>
-                <div>
-                  <h1 style={{ fontSize: 'clamp(18px,3vw,26px)', fontWeight: 900, color: '#111', margin: '0 0 6px', lineHeight: 1.2, letterSpacing: '-.02em' }}>{title}</h1>
-                  {property.title_amharic && lang === 'en' && <div style={{ fontSize: 14, color: '#aaa' }}>{property.title_amharic}</div>}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, color: '#888', marginTop: 6 }}>
-                    <MapPin size={13} color="#16a34a"/>
-                    {property.address || (property as any).neighborhood?.name || property.city}, {property.city}
-                  </div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                    <span style={{ fontSize: 30, fontWeight: 900, color: '#16a34a', lineHeight: 1 }}>
-                      {formatETB(price)}
+            <div style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 14, padding: '16px 18px', marginBottom: 12 }}>
+
+              {/* Badge row + meta row */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+                  <span style={{ background: property.listing_intent === 'rent' ? '#1d4ed8' : '#166534', color: '#fff', fontSize: 10, fontWeight: 800, padding: '3px 9px', borderRadius: 20, letterSpacing: '.06em' }}>
+                    {property.listing_intent === 'rent' ? 'FOR RENT' : 'FOR SALE'}
+                  </span>
+                  {property.property_type && (
+                    <span style={{ background: '#f5f5f2', color: '#555', fontSize: 11, fontWeight: 600, padding: '3px 9px', borderRadius: 20, textTransform: 'capitalize' }}>
+                      {property.property_type}
                     </span>
-                    {property.listing_intent === 'rent' && <span style={{ fontSize: 14, color: '#aaa' }}>/mo</span>}
-                  </div>
-                  {property.price_usd && <div style={{ fontSize: 13, color: '#bbb', marginTop: 2 }}>≈ ${property.price_usd?.toLocaleString()} USD</div>}
-                  {property.is_negotiable && <div style={{ fontSize: 12, color: '#d97706', fontWeight: 600, marginTop: 4 }}>Price negotiable</div>}
+                  )}
+                  {property.title_verified && (
+                    <span style={{ background: '#f0fdf4', color: '#15803d', fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 20, border: '1px solid #bbf7d0' }}>✓ Verified</span>
+                  )}
+                  {property.is_featured && (
+                    <span style={{ background: '#fefce8', color: '#a16207', fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 20, border: '1px solid #fde68a' }}>★ Featured</span>
+                  )}
+                </div>
+                <div style={{ fontSize: 11, color: '#bbb', display: 'flex', gap: 10 }}>
+                  <span>Listed {timeAgo(property.listed_at || property.created_at)}</span>
+                  <span>· {property.views || 0} views</span>
                 </div>
               </div>
 
-              {/* Key specs bar */}
-              <div style={{ display: 'flex', gap: 0, borderTop: '1px solid #f0f0ec', paddingTop: 14, flexWrap: 'wrap' }}>
-                {[
-                  { icon: <Bed size={15}/>, value: property.bedrooms, label: property.bedrooms === 1 ? 'Bedroom' : 'Bedrooms' },
-                  { icon: <Bath size={15}/>, value: property.bathrooms, label: property.bathrooms === 1 ? 'Bathroom' : 'Bathrooms' },
-                  { icon: <Square size={15}/>, value: property.size_sqm ? `${property.size_sqm}m²` : null, label: 'Floor area' },
-                  { icon: <Calendar size={15}/>, value: property.year_built, label: 'Year built' },
-                  { icon: <Eye size={15}/>, value: property.views, label: 'Views' },
-                ].filter(s => s.value).map(({ icon, value, label }, i, arr) => (
-                  <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 7, paddingRight: 20, marginRight: 20, borderRight: i < arr.length - 1 ? '1px solid #f0f0ec' : 'none', marginBottom: 6 }}>
-                    <span style={{ color: '#16a34a' }}>{icon}</span>
-                    <div>
-                      <div style={{ fontSize: 15, fontWeight: 700, color: '#111', lineHeight: 1 }}>{value}</div>
-                      <div style={{ fontSize: 11, color: '#aaa' }}>{label}</div>
-                    </div>
+              {/* Title + location */}
+              <h1 style={{ fontSize: 'clamp(18px,2.5vw,24px)', fontWeight: 900, color: '#111', margin: '0 0 4px', lineHeight: 1.2, letterSpacing: '-.02em' }}>{title}</h1>
+              {property.title_amharic && lang === 'en' && (
+                <div style={{ fontSize: 13, color: '#aaa', marginBottom: 6 }}>{property.title_amharic}</div>
+              )}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: '#666', marginBottom: 12 }}>
+                <MapPin size={13} color="#888"/>
+                <span>{[property.address, (property as any).neighborhood?.name, property.city].filter(Boolean).join(', ')}</span>
+              </div>
+
+              {/* Price + specs inline */}
+              <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 16, paddingTop: 12, borderTop: '1px solid #f0f0ec' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                    <span style={{ fontSize: 28, fontWeight: 900, color: '#111', lineHeight: 1, letterSpacing: '-.02em' }}>{formatETB(price)}</span>
+                    {property.listing_intent === 'rent' && <span style={{ fontSize: 13, color: '#888' }}>/mo</span>}
                   </div>
-                ))}
+                  {property.price_usd && <div style={{ fontSize: 12, color: '#bbb', marginTop: 2 }}>≈ ${property.price_usd.toLocaleString()} USD</div>}
+                  {property.is_negotiable && <div style={{ fontSize: 11, color: '#d97706', fontWeight: 700, marginTop: 2 }}>Negotiable</div>}
+                </div>
+
+                <div style={{ width: 1, height: 36, background: '#eae9e4', flexShrink: 0 }}/>
+
+                {/* Compact specs */}
+                <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+                  {[
+                    { icon: <Bed size={14}/>, value: property.bedrooms, label: 'bd' },
+                    { icon: <Bath size={14}/>, value: property.bathrooms, label: 'ba' },
+                    { icon: <Square size={14}/>, value: property.size_sqm ? `${property.size_sqm}` : null, label: 'm²' },
+                    { icon: <Calendar size={14}/>, value: property.year_built, label: '' },
+                  ].filter(s => s.value != null).map(({ icon, value, label }) => (
+                    <div key={label + value} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 14, color: '#333', fontWeight: 600 }}>
+                      <span style={{ color: '#999', display: 'flex' }}>{icon}</span>
+                      {value}{label && <span style={{ color: '#aaa', fontWeight: 400, fontSize: 12 }}>{label}</span>}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -426,16 +460,20 @@ export default function PropertyDetailPage() {
                   <div>
                     {/* Description */}
                     {desc && (
-                      <div style={{ marginBottom: 24 }}>
-                        <h2 style={{ fontSize: 17, fontWeight: 700, color: '#111', marginBottom: 10 }}>About this property</h2>
+                      <div style={{ marginBottom: 20 }}>
+                        <h2 style={{ fontSize: 14, fontWeight: 800, color: '#111', marginBottom: 10, paddingBottom: 8, borderBottom: '1px solid #f0f0ec', display: 'flex', alignItems: 'center', gap: 7, textTransform: 'uppercase', letterSpacing: '.05em' }}>
+                          <span style={{ width: 3, height: 14, background: '#374151', borderRadius: 2, display: 'inline-block' }}/>About this property
+                        </h2>
                         <p style={{ fontSize: 14, color: '#555', lineHeight: 1.8, margin: 0 }}>{desc}</p>
                       </div>
                     )}
 
                     {/* Amenities */}
                     {amenities.length > 0 && (
-                      <div style={{ marginBottom: 24 }}>
-                        <h2 style={{ fontSize: 17, fontWeight: 700, color: '#111', marginBottom: 12 }}>Amenities & features</h2>
+                      <div style={{ marginBottom: 20 }}>
+                        <h2 style={{ fontSize: 14, fontWeight: 800, color: '#111', marginBottom: 10, paddingBottom: 8, borderBottom: '1px solid #f0f0ec', display: 'flex', alignItems: 'center', gap: 7, textTransform: 'uppercase', letterSpacing: '.05em' }}>
+                          <span style={{ width: 3, height: 14, background: '#374151', borderRadius: 2, display: 'inline-block' }}/>Amenities & features
+                        </h2>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(160px,1fr))', gap: 8 }}>
                           {visibleAmenities.map(a => (
                             <div key={a} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#555' }}>
@@ -451,25 +489,28 @@ export default function PropertyDetailPage() {
                       </div>
                     )}
 
-                    {/* Property details table */}
-                    <div style={{ marginBottom: 24 }}>
-                      <h2 style={{ fontSize: 17, fontWeight: 700, color: '#111', marginBottom: 12 }}>Property details</h2>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0, border: '1px solid #eae9e4', borderRadius: 10, overflow: 'hidden' }}>
+                    {/* Property details */}
+                    <div style={{ marginBottom: 20 }}>
+                      <h2 style={{ fontSize: 14, fontWeight: 800, color: '#111', marginBottom: 10, paddingBottom: 8, borderBottom: '1px solid #f0f0ec', display: 'flex', alignItems: 'center', gap: 7, textTransform: 'uppercase', letterSpacing: '.05em' }}>
+                        <span style={{ width: 3, height: 14, background: '#374151', borderRadius: 2, display: 'inline-block' }}/>Property details
+                      </h2>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px 24px' }}>
                         {[
-                          { label: 'Property type', value: property.property_type },
-                          { label: 'Listing type', value: property.listing_intent === 'rent' ? 'For Rent' : 'For Sale' },
-                          { label: 'City', value: property.city },
-                          { label: 'Neighborhood', value: (property as any).neighborhood?.name },
-                          { label: 'Bedrooms', value: property.bedrooms },
-                          { label: 'Bathrooms', value: property.bathrooms },
-                          { label: 'Floor area', value: property.size_sqm ? `${property.size_sqm} m²` : null },
-                          { label: 'Floor number', value: (property as any).floor_number },
-                          { label: 'Year built', value: property.year_built },
-                          { label: 'Listed', value: timeAgo(property.listed_at || property.created_at) },
-                        ].filter(r => r.value).map(({ label, value }, i) => (
-                          <div key={label} style={{ padding: '11px 14px', borderBottom: '1px solid #f0f0ec', borderRight: i % 2 === 0 ? '1px solid #eae9e4' : 'none', background: i % 4 < 2 ? '#fff' : '#fafaf8' }}>
-                            <div style={{ fontSize: 11, color: '#aaa', marginBottom: 3 }}>{label}</div>
-                            <div style={{ fontSize: 14, fontWeight: 600, color: '#111', textTransform: 'capitalize' }}>{String(value)}</div>
+                          { icon: '🏠', label: 'Property type', value: property.property_type },
+                          { icon: '📋', label: 'Listing type',  value: property.listing_intent === 'rent' ? 'For Rent' : 'For Sale' },
+                          { icon: '📍', label: 'City',          value: property.city },
+                          { icon: '🏘', label: 'Neighborhood',  value: (property as any).neighborhood?.name },
+                          { icon: '🛏', label: 'Bedrooms',      value: property.bedrooms != null ? `${property.bedrooms} bed${property.bedrooms !== 1 ? 's' : ''}` : null },
+                          { icon: '🚿', label: 'Bathrooms',     value: property.bathrooms != null ? `${property.bathrooms} bath${property.bathrooms !== 1 ? 's' : ''}` : null },
+                          { icon: '📐', label: 'Floor area',    value: property.size_sqm ? `${property.size_sqm} m²` : null },
+                          { icon: '🏢', label: 'Floor',         value: (property as any).floor_number ? `Floor ${(property as any).floor_number}` : null },
+                          { icon: '📅', label: 'Year built',    value: property.year_built },
+                          { icon: '🕐', label: 'Listed',        value: timeAgo(property.listed_at || property.created_at) },
+                        ].filter(r => r.value != null).map(({ icon, label, value }) => (
+                          <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 0', borderBottom: '1px solid #f5f5f2' }}>
+                            <span style={{ fontSize: 15, flexShrink: 0, width: 22, textAlign: 'center' }}>{icon}</span>
+                            <span style={{ fontSize: 12.5, color: '#888', flex: 1 }}>{label}</span>
+                            <span style={{ fontSize: 13, fontWeight: 600, color: '#111', textTransform: 'capitalize', textAlign: 'right' }}>{String(value)}</span>
                           </div>
                         ))}
                       </div>
@@ -477,8 +518,10 @@ export default function PropertyDetailPage() {
 
                     {/* Video tour */}
                     {(property as any).video_url && (
-                      <div style={{ marginBottom: 24 }}>
-                        <h2 style={{ fontSize: 17, fontWeight: 700, color: '#111', marginBottom: 12 }}>🎥 Video tour</h2>
+                      <div style={{ marginBottom: 20 }}>
+                        <h2 style={{ fontSize: 14, fontWeight: 800, color: '#111', marginBottom: 10, paddingBottom: 8, borderBottom: '1px solid #f0f0ec', display: 'flex', alignItems: 'center', gap: 7, textTransform: 'uppercase', letterSpacing: '.05em' }}>
+                          <span style={{ width: 3, height: 14, background: '#374151', borderRadius: 2, display: 'inline-block' }}/>🎥 Video tour
+                        </h2>
                         <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, borderRadius: 12, overflow: 'hidden' }}>
                           <iframe src={getVideoEmbedUrl((property as any).video_url)} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen/>
                         </div>
@@ -486,8 +529,10 @@ export default function PropertyDetailPage() {
                     )}
 
                     {/* Location map */}
-                    <div style={{ marginBottom: 24 }}>
-                      <h2 style={{ fontSize: 17, fontWeight: 700, color: '#111', marginBottom: 12 }}>📍 Location</h2>
+                    <div style={{ marginBottom: 20 }}>
+                      <h2 style={{ fontSize: 14, fontWeight: 800, color: '#111', marginBottom: 10, paddingBottom: 8, borderBottom: '1px solid #f0f0ec', display: 'flex', alignItems: 'center', gap: 7, textTransform: 'uppercase', letterSpacing: '.05em' }}>
+                        <span style={{ width: 3, height: 14, background: '#374151', borderRadius: 2, display: 'inline-block' }}/>📍 Location
+                      </h2>
                       <PropertyMap
                         properties={[property]}
                         center={(property as any).lat ? { lat: (property as any).lat, lng: (property as any).lng } : { lat: 9.0192, lng: 38.7892 }}
@@ -500,7 +545,9 @@ export default function PropertyDetailPage() {
 
                     {/* Neighborhood price history */}
                     <div style={{ marginBottom: 8 }}>
-                      <h2 style={{ fontSize: 17, fontWeight: 700, color: '#111', marginBottom: 4 }}>📈 Neighborhood price history</h2>
+                      <h2 style={{ fontSize: 14, fontWeight: 800, color: '#111', marginBottom: 4, paddingBottom: 8, borderBottom: '1px solid #f0f0ec', display: 'flex', alignItems: 'center', gap: 7, textTransform: 'uppercase', letterSpacing: '.05em' }}>
+                        <span style={{ width: 3, height: 14, background: '#374151', borderRadius: 2, display: 'inline-block' }}/>📈 Neighborhood price trend
+                      </h2>
                       <p style={{ fontSize: 13, color: '#888', marginBottom: 14 }}>
                         12-month price trend for {(property as any).neighborhood?.name || property.city}
                       </p>
@@ -532,13 +579,13 @@ export default function PropertyDetailPage() {
           </div>
 
           {/* ── RIGHT SIDEBAR ── */}
-          <div style={{ position: 'sticky', top: 24, display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div className="property-detail-sidebar" style={{ position: 'sticky', top: 24, display: 'flex', flexDirection: 'column', gap: 14 }}>
 
             {/* Price card */}
-            <div style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 16, padding: '20px 22px', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
-              <div style={{ fontSize: 28, fontWeight: 900, color: '#16a34a', marginBottom: 2 }}>
+            <div style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 16, padding: '18px 20px', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
+              <div style={{ fontSize: 26, fontWeight: 900, color: '#111', marginBottom: 2 }}>
                 {formatETB(price)}
-                {property.listing_intent === 'rent' && <span style={{ fontSize: 14, fontWeight: 400, color: '#aaa' }}>/mo</span>}
+                {property.listing_intent === 'rent' && <span style={{ fontSize: 13, fontWeight: 400, color: '#aaa' }}>/mo</span>}
               </div>
               {property.is_negotiable && <div style={{ fontSize: 12, color: '#d97706', fontWeight: 600, marginBottom: 12 }}>Price negotiable</div>}
 
@@ -611,12 +658,76 @@ export default function PropertyDetailPage() {
               </Link>
             </div>
 
-            {/* Stats */}
-            <div style={{ fontSize: 12, color: '#bbb', textAlign: 'center' }}>
-              <Clock size={11} style={{ display: 'inline', marginRight: 4 }}/>
-              Listed {timeAgo(property.listed_at || property.created_at)} · {property.views || 0} views
+          </div>
+        </div>
+
+        {/* Similar properties */}
+        {similar.length > 0 && (
+          <div style={{ marginTop: 40, paddingTop: 32, borderTop: '1px solid #eae9e4' }}>
+            <h2 style={{ fontSize: 20, fontWeight: 800, color: '#111', marginBottom: 4, letterSpacing: '-.02em' }}>
+              Similar properties in {property.city}
+            </h2>
+            <p style={{ fontSize: 14, color: '#888', marginBottom: 20 }}>
+              {property.listing_intent === 'rent' ? 'Other rentals' : 'Other properties for sale'} in this area
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16 }}>
+              {similar.map(sim => {
+                const simPrice = sim.listing_intent === 'rent' ? sim.rent_per_month_etb : sim.price_etb
+                const simPhotos: string[] = (sim as any).photos?.length ? (sim as any).photos : sim.cover_image_url ? [sim.cover_image_url] : []
+                return (
+                  <Link key={sim.id} href={`/property/${sim.id}`} style={{ textDecoration: 'none', display: 'block', background: '#fff', border: '1px solid #eae9e4', borderRadius: 14, overflow: 'hidden', transition: 'box-shadow .2s, transform .2s' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 8px 24px rgba(0,0,0,0.1)'; (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-2px)' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = 'none'; (e.currentTarget as HTMLAnchorElement).style.transform = 'none' }}
+                  >
+                    <div style={{ position: 'relative', paddingBottom: '57%', background: '#f0f0ec', overflow: 'hidden' }}>
+                      {simPhotos[0]
+                        ? <img src={simPhotos[0]} alt={sim.title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}/>
+                        : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ccc', fontSize: 12 }}>No photo</div>
+                      }
+                      <span style={{ position: 'absolute', top: 10, left: 10, background: sim.listing_intent === 'rent' ? '#1d4ed8' : '#16a34a', color: '#fff', fontSize: 9, fontWeight: 800, padding: '2px 8px', borderRadius: 20, letterSpacing: '.06em' }}>
+                        {sim.listing_intent === 'rent' ? 'RENT' : 'SALE'}
+                      </span>
+                    </div>
+                    <div style={{ padding: '12px 14px' }}>
+                      <div style={{ fontSize: 16, fontWeight: 800, color: '#16a34a', marginBottom: 3 }}>{formatETB(simPrice)}{sim.listing_intent === 'rent' && <span style={{ fontSize: 11, fontWeight: 400, color: '#aaa' }}>/mo</span>}</div>
+                      <div style={{ display: 'flex', gap: 10, fontSize: 12, color: '#666', marginBottom: 6 }}>
+                        {sim.bedrooms != null && <span><Bed size={11} style={{ display: 'inline', marginRight: 3 }}/>{sim.bedrooms} bd</span>}
+                        {sim.bathrooms != null && <span><Bath size={11} style={{ display: 'inline', marginRight: 3 }}/>{sim.bathrooms} ba</span>}
+                        {sim.size_sqm != null && <span><Square size={11} style={{ display: 'inline', marginRight: 3 }}/>{sim.size_sqm} m²</span>}
+                      </div>
+                      <div style={{ fontSize: 12.5, fontWeight: 600, color: '#222', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: 3 }}>{sim.title}</div>
+                      <div style={{ fontSize: 11.5, color: '#999', display: 'flex', alignItems: 'center', gap: 3 }}>
+                        <MapPin size={10} color="#ccc"/>{(sim as any).neighborhood?.name || sim.city}
+                      </div>
+                    </div>
+                  </Link>
+                )
+              })}
             </div>
           </div>
+        )}
+
+      </div>
+
+      {/* Mobile sticky contact bar */}
+      <div className="mobile-sticky-bar" style={{ display: 'none', position: 'fixed', bottom: 0, left: 0, right: 0, background: '#fff', borderTop: '1px solid #eae9e4', padding: '12px 16px', zIndex: 50, boxShadow: '0 -4px 20px rgba(0,0,0,0.08)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 18, fontWeight: 900, color: '#16a34a', lineHeight: 1 }}>{formatETB(price)}</div>
+            {property.listing_intent === 'rent' && <div style={{ fontSize: 11, color: '#aaa' }}>per month</div>}
+          </div>
+          {(property.agent as any)?.profile?.phone && (
+            <a href={`tel:${(property.agent as any).profile.phone}`}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#0d2318', color: '#fff', padding: '11px 18px', borderRadius: 10, textDecoration: 'none', fontSize: 14, fontWeight: 700, flexShrink: 0 }}
+            >
+              <Phone size={15}/> Call
+            </a>
+          )}
+          <button onClick={() => document.querySelector('.property-contact-form')?.scrollIntoView({ behavior: 'smooth' })}
+            style={{ background: '#16a34a', color: '#fff', border: 'none', padding: '11px 18px', borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}
+          >
+            Contact
+          </button>
         </div>
       </div>
     </div>
