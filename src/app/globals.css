@@ -49,7 +49,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 body {
   margin: 0;
   font-family: var(--font-body);
@@ -57,6 +57,7 @@ body {
   color: var(--text);
   font-size: 15px;
   line-height: 1.6;
+  overflow-x: hidden;
 }
 input, textarea, select, button { font-family: inherit; }
 a { color: inherit; text-decoration: none; }
@@ -296,6 +297,38 @@ img { max-width: 100%; display: block; }
   }
   .property-detail-sidebar {
     position: static !important;
+  }
+
+  /* Property photo gallery — single column on mobile */
+  .property-photo-grid {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: 240px !important;
+  }
+  .property-photo-grid > *:not(:first-child) {
+    display: none !important;
+  }
+  .property-photo-grid > *:first-child {
+    grid-row: 1 !important;
+  }
+
+  /* Tabs — scrollable on mobile */
+  .property-tabs-bar {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+  .property-tabs-bar::-webkit-scrollbar {
+    display: none !important;
+  }
+  .property-tabs-bar button {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+    padding: 14px 16px !important;
+  }
+
+  /* Navbar search button — hide text on mobile, icon only */
+  .nav-search-text {
+    display: none !important;
   }
 }
 

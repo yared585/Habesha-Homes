@@ -58,7 +58,7 @@ function SearchBtn({ onClick }: { onClick: () => void }) {
       style={{ display: 'flex', alignItems: 'center', gap: 7, cursor: 'pointer', background: hov ? '#f5f5f2' : '#f9f9f7', border: `1px solid ${hov ? '#d0cfc9' : '#e8e7e2'}`, borderRadius: 9, padding: '7px 12px', transition: 'all .15s', fontFamily: 'inherit' }}
     >
       <Search size={13} color="#999"/>
-      <span style={{ fontSize: 13, color: '#999' }}>Search</span>
+      <span className="nav-search-text" style={{ fontSize: 13, color: '#999' }}>Search</span>
       <kbd className="nav-search-kbd" style={{ fontSize: 10, color: '#bbb', background: '#efefed', padding: '1px 5px', borderRadius: 4, fontFamily: 'monospace', border: '1px solid #e0dfd9' }}>⌘K</kbd>
     </button>
   )

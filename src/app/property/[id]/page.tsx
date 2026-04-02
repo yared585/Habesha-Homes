@@ -314,7 +314,7 @@ export default function PropertyDetailPage() {
                 </div>
               ) : (
                 /* Zillow-style: main left + 2 stacked right */
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '230px 230px', gap: 3 }}>
+                <div className="property-photo-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '230px 230px', gap: 3 }}>
                   {/* Main large image — spans 2 rows */}
                   <div style={{ gridRow: '1 / 3', position: 'relative', cursor: 'zoom-in', overflow: 'hidden' }} onClick={() => openLightbox(0)}>
                     <img src={images[0].url} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform .3s' }}
@@ -445,7 +445,7 @@ export default function PropertyDetailPage() {
 
             {/* Tabs */}
             <div style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 14, overflow: 'hidden', marginBottom: 16 }}>
-              <div style={{ display: 'flex', borderBottom: '1px solid #eae9e4' }}>
+              <div className="property-tabs-bar" style={{ display: 'flex', borderBottom: '1px solid #eae9e4' }}>
                 {TABS.map(t => (
                   <button key={t.id} onClick={() => setTab(t.id as any)} style={{
                     flex: 1, background: 'none', border: 'none', padding: '14px 8px', cursor: 'pointer', fontSize: 13, fontWeight: tab === t.id ? 700 : 400,
