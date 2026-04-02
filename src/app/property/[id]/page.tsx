@@ -304,7 +304,7 @@ export default function PropertyDetailPage() {
             {lightboxOpen && images.length > 0 && (
               <Lightbox images={images} startIndex={lightboxStart} onClose={() => setLightboxOpen(false)}/>
             )}
-            <div style={{ borderRadius: 16, overflow: 'hidden', marginBottom: 20, position: 'relative' }}>
+            <div className="property-photo-wrapper" style={{ borderRadius: 16, overflow: 'hidden', marginBottom: 20, position: 'relative' }}>
               {images.length === 0 ? (
                 <div style={{ height: 380, background: '#f0f0ec', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aaa', fontSize: 14 }}>No photos available</div>
               ) : images.length === 1 ? (

@@ -193,7 +193,7 @@ export function Hero() {
                 padding: '14px', fontSize: 16, fontWeight: 700, textDecoration: 'none',
               }}
             >
-              <Search size={18}/> Search properties in Ethiopia
+              <Search size={18}/> Search
             </Link>
             <div style={{ display: 'flex', gap: 8, marginTop: 10, justifyContent: 'center' }}>
               <Link href="/search?intent=sale" style={{ flex: 1, textAlign: 'center', padding: '10px', background: '#f0fdf4', color: '#1a3d2b', borderRadius: 8, fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid #bbf7d0' }}>Buy</Link>

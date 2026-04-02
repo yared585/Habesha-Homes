@@ -178,7 +178,7 @@ export function Navbar() {
             </Suspense>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: 'auto' }}>
             <SearchBtn onClick={() => setSearchOpen(true)}/>
             {profile ? (
               <UserMenu profile={profile} signOut={signOut}/>
