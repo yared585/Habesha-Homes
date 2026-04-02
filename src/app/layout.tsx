@@ -12,27 +12,65 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: { default: 'Habesha Properties — Ethiopian Property Marketplace', template: '%s | Habesha Properties' },
-  description: "Ethiopia's smartest property marketplace. Buy, sell and rent homes in Addis Ababa and across Ethiopia. AI fraud detection, valuations, and Amharic support.",
+  title: { default: 'Habesha Properties — Buy, Sell & Rent Property in Ethiopia', template: '%s | Habesha Properties' },
+  description: "Ethiopia's leading property marketplace. Find houses for sale and apartments for rent in Addis Ababa — Bole, CMC, Kazanchis, Megenagna, Ayat, Sarbet, Gerji, Lideta. AI fraud detection, valuations and Amharic support. ቤት ለሽያጭ እና ለኪራይ በአዲስ አበባ።",
   keywords: [
-    'Ethiopian real estate', 'Addis Ababa property', 'Ethiopia homes for sale',
-    'apartments for rent Addis Ababa', 'ቤት ለሽያጭ', 'ቤት ለኪራይ', 'አዲስ አበባ ቤት',
-    'Bole apartments', 'Ethiopia property market', 'diaspora real estate Ethiopia',
-    'buy house Ethiopia', 'Ethiopian property investment'
+    // Core intent searches
+    'houses for sale in Ethiopia',
+    'apartments for rent Addis Ababa',
+    'Ethiopian real estate',
+    'Addis Ababa housing',
+    'buy house Addis Ababa',
+    'property for sale Ethiopia',
+    'property for rent Ethiopia',
+    'real estate Ethiopia',
+    // Neighborhoods
+    'Bole apartments for sale',
+    'Bole apartments for rent',
+    'CMC houses Addis Ababa',
+    'Kazanchis property',
+    'Megenagna apartments',
+    'Ayat real estate',
+    'Sarbet houses',
+    'Gerji apartments',
+    'Lideta property',
+    'Piassa real estate',
+    // Diaspora
+    'buy property in Ethiopia from abroad',
+    'Ethiopian diaspora real estate',
+    'invest in Ethiopian property',
+    'diaspora housing Ethiopia',
+    'Ethiopia property investment',
+    // Property types
+    'apartments Ethiopia',
+    'villas for sale Addis Ababa',
+    'land for sale Ethiopia',
+    'commercial property Addis Ababa',
+    'condominiums Ethiopia',
+    // Amharic
+    'ቤት ለሽያጭ',
+    'ቤት ለኪራይ',
+    'አዲስ አበባ ቤት',
+    'ቦሌ ቤት',
+    'ኮንዶሚኒየም ለሽያጭ',
+    'ኪራይ ቤት አዲስ አበባ',
+    // Brand
+    'Habesha Properties',
+    'habeshaproperties.com',
   ],
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://habeshaproperties.com'),
   openGraph: {
-    title: 'Habesha Properties — Ethiopian Property Marketplace',
-    description: "Buy, sell and rent properties across Ethiopia. AI-powered fraud detection and valuations.",
+    title: 'Habesha Properties — Buy, Sell & Rent Property in Ethiopia',
+    description: "Ethiopia's leading property marketplace. Houses for sale and apartments for rent in Addis Ababa — Bole, CMC, Kazanchis, Megenagna, Ayat and more. AI-powered search.",
     type: 'website',
     locale: 'en_US',
     siteName: 'Habesha Properties',
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Habesha Properties' }],
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Habesha Properties — Ethiopian Real Estate' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Habesha Properties — Ethiopian Property Marketplace',
-    description: "Buy, sell and rent properties across Ethiopia with AI assistance.",
+    title: 'Habesha Properties — Buy, Sell & Rent Property in Ethiopia',
+    description: "Find houses for sale and apartments for rent in Addis Ababa. AI fraud detection, valuations and Amharic support.",
     images: ['/og-image.png'],
   },
   robots: {

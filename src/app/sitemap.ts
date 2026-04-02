@@ -3,6 +3,11 @@ import { createClient } from '@/lib/supabase/server'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://habeshaproperties.com'
 
+const NEIGHBORHOODS = [
+  'Bole', 'CMC', 'Kazanchis', 'Megenagna', 'Ayat',
+  'Sarbet', 'Gerji', 'Lideta', 'Piassa', 'Kolfe',
+]
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = createClient()
 
@@ -34,17 +39,49 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }))
 
+  // Neighborhood-specific search pages — high SEO value
+  const neighborhoodUrls: MetadataRoute.Sitemap = NEIGHBORHOODS.flatMap(n => [
+    {
+      url: `${APP_URL}/search?neighborhoods=${encodeURIComponent(n)}`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.85,
+    },
+    {
+      url: `${APP_URL}/search?neighborhoods=${encodeURIComponent(n)}&intent=sale`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.8,
+    },
+    {
+      url: `${APP_URL}/search?neighborhoods=${encodeURIComponent(n)}&intent=rent`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.8,
+    },
+  ])
+
   return [
+    // Core pages
     { url: APP_URL, lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
-    { url: `${APP_URL}/search`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
+    { url: `${APP_URL}/search`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.95 },
     { url: `${APP_URL}/search?intent=sale`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
     { url: `${APP_URL}/search?intent=rent`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
+    // Feature pages
+    { url: `${APP_URL}/diaspora`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
+    { url: `${APP_URL}/developments`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.75 },
     { url: `${APP_URL}/ai-reports`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${APP_URL}/about`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${APP_URL}/contact`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
     { url: `${APP_URL}/pricing`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
-    { url: `${APP_URL}/diaspora`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+    // Legal
     { url: `${APP_URL}/terms`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
     { url: `${APP_URL}/privacy`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
+    // Neighborhood search pages
+    ...neighborhoodUrls,
+    // Individual listings
     ...propertyUrls,
+    // Agent profiles
     ...agentUrls,
   ]
 }
