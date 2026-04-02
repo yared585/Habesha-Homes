@@ -281,8 +281,8 @@ export default function PropertyDetailPage() {
   ]
 
   return (
-    <div className="property-page-body" style={{ background: '#f9f9f7', minHeight: '100vh' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '24px 16px' }}>
+    <div className="property-page-body" style={{ background: '#f9f9f7', minHeight: '100vh', overflowX: 'hidden', maxWidth: '100vw' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '24px 16px', overflowX: 'hidden' }}>
 
         {/* Breadcrumb */}
         <div style={{ display: 'flex', gap: 6, fontSize: 13, color: '#aaa', marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
@@ -295,10 +295,10 @@ export default function PropertyDetailPage() {
           <span style={{ color: '#555' }}>{title}</span>
         </div>
 
-        <div className="property-detail-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 28, alignItems: 'start' }}>
+        <div className="property-detail-grid" style={{ display: 'grid', gridTemplateColumns: '1fr minmax(0, 380px)', gap: 28, alignItems: 'start', minWidth: 0 }}>
 
           {/* ── LEFT COLUMN ── */}
-          <div>
+          <div style={{ minWidth: 0, overflow: 'hidden' }}>
 
             {/* Gallery */}
             {lightboxOpen && images.length > 0 && (
@@ -388,7 +388,7 @@ export default function PropertyDetailPage() {
                     <span style={{ background: '#fefce8', color: '#a16207', fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 20, border: '1px solid #fde68a' }}>★ Featured</span>
                   )}
                 </div>
-                <div style={{ fontSize: 11, color: '#bbb', display: 'flex', gap: 10 }}>
+                <div style={{ fontSize: 11, color: '#bbb', display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                   <span>Listed {timeAgo(property.listed_at || property.created_at)}</span>
                   <span>· {property.views || 0} views</span>
                 </div>
@@ -399,9 +399,9 @@ export default function PropertyDetailPage() {
               {property.title_amharic && lang === 'en' && (
                 <div style={{ fontSize: 13, color: '#aaa', marginBottom: 6 }}>{property.title_amharic}</div>
               )}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: '#666', marginBottom: 12 }}>
-                <MapPin size={13} color="#888"/>
-                <span>{[property.address, (property as any).neighborhood?.name, property.city].filter(Boolean).join(', ')}</span>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 4, fontSize: 13, color: '#666', marginBottom: 12 }}>
+                <MapPin size={13} color="#888" style={{ flexShrink: 0, marginTop: 2 }}/>
+                <span style={{ overflowWrap: 'break-word', wordBreak: 'break-word' }}>{[property.address, (property as any).neighborhood?.name, property.city].filter(Boolean).join(', ')}</span>
               </div>
 
               {/* Price + specs inline */}
