@@ -12,6 +12,11 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
   title: { default: 'Habesha Properties — Buy, Sell & Rent Property in Ethiopia', template: '%s | Habesha Properties' },
   description: "Ethiopia's leading property marketplace. Find houses for sale and apartments for rent in Addis Ababa — Bole, CMC, Kazanchis, Megenagna, Ayat, Sarbet, Gerji, Lideta. AI fraud detection, valuations and Amharic support. ቤት ለሽያጭ እና ለኪራይ በአዲስ አበባ።",
   keywords: [
