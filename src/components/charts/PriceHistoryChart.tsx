@@ -144,8 +144,8 @@ export function PriceHistoryChart({ neighborhood, showComparison = true }: Props
         )}
       </div>
 
-      <div style={{ position: 'relative', height: 200 }}>
-        <canvas ref={canvasRef} />
+      <div style={{ position: 'relative', height: 200, width: '100%' }}>
+        <canvas ref={canvasRef} style={{ maxWidth: '100%' }} />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginTop: 14 }}>

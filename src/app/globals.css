@@ -49,7 +49,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
 body {
   margin: 0;
   font-family: var(--font-body);
@@ -290,6 +290,8 @@ img { max-width: 100%; display: block; }
   /* Add padding-bottom so sticky bar doesn't overlap content */
   .property-page-body {
     padding-bottom: 80px !important;
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
   }
 
   /* Property detail — stack sidebar below content */
@@ -300,15 +302,13 @@ img { max-width: 100%; display: block; }
     position: static !important;
   }
 
-  /* Property photo gallery — single column on mobile, full-bleed */
+  /* Property photo gallery — single column on mobile */
   .property-photo-grid {
     grid-template-columns: 1fr !important;
-    grid-template-rows: 240px !important;
+    grid-template-rows: 200px !important;
   }
   .property-photo-wrapper {
-    margin-left: -16px !important;
-    margin-right: -16px !important;
-    border-radius: 0 !important;
+    width: 100% !important;
   }
   .property-photo-grid > *:not(:first-child) {
     display: none !important;
