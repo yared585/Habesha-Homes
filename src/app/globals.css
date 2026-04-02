@@ -49,7 +49,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 body {
   margin: 0;
   font-family: var(--font-body);
@@ -306,8 +306,10 @@ img { max-width: 100%; display: block; }
     grid-template-rows: 240px !important;
   }
   .property-photo-wrapper {
-    margin-left: -16px !important;
-    margin-right: -16px !important;
+    width: 100vw !important;
+    position: relative !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
     border-radius: 0 !important;
   }
   .property-photo-grid > *:not(:first-child) {
