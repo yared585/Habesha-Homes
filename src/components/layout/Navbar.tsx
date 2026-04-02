@@ -8,7 +8,7 @@ import { Search, LogOut, LayoutDashboard, Plus, User, Home, Building2, ChevronDo
 import { useAuth } from '@/hooks/useAuth'
 import { SearchOverlay } from '@/components/layout/SearchOverlay'
 
-function HabeshaLogo({ size = 40 }: { size?: number }) {
+function HabeshaLogo({ size = 46 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
       <rect width="40" height="40" rx="10" fill="#1a3d2b"/>

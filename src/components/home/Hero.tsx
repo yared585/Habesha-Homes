@@ -10,7 +10,6 @@ const BEDS        = ['Any beds','Studio','1+','2+','3+','4+','5+']
 const SALE_PRICES = ['Any price','Under ETB 1M','ETB 1M–3M','ETB 3M–6M','ETB 6M–10M','Over ETB 10M']
 const RENT_PRICES = ['Any price','Under ETB 5K','ETB 5K–15K','ETB 15K–30K','ETB 30K–60K','Over ETB 60K']
 
-// Compact single-line dropdown — no stacked label
 function Dropdown({ id, value, options, onChange, icon, placeholder, active, setActive }: {
   id: string; value: string; options: string[]; onChange: (v: string) => void;
   icon: React.ReactNode; placeholder: string;
@@ -33,8 +32,8 @@ function Dropdown({ id, value, options, onChange, icon, placeholder, active, set
         onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = '#f7f7f5'}
         onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = 'transparent'}
       >
-        <span style={{ color: changed ? '#16a34a' : '#ccc', display: 'flex', flexShrink: 0 }}>{icon}</span>
-        <span style={{ fontSize: 13.5, color: changed ? '#15803d' : '#444', fontWeight: changed ? 600 : 400 }}>
+        <span style={{ color: changed ? '#1a3d2b' : '#ccc', display: 'flex', flexShrink: 0 }}>{icon}</span>
+        <span style={{ fontSize: 13.5, color: changed ? '#1a3d2b' : '#444', fontWeight: changed ? 600 : 400 }}>
           {changed ? value : placeholder}
         </span>
         <ChevronDown size={11} color="#bbb" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .15s' }}/>
@@ -55,7 +54,7 @@ function Dropdown({ id, value, options, onChange, icon, placeholder, active, set
                   display: 'flex', alignItems: 'center', gap: 9, width: '100%',
                   padding: '10px 14px', border: 'none', fontSize: 13.5,
                   background: opt === value ? '#f0fdf4' : 'transparent',
-                  color: opt === value ? '#15803d' : '#333',
+                  color: opt === value ? '#1a3d2b' : '#333',
                   cursor: 'pointer', fontWeight: opt === value ? 600 : 400,
                   fontFamily: 'inherit', transition: 'background .1s',
                 }}
@@ -63,7 +62,7 @@ function Dropdown({ id, value, options, onChange, icon, placeholder, active, set
                 onMouseLeave={e => { if (opt !== value) (e.currentTarget as HTMLButtonElement).style.background = 'transparent' }}
               >
                 {opt === value
-                  ? <Check size={13} color="#16a34a" style={{ flexShrink: 0 }}/>
+                  ? <Check size={13} color="#1a3d2b" style={{ flexShrink: 0 }}/>
                   : <span style={{ width: 13, flexShrink: 0 }}/>}
                 {opt}
               </button>
@@ -75,7 +74,6 @@ function Dropdown({ id, value, options, onChange, icon, placeholder, active, set
   )
 }
 
-// Thin divider between filter items
 function Divider() {
   return <div style={{ width: 1, height: 24, background: '#eeede9', flexShrink: 0, alignSelf: 'center' }}/>
 }
@@ -113,7 +111,6 @@ export function Hero() {
       padding: 'clamp(32px, 4vw, 56px) 24px clamp(24px, 3vw, 40px)',
       position: 'relative', overflow: 'visible',
     }}>
-      {/* Dot grid */}
       <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
         <div style={{ position: 'absolute', inset: 0, opacity: 0.035,
           backgroundImage: 'radial-gradient(circle, #86efac 1px, transparent 1px)',
@@ -125,7 +122,6 @@ export function Hero() {
 
       <div style={{ maxWidth: 900, margin: '0 auto', position: 'relative' }}>
 
-        {/* Headline */}
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <h1 style={{
             fontFamily: "'Instrument Serif', Georgia, serif",
@@ -138,17 +134,10 @@ export function Hero() {
           </h1>
         </div>
 
-        {/* Search card */}
-        <div style={{
-          background: '#fff',
-          borderRadius: 14,
-          boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
-          overflow: 'visible',
-        }}>
-          {/* Single filter row — desktop */}
+        <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 20px 60px rgba(0,0,0,0.4)', overflow: 'visible' }}>
+
           <div className="hero-filter-bar-desktop" style={{ alignItems: 'center', overflow: 'visible' }}>
 
-            {/* Buy / Rent inline toggle */}
             <div style={{ display: 'flex', alignItems: 'center', padding: '0 6px 0 10px', gap: 2, flexShrink: 0 }}>
               {(['sale', 'rent'] as const).map(i => (
                 <button key={i}
@@ -158,7 +147,7 @@ export function Hero() {
                     cursor: 'pointer', fontSize: 13, fontWeight: 700,
                     fontFamily: 'inherit', transition: 'all .15s',
                     background: intent === i ? '#f0fdf4' : 'transparent',
-                    color: intent === i ? '#16a34a' : '#bbb',
+                    color: intent === i ? '#1a3d2b' : '#bbb',
                   }}>
                   {i === 'sale' ? 'Buy' : 'Rent'}
                 </button>
@@ -174,54 +163,51 @@ export function Hero() {
             <Divider/>
             <Dropdown id="beds"  value={beds}  options={BEDS}     onChange={setBeds}  icon={<Home size={13}/>}      placeholder="Bedrooms"     active={activeDD} setActive={setActiveDD}/>
 
-            {/* Actions */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 10px 0 8px', marginLeft: 'auto', flexShrink: 0 }}>
               <Link href="/search?view=map"
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#bbb', padding: '8px 10px', borderRadius: 8, textDecoration: 'none', transition: 'all .12s', border: '1px solid #eae9e4' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#16a34a'; (e.currentTarget as HTMLAnchorElement).style.borderColor = '#16a34a' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#1a3d2b'; (e.currentTarget as HTMLAnchorElement).style.borderColor = '#1a3d2b' }}
                 onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#bbb'; (e.currentTarget as HTMLAnchorElement).style.borderColor = '#eae9e4' }}
               ><Map size={12}/> Map</Link>
 
               <Link href={buildUrl()}
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 7,
-                  background: '#2563eb', color: '#fff',
+                  background: '#1a3d2b', color: '#fff',
                   padding: '10px 22px', borderRadius: 9,
                   fontSize: 14, fontWeight: 700, textDecoration: 'none',
                   transition: 'all .18s', whiteSpace: 'nowrap',
-                  boxShadow: '0 2px 10px rgba(37,99,235,0.4)',
+                  boxShadow: '0 2px 10px rgba(26,61,43,0.4)',
                 }}
-                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#1d4ed8'; (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-1px)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#2563eb'; (e.currentTarget as HTMLAnchorElement).style.transform = 'none' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#2d5a3d'; (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-1px)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#1a3d2b'; (e.currentTarget as HTMLAnchorElement).style.transform = 'none' }}
               ><Search size={14}/> Search</Link>
             </div>
           </div>
 
-          {/* Mobile search button */}
           <div className="hero-filter-bar-mobile" style={{ padding: '12px' }}>
             <Link href="/search"
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                background: '#2563eb', color: '#fff', borderRadius: 10,
+                background: '#1a3d2b', color: '#fff', borderRadius: 10,
                 padding: '14px', fontSize: 16, fontWeight: 700, textDecoration: 'none',
               }}
             >
               <Search size={18}/> Search properties in Ethiopia
             </Link>
             <div style={{ display: 'flex', gap: 8, marginTop: 10, justifyContent: 'center' }}>
-              <Link href="/search?intent=sale" style={{ flex: 1, textAlign: 'center', padding: '10px', background: '#f0fdf4', color: '#16a34a', borderRadius: 8, fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid #bbf7d0' }}>Buy</Link>
-              <Link href="/search?intent=rent" style={{ flex: 1, textAlign: 'center', padding: '10px', background: '#f0fdf4', color: '#16a34a', borderRadius: 8, fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid #bbf7d0' }}>Rent</Link>
+              <Link href="/search?intent=sale" style={{ flex: 1, textAlign: 'center', padding: '10px', background: '#f0fdf4', color: '#1a3d2b', borderRadius: 8, fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid #bbf7d0' }}>Buy</Link>
+              <Link href="/search?intent=rent" style={{ flex: 1, textAlign: 'center', padding: '10px', background: '#f0fdf4', color: '#1a3d2b', borderRadius: 8, fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid #bbf7d0' }}>Rent</Link>
               <Link href="/search?view=map" style={{ flex: 1, textAlign: 'center', padding: '10px', background: '#f5f5f2', color: '#555', borderRadius: 8, fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid #e8e7e2' }}>Map</Link>
             </div>
           </div>
 
-          {/* Popular searches */}
           <div style={{ padding: '8px 16px 10px', display: 'flex', alignItems: 'center', gap: 6, borderTop: '1px solid #f5f5f2', flexWrap: 'wrap' }}>
             <span style={{ fontSize: 11, color: '#ccc', fontWeight: 500 }}>Popular:</span>
             {['Bole', 'Kazanchis', 'CMC', 'Megenagna', 'Land'].map(t => (
               <Link key={t} href={`/search?q=${encodeURIComponent(t)}`}
                 style={{ fontSize: 11, color: '#999', padding: '3px 10px', border: '1px solid #eae9e4', borderRadius: 20, textDecoration: 'none', transition: 'all .12s' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = '#16a34a'; (e.currentTarget as HTMLAnchorElement).style.color = '#16a34a' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = '#1a3d2b'; (e.currentTarget as HTMLAnchorElement).style.color = '#1a3d2b' }}
                 onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = '#eae9e4'; (e.currentTarget as HTMLAnchorElement).style.color = '#999' }}
               >{t}</Link>
             ))}
