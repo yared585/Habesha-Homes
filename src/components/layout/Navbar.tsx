@@ -183,7 +183,7 @@ export function Navbar() {
             {profile ? (
               <UserMenu profile={profile} signOut={signOut}/>
             ) : (
-              <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+              <div className="nav-auth-desktop" style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                 <Link href="/auth/login"
                   style={{ padding: '7px 13px', fontSize: 13.5, fontWeight: 500, color: '#555', textDecoration: 'none', borderRadius: 8, transition: 'all .15s' }}
                   onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#111'; (e.currentTarget as HTMLAnchorElement).style.background = '#f5f5f2' }}
