@@ -40,6 +40,7 @@ function NavLink({ label, href, badge }: { label: string; href: string; badge?: 
         display: 'inline-flex', alignItems: 'center', gap: 5,
         padding: '7px 13px', borderRadius: 8, textDecoration: 'none', fontSize: 13.5,
         fontWeight: active ? 600 : 500,
+        letterSpacing: '-.01em',
         color: active ? '#1a3d2b' : hov ? '#1a3d2b' : '#1a1a18',
         background: active ? 'rgba(26,61,43,0.08)' : hov ? 'rgba(26,61,43,0.06)' : 'transparent',
         transition: 'all .15s', whiteSpace: 'nowrap',
@@ -55,11 +56,11 @@ function SearchBtn({ onClick }: { onClick: () => void }) {
   const [hov, setHov] = useState(false)
   return (
     <button onClick={onClick} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
-      style={{ display: 'flex', alignItems: 'center', gap: 7, cursor: 'pointer', background: hov ? '#f5f5f2' : '#f9f9f7', border: `1px solid ${hov ? '#d0cfc9' : '#e8e7e2'}`, borderRadius: 9, padding: '7px 12px', transition: 'all .15s', fontFamily: 'inherit' }}
+      style={{ display: 'flex', alignItems: 'center', gap: 7, cursor: 'pointer', background: '#fff', border: `1px solid ${hov ? 'rgba(26,61,43,0.35)' : '#e5e4df'}`, borderRadius: 9, padding: '7px 13px', transition: 'all .18s', fontFamily: 'inherit', boxShadow: hov ? '0 2px 12px rgba(26,61,43,0.1)' : '0 1px 3px rgba(0,0,0,0.07)' }}
     >
-      <Search size={13} color="#999"/>
-      <span className="nav-search-text" style={{ fontSize: 13, color: '#999' }}>Search</span>
-      <kbd className="nav-search-kbd" style={{ fontSize: 10, color: '#bbb', background: '#efefed', padding: '1px 5px', borderRadius: 4, fontFamily: 'monospace', border: '1px solid #e0dfd9' }}>⌘K</kbd>
+      <Search size={13} color={hov ? '#1a3d2b' : '#888'}/>
+      <span className="nav-search-text" style={{ fontSize: 13, color: hov ? '#1a3d2b' : '#888', fontWeight: 500 }}>Search</span>
+      <kbd className="nav-search-kbd" style={{ fontSize: 10, color: '#c0bfba', background: '#f5f5f2', padding: '1px 5px', borderRadius: 4, fontFamily: 'monospace', border: '1px solid #e8e7e2' }}>⌘K</kbd>
     </button>
   )
 }
@@ -93,9 +94,9 @@ function UserMenu({ profile, signOut }: { profile: any; signOut: () => void }) {
   return (
     <div style={{ position: 'relative' }}>
       <button onClick={() => setOpen(!open)}
-        style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f5f5f2', border: '1px solid #e8e7e2', borderRadius: 24, padding: '5px 10px 5px 5px', cursor: 'pointer', transition: 'all .15s', fontFamily: 'inherit' }}
-        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(26,61,43,0.08)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(26,61,43,0.3)' }}
-        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#f5f5f2'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#e8e7e2' }}
+        style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(26,61,43,0.05)', border: '1px solid rgba(26,61,43,0.18)', borderRadius: 24, padding: '5px 10px 5px 5px', cursor: 'pointer', transition: 'all .18s', fontFamily: 'inherit', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
+        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(26,61,43,0.1)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(26,61,43,0.35)' }}
+        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(26,61,43,0.05)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(26,61,43,0.18)' }}
       >
         <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#1a3d2b,#2d5a3d)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#fff', fontWeight: 700 }}>
           {profile.full_name?.[0]?.toUpperCase() || 'U'}
@@ -161,8 +162,8 @@ export function Navbar() {
 
   return (
     <>
-      <nav style={{ position: 'sticky', top: 0, zIndex: 100, background: scrolled ? 'rgba(255,255,255,0.98)' : '#ffffff', backdropFilter: 'blur(20px)', borderBottom: '1px solid #e8e7e2', boxShadow: scrolled ? '0 4px 24px rgba(0,0,0,0.08)' : '0 1px 0 #e8e7e2', transition: 'all .25s' }}>
-        <div className="nav-inner" style={{ maxWidth: 1280, margin: '0 auto', height: 82, padding: '0 28px', display: 'flex', alignItems: 'center', gap: 4 }}>
+      <nav style={{ position: 'sticky', top: 0, zIndex: 100, background: scrolled ? 'rgba(255,255,255,0.97)' : '#ffffff', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(0,0,0,0.08)', boxShadow: scrolled ? '0 2px 20px rgba(0,0,0,0.07)' : 'none', transition: 'all .25s' }}>
+        <div className="nav-inner" style={{ maxWidth: 1280, margin: '0 auto', height: 68, padding: '0 28px', display: 'flex', alignItems: 'center', gap: 4 }}>
 
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginRight: 16, flexShrink: 0 }}>
             <HabeshaLogo/>
@@ -181,7 +182,19 @@ export function Navbar() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: 'auto' }}>
             <SearchBtn onClick={() => setSearchOpen(true)}/>
             {profile ? (
-              <UserMenu profile={profile} signOut={signOut}/>
+              <>
+                <Link
+                  href={profile.role === 'buyer' ? '/saved' : profile.role === 'admin' ? '/admin' : profile.role === 'developer' ? '/dashboard/developer' : '/dashboard'}
+                  className="nav-dashboard-btn"
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 16px', fontSize: 13, fontWeight: 600, color: '#1a3d2b', background: 'rgba(26,61,43,0.07)', border: '1px solid rgba(26,61,43,0.25)', borderRadius: 8, textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all .15s' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(26,61,43,0.14)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(26,61,43,0.4)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(26,61,43,0.07)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(26,61,43,0.25)' }}
+                >
+                  {profile.role === 'buyer' ? <Heart size={13}/> : <LayoutDashboard size={13}/>}
+                  {profile.role === 'buyer' ? 'Saved' : 'Dashboard'}
+                </Link>
+                <UserMenu profile={profile} signOut={signOut}/>
+              </>
             ) : (
               <div className="nav-auth-desktop" style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                 <Link href="/auth/login"
@@ -190,9 +203,9 @@ export function Navbar() {
                   onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#555'; (e.currentTarget as HTMLAnchorElement).style.background = 'transparent' }}
                 >Log in</Link>
                 <Link href="/auth/signup"
-                  style={{ padding: '8px 20px', fontSize: 13.5, fontWeight: 600, background: '#1a3d2b', color: '#fff', borderRadius: 9, textDecoration: 'none', transition: 'all .18s', boxShadow: '0 2px 10px rgba(26,61,43,0.4)' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#2d5a3d'; (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-1px)'; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 6px 20px rgba(26,61,43,0.5)' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#1a3d2b'; (e.currentTarget as HTMLAnchorElement).style.transform = 'none'; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 2px 10px rgba(26,61,43,0.4)' }}
+                  style={{ padding: '8px 20px', fontSize: 13.5, fontWeight: 600, background: '#1a3d2b', color: '#fff', borderRadius: 9, textDecoration: 'none', transition: 'all .18s', letterSpacing: '-.01em' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#2d5a3d'; (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-1px)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#1a3d2b'; (e.currentTarget as HTMLAnchorElement).style.transform = 'none' }}
                 >Get started</Link>
               </div>
             )}

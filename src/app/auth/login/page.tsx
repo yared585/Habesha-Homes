@@ -20,9 +20,14 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
     const sb = createClient()
-    const { error: err } = await sb.auth.signInWithPassword({ email, password })
-    if (err) { setError(err.message); setLoading(false) }
-    else router.push('/')
+    const { data, error: err } = await sb.auth.signInWithPassword({ email, password })
+    if (err) { setError(err.message); setLoading(false); return }
+    const { data: profile } = await sb.from('profiles').select('role').eq('id', data.user.id).single()
+    const role = profile?.role
+    if (role === 'admin') router.push('/admin')
+    else if (role === 'developer') router.push('/dashboard/developer')
+    else if (role === 'agent') router.push('/dashboard')
+    else router.push('/saved')
   }
 
   async function handleGoogle() {

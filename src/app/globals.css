@@ -278,7 +278,7 @@ img { max-width: 100%; display: block; }
 
   /* Navbar height reduction on mobile */
   .nav-inner {
-    height: 64px !important;
+    height: 58px !important;
     padding: 0 16px !important;
   }
 
@@ -340,6 +340,10 @@ img { max-width: 100%; display: block; }
   /* Navbar — hide desktop auth buttons on mobile (mobile menu has them) */
   .nav-auth-desktop {
     display: none !important;
+  }
+  .nav-dashboard-btn {
+    font-size: 12px !important;
+    padding: 5px 10px !important;
   }
 }
 
