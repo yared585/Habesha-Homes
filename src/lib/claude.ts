@@ -234,7 +234,8 @@ Return your analysis as JSON only, no other text.`
   if (content.type !== 'text') throw new Error('Unexpected response type')
 
   try {
-    const result = JSON.parse(content.text) as FraudCheckResult
+    const cleanText = content.text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+    const result = JSON.parse(cleanText) as FraudCheckResult
     return { ...result, checked_at: new Date().toISOString() }
   } catch {
     // If Claude didn't return valid JSON, create a structured error response
@@ -293,7 +294,8 @@ Property to value:
   const content = response.content[0]
   if (content.type !== 'text') throw new Error('Unexpected response type')
 
-  const result = JSON.parse(content.text) as Omit<ValuationResult, 'generated_at'>
+  const cleanText = content.text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+  const result = JSON.parse(cleanText) as Omit<ValuationResult, 'generated_at'>
   return { ...result, generated_at: new Date().toISOString() }
 }
 
@@ -321,7 +323,8 @@ export async function analyzeContract(
   const content = response.content[0]
   if (content.type !== 'text') throw new Error('Unexpected response type')
 
-  return JSON.parse(content.text) as ContractAnalysisResult
+  const cleanText = content.text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+  return JSON.parse(cleanText) as ContractAnalysisResult
 }
 
 // ============================================================
@@ -368,7 +371,8 @@ Return ONLY valid JSON:
   const content = response.content[0]
   if (content.type !== 'text') throw new Error('Unexpected response type')
 
-  return JSON.parse(content.text) as NeighborhoodReport
+  const cleanText = content.text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+  return JSON.parse(cleanText) as NeighborhoodReport
 }
 
 // ============================================================
@@ -421,7 +425,8 @@ Format as JSON: {"english": "...", "amharic": "..."}`
   const content = response.content[0]
   if (content.type !== 'text') throw new Error('Unexpected response type')
 
-  return JSON.parse(content.text)
+  const cleanText = content.text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+  return JSON.parse(cleanText)
 }
 
 // ============================================================
@@ -472,5 +477,6 @@ Return JSON only:
   const content = response.content[0]
   if (content.type !== 'text') throw new Error('Unexpected response type')
 
-  return JSON.parse(content.text)
+  const cleanText = content.text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+  return JSON.parse(cleanText)
 }
