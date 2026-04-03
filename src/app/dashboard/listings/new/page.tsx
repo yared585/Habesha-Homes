@@ -310,12 +310,12 @@ function Step5({ form, set, onGenerate, generating, generated }: any) {
         <h2 style={{ fontSize: 22, fontWeight: 800, color: '#111', margin: 0 }}>AI listing writer</h2>
       </div>
       <p style={{ fontSize: 14, color: '#666', margin: 0, lineHeight: 1.6 }}>
-        Claude AI will write a compelling listing description in Amharic and English based on your property details.
+        AI will write a compelling listing description in Amharic and English based on your property details.
       </p>
       <button type="button" onClick={onGenerate} disabled={generating}
         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: generating ? '#9ca3af' : '#16a34a', color: '#fff', border: 'none', padding: '14px', borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: generating ? 'not-allowed' : 'pointer', fontFamily: 'inherit', transition: 'all .15s' }}
       >
-        <Sparkles size={16}/> {generating ? 'Claude is writing...' : 'Write with Claude AI'}
+        <Sparkles size={16}/> {generating ? 'AI is writing...' : 'Write with AI'}
       </button>
       {generated && (
         <div>
@@ -328,7 +328,7 @@ function Step5({ form, set, onGenerate, generating, generated }: any) {
       )}
       {!generated && !generating && (
         <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 10, padding: 14, fontSize: 13, color: '#15803d', lineHeight: 1.6 }}>
-          💡 Claude will use your property details — type, size, location, amenities — to write a professional listing in both languages. Takes about 10 seconds.
+          💡 AI will use your property details — type, size, location, amenities — to write a professional listing in both languages. Takes about 10 seconds.
         </div>
       )}
     </div>
@@ -461,7 +461,7 @@ Keep each paragraph under 100 words.`
         {/* Header */}
         <div style={{ marginBottom: 32 }}>
           <h1 style={{ fontSize: 28, fontWeight: 900, color: '#111', margin: '0 0 6px', letterSpacing: '-.02em' }}>Add new listing</h1>
-          <p style={{ fontSize: 14, color: '#888', margin: 0 }}>Fill in the details — Claude AI will help write the description</p>
+          <p style={{ fontSize: 14, color: '#888', margin: 0 }}>Fill in the details — AI will help write the description</p>
         </div>
 
         {/* Step indicators */}

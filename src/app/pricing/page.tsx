@@ -8,7 +8,7 @@ export const metadata = {
 
 const AI_REPORTS = [
   { emoji: '🤖', name: 'AI Assistant', price: 'Free', period: '', color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0', features: ['Ask any property question', 'Amharic & English', 'Available 24/7', 'On every listing page'] },
-  { emoji: '🔍', name: 'Fraud Detection', price: '$49', period: 'per report', color: '#dc2626', bg: '#fef2f2', border: '#fecaca', features: ['Title document analysis', 'Claude Vision AI', '30 second results', 'SAFE/RISKY/FRAUD verdict', 'Red flag details'] },
+  { emoji: '🔍', name: 'Fraud Detection', price: '$49', period: 'per report', color: '#dc2626', bg: '#fef2f2', border: '#fecaca', features: ['Title document analysis', 'AI Vision', '30 second results', 'SAFE/RISKY/FRAUD verdict', 'Red flag details'] },
   { emoji: '📊', name: 'Property Valuation', price: '$25', period: 'per report', color: '#2563eb', bg: '#eff6ff', border: '#bfdbfe', features: ['ETB & USD pricing', 'Rental yield estimate', 'Investment verdict', 'Market comparison', 'Neighborhood context'] },
   { emoji: '📄', name: 'Contract Analyzer', price: '$9.99', period: 'per contract', color: '#d97706', bg: '#fffbeb', border: '#fde68a', features: ['Full contract review', 'Dangerous clause detection', 'Amharic explanations', 'SIGN/AVOID verdict', 'Negotiation tips'] },
   { emoji: '🏘️', name: 'Neighborhood Report', price: '$14.99', period: 'per area', color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe', features: ['Safety score', 'Transport access', 'Flood risk assessment', 'Price trend analysis', '5-year outlook'] },

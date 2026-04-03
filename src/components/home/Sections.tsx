@@ -45,11 +45,11 @@ export function StatsBar() {
 // ── AI features ───────────────────────────────────────────────────────────────
 const AI_FEATURES = [
   { icon: <Bot size={20}/>, t:'Amharic AI assistant', a:'አማርኛ AI ረዳት', d:'Ask any property question in Amharic or English — instant answer 24/7.', p:'Free', pc:'#16a34a', bg:'#f0fdf4', bc:'#bbf7d0', ic:'#16a34a', ib:'rgba(22,163,74,0.1)' },
-  { icon: <ShieldCheck size={20}/>, t:'Title fraud detector', a:'ማጭበርበር መፈለጊያ', d:'Upload title documents — Claude Vision scans for forged stamps instantly.', p:'$49/check', pc:'#dc2626', bg:'#fef2f2', bc:'#fecaca', ic:'#dc2626', ib:'rgba(220,38,38,0.08)' },
+  { icon: <ShieldCheck size={20}/>, t:'Title fraud detector', a:'ማጭበርበር መፈለጊያ', d:'Upload title documents — AI Vision scans for forged stamps instantly.', p:'$49/check', pc:'#dc2626', bg:'#fef2f2', bc:'#fecaca', ic:'#dc2626', ib:'rgba(220,38,38,0.08)' },
   { icon: <BarChart3 size={20}/>, t:'AI property valuation', a:'AI ዋጋ ግምት', d:'Instant valuation with price range, rental yield, and investment verdict.', p:'$25', pc:'#2563eb', bg:'#eff6ff', bc:'#bfdbfe', ic:'#2563eb', ib:'rgba(37,99,235,0.08)' },
   { icon: <FileText size={20}/>, t:'Contract analyzer', a:'ውል ፈታኝ', d:'Upload any contract — dangerous clauses highlighted in Amharic instantly.', p:'$9.99', pc:'#d97706', bg:'#fffbeb', bc:'#fde68a', ic:'#d97706', ib:'rgba(217,119,6,0.08)' },
   { icon: <MapPin size={20}/>, t:'Neighborhood report', a:'ሰፈር ሪፖርት', d:'Safety, transport, flood risk — full area intelligence for Addis.', p:'$14.99', pc:'#7c3aed', bg:'#f5f3ff', bc:'#ddd6fe', ic:'#7c3aed', ib:'rgba(124,58,237,0.08)' },
-  { icon: <Target size={20}/>, t:'Smart property matching', a:'ስማርት ፍለጋ', d:'Describe what you want in Amharic — Claude finds your top 5 matches.', p:'Free', pc:'#16a34a', bg:'#f0fdf4', bc:'#bbf7d0', ic:'#16a34a', ib:'rgba(22,163,74,0.1)' },
+  { icon: <Target size={20}/>, t:'Smart property matching', a:'ስማርት ፍለጋ', d:'Describe what you want in Amharic — AI finds your top 5 matches.', p:'Free', pc:'#16a34a', bg:'#f0fdf4', bc:'#bbf7d0', ic:'#16a34a', ib:'rgba(22,163,74,0.1)' },
 ]
 
 export function AIFeatures() {
@@ -59,7 +59,7 @@ export function AIFeatures() {
         <SectionHeader
           centered
           title="The most intelligent platform in Ethiopian real estate"
-          subtitle="Claude AI helps you make better property decisions — in Amharic or English, any time"
+          subtitle="AI helps you make better property decisions — in Amharic or English, any time"
         />
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 18 }}>
           {AI_FEATURES.map(({ icon, t, a, d, p, pc, bg, bc, ic, ib }) => (
@@ -129,7 +129,7 @@ export function NeighborhoodGrid() {
 // ── How it works ──────────────────────────────────────────────────────────────
 const HOW_STEPS = [
   { n:'01', icon:<Search size={22}/>, t:'Search & filter', d:'Filter by city, type, price, bedrooms. Browse map or list view.' },
-  { n:'02', icon:<Shield size={22}/>, t:'AI fraud check', d:'Upload title document — Claude verifies authenticity in 30 seconds.' },
+  { n:'02', icon:<Shield size={22}/>, t:'AI fraud check', d:'Upload title document — AI verifies authenticity in 30 seconds.' },
   { n:'03', icon:<Star size={22}/>, t:'Get AI valuation', d:'Instant valuation with rental yield and investment recommendation.' },
   { n:'04', icon:<Check size={22}/>, t:'Close with confidence', d:'Sign with verified agents — locally or remotely from anywhere.' },
 ]
@@ -172,7 +172,7 @@ export function DiasporaCTA() {
             Investing from abroad?<br/><span style={{ color: '#4ade80' }}>We handle everything.</span>
           </h2>
           <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)', marginBottom: 28, lineHeight: 1.7, maxWidth: 480 }}>
-            Claude AI runs full due diligence. Local agents verify physically. Sign via DocuSign from anywhere and own Ethiopian property — without leaving your city.
+            Our AI runs full due diligence. Local agents verify physically. Sign via DocuSign from anywhere and own Ethiopian property — without leaving your city.
           </p>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
             <Link href="/diaspora" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#16a34a', color: '#fff', padding: '13px 28px', borderRadius: 12, fontSize: 15, fontWeight: 700, textDecoration: 'none', transition: 'all .15s' }}

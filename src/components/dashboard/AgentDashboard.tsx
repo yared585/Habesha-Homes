@@ -105,7 +105,7 @@ function ListingCard({ p, inquiryCount }: { p: any; inquiryCount: number }) {
 }
 
 const AI_TOOLS = [
-  { emoji: '✍️', title: 'AI listing writer', desc: 'Claude writes your listing in Amharic and English.', href: '/dashboard/listings/new', btn: 'Create listing', color: '#16a34a' },
+  { emoji: '✍️', title: 'AI listing writer', desc: 'AI writes your listing in Amharic and English.', href: '/dashboard/listings/new', btn: 'Create listing', color: '#16a34a' },
   { emoji: '🔍', title: 'Fraud check', desc: 'Run a title fraud check for your buyer clients.', href: '/ai-reports', btn: 'Run check', color: '#dc2626' },
   { emoji: '📊', title: 'Property valuation', desc: 'Get instant AI valuation to price listings correctly.', href: '/ai-reports', btn: 'Get valuation', color: '#2563eb' },
   { emoji: '📄', title: 'Contract analyzer', desc: 'Highlight dangerous clauses in any contract.', href: '/ai-reports', btn: 'Analyze', color: '#d97706' },

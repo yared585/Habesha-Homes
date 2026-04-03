@@ -160,7 +160,7 @@ export default function LoginPage() {
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, marginTop: 20 }}>
           <Sparkles size={11} color="rgba(255,255,255,0.3)"/>
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Secured by Supabase · Powered by Claude AI</span>
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Secured by Supabase</span>
         </div>
       </div>
     </div>

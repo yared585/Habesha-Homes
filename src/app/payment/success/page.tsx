@@ -32,14 +32,14 @@ function SuccessContent() {
           Payment successful!
         </h1>
         <p style={{ fontSize: 16, color: '#888', marginBottom: 32, lineHeight: 1.6 }}>
-          Your <strong style={{ color: '#111' }}>{reportName}</strong> is being processed. Claude AI will analyze your request and deliver results within minutes.
+          Your <strong style={{ color: '#111' }}>{reportName}</strong> is being processed. Our AI will analyze your request and deliver results within minutes.
         </p>
 
         {/* What happens next */}
         <div style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 16, padding: 24, marginBottom: 24, textAlign: 'left' }}>
           <div style={{ fontSize: 14, fontWeight: 700, color: '#111', marginBottom: 16 }}>What happens next</div>
           {[
-            { step: '01', text: 'Claude AI processes your request' },
+            { step: '01', text: 'AI processes your request' },
             { step: '02', text: 'Report delivered to your dashboard' },
             { step: '03', text: 'Email notification when ready' },
           ].map(({ step, text }) => (

@@ -88,9 +88,9 @@ export default function AboutPage() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 16 }}>
             {[
-              { icon: <Shield size={20} color="#16a34a"/>, title: 'Fraud Detection', desc: 'Claude AI analyzes title documents in 30 seconds — spotting forgeries and red flags instantly.', bg: '#f0fdf4', border: '#bbf7d0' },
+              { icon: <Shield size={20} color="#16a34a"/>, title: 'Fraud Detection', desc: 'AI analyzes title documents in 30 seconds — spotting forgeries and red flags instantly.', bg: '#f0fdf4', border: '#bbf7d0' },
               { icon: <TrendingUp size={20} color="#2563eb"/>, title: 'Instant Valuations', desc: 'AI property valuations based on real market data — know if you\'re paying fair price.', bg: '#eff6ff', border: '#bfdbfe' },
-              { icon: <Sparkles size={20} color="#d97706"/>, title: 'AI Assistant', desc: 'Ask anything in Amharic or English 24/7. Claude explains documents, trends, and tips.', bg: '#fffbeb', border: '#fde68a' },
+              { icon: <Sparkles size={20} color="#d97706"/>, title: 'AI Assistant', desc: 'Ask anything in Amharic or English 24/7. AI explains documents, trends, and tips.', bg: '#fffbeb', border: '#fde68a' },
               { icon: <Globe size={20} color="#7c3aed"/>, title: 'Diaspora Package', desc: 'Complete remote due diligence — fraud check, valuation, contract and neighborhood report.', bg: '#f5f3ff', border: '#ddd6fe' },
             ].map(({ icon, title, desc, bg, border }) => (
               <div key={title} style={{ background: bg, border: `1px solid ${border}`, borderRadius: 14, padding: 20 }}>

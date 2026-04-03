@@ -10,9 +10,9 @@ const COUNTRIES = ['🇺🇸 United States', '🇬🇧 United Kingdom', '🇨�
 
 const STEPS = [
   { n: '01', icon: <Globe size={20}/>, title: 'Browse with USD pricing', desc: 'All properties show prices in both ETB and USD. Filter by your budget in dollars. Save favorites to compare later.', color: '#16a34a' },
-  { n: '02', icon: <Shield size={20}/>, title: 'AI fraud check in 30 seconds', desc: 'Upload the title document photo. Claude AI instantly detects forgeries, fake stamps, and ownership chain issues before you invest.', color: '#dc2626' },
+  { n: '02', icon: <Shield size={20}/>, title: 'AI fraud check in 30 seconds', desc: 'Upload the title document photo. AI instantly detects forgeries, fake stamps, and ownership chain issues before you invest.', color: '#dc2626' },
   { n: '03', icon: <TrendingUp size={20}/>, title: 'Get AI valuation report', desc: 'Know the fair market value before negotiating. Our AI compares recent sales data and gives you a verdict — overprice, fair, or undervalue.', color: '#2563eb' },
-  { n: '04', icon: <FileText size={20}/>, title: 'Contract analysis', desc: 'Upload the sale agreement. Claude reads every clause and highlights dangerous terms, missing protections, and negotiation opportunities.', color: '#d97706' },
+  { n: '04', icon: <FileText size={20}/>, title: 'Contract analysis', desc: 'Upload the sale agreement. AI reads every clause and highlights dangerous terms, missing protections, and negotiation opportunities.', color: '#d97706' },
   { n: '05', icon: <MapPin size={20}/>, title: 'Neighborhood intelligence', desc: 'Safety score, transport access, flood risk, price trend and 5-year outlook for the area — all in one report.', color: '#7c3aed' },
   { n: '06', icon: <CheckCircle size={20}/>, title: 'Buy with confidence', desc: 'Connect with a verified local agent to complete the transaction. Your title documents are secured and registered properly.', color: '#16a34a' },
 ]
@@ -27,7 +27,7 @@ const RISKS = [
 const FAQS = [
   { q: 'Can Ethiopians abroad legally buy property in Ethiopia?', a: 'Yes. Ethiopian citizens abroad have full rights to own property in Ethiopia. Foreign nationals of Ethiopian origin also have property rights under Ethiopian law.' },
   { q: 'Do I need to visit Ethiopia to buy?', a: 'No. With Habesha Properties you can complete the entire process remotely — from property search to title transfer — without visiting Ethiopia.' },
-  { q: 'How does the AI fraud check work?', a: 'You upload a photo of the title document. Claude AI analyzes the stamps, signatures, ownership chain, and registration details to detect forgeries. Takes 30 seconds.' },
+  { q: 'How does the AI fraud check work?', a: 'You upload a photo of the title document. AI analyzes the stamps, signatures, ownership chain, and registration details to detect forgeries. Takes 30 seconds.' },
   { q: 'What is the typical rental yield in Addis Ababa?', a: 'Rental yields in Addis Ababa average 7-9% annually, with prime areas like Bole reaching up to 10%. This compares favorably to most Western real estate markets.' },
   { q: 'How do I send money to pay for property?', a: 'International wire transfer or through your bank. We recommend using a verified Ethiopian bank account. Habesha Properties does not handle money transfers directly.' },
   { q: 'What documents do I need?', a: 'Ethiopian passport or Kebele ID, Power of Attorney for your local agent (notarized), and proof of funds. Our verified agents guide you through every document.' },

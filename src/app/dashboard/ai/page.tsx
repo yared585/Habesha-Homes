@@ -20,7 +20,7 @@ export default function DashboardAIPage() {
         <Sparkles size={28} color="#16a34a"/>
       </div>
       <h2 style={{ fontSize: 22, fontWeight: 800, color: '#111', margin: 0 }}>AI Listing Writer</h2>
-      <p style={{ fontSize: 14, color: '#888', margin: 0 }}>Loading Claude AI...</p>
+      <p style={{ fontSize: 14, color: '#888', margin: 0 }}>Loading AI writer...</p>
       <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
         {[0,1,2].map(i => (
           <div key={i} style={{ width: 8, height: 8, borderRadius: '50%', background: '#16a34a', animation: `bounce 1s ${i * 0.2}s infinite` }}/>

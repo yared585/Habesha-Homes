@@ -56,7 +56,7 @@ export function SearchOverlay({ onClose }: { onClose: () => void }) {
         </div>
 
         <div style={{ padding: '10px 18px', borderTop: '1px solid #f0f0ee', display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#9ca3af' }}>
-          <Sparkles size={12} color="#16a34a"/> Claude AI — search in Amharic or English
+          <Sparkles size={12} color="#16a34a"/> AI-powered — search in Amharic or English
         </div>
       </div>
     </div>

@@ -48,7 +48,7 @@ export function ValuationReport({ property, existingValuation }: ValuationReport
           <h3 style={{ fontSize: 16, fontWeight: 600, color: '#111', margin: 0 }}>AI Property Valuation</h3>
         </div>
         <p style={{ fontSize: 13, color: '#555', margin: 0, lineHeight: 1.6 }}>
-          Claude AI analyzes comparable sales, neighborhood trends, and property specs to generate
+          Our AI analyzes comparable sales, neighborhood trends, and property specs to generate
           an instant professional valuation with rental yield and investment recommendation.
         </p>
       </div>

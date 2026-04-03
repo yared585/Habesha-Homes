@@ -7,7 +7,7 @@ export const metadata = { title: 'AI Reports — Habesha Properties' }
 const REPORTS = [
   {
     icon: '🤖', title: 'AI Property Assistant', amh: 'አማርኛ AI ረዳት',
-    desc: 'Ask any question about any property in Amharic or English. Claude answers 24/7 with full property context — pricing, neighborhood, legal steps, diaspora buying.',
+    desc: 'Ask any question about any property in Amharic or English. AI answers 24/7 with full property context — pricing, neighborhood, legal steps, diaspora buying.',
     price: 'Free', priceNote: 'Available on every property page',
     color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0',
     features: ['Amharic & English', 'Streaming responses', '24/7 availability', 'Full property context'],
@@ -16,10 +16,10 @@ const REPORTS = [
   },
   {
     icon: '🔍', title: 'Title Fraud Detector', amh: 'ማጭበርበር መፈለጊያ',
-    desc: 'Upload a photo of any title document. Claude Vision AI analyzes stamps, signatures, ownership chain, and registration details. Returns SAFE / RISKY / FRAUD verdict with specific red flags.',
+    desc: 'Upload a photo of any title document. AI Vision analyzes stamps, signatures, ownership chain, and registration details. Returns SAFE / RISKY / FRAUD verdict with specific red flags.',
     price: '$49', priceNote: 'Per document check',
     color: '#dc2626', bg: '#fef2f2', border: '#fecaca',
-    features: ['Claude Vision AI', '30 second results', 'Red flag details', 'Confidence score'],
+    features: ['AI Vision', '30 second results', 'Red flag details', 'Confidence score'],
     href: '/contact',
     btnLabel: 'Order fraud check',
     id: 'fraud',
@@ -36,7 +36,7 @@ const REPORTS = [
   },
   {
     icon: '📄', title: 'Contract Analyzer', amh: 'ውል ፈታኝ',
-    desc: 'Upload any lease or sale contract. Claude reads every clause and highlights dangerous ones in Amharic — illegal rent increases, waived eviction rights, hidden fees. SIGN / NEGOTIATE / AVOID verdict.',
+    desc: 'Upload any lease or sale contract. AI reads every clause and highlights dangerous ones in Amharic — illegal rent increases, waived eviction rights, hidden fees. SIGN / NEGOTIATE / AVOID verdict.',
     price: '$9.99', priceNote: 'Per contract',
     color: '#d97706', bg: '#fffbeb', border: '#fde68a',
     features: ['Amharic explanations', 'Danger highlighting', 'SIGN/AVOID verdict', 'Negotiation tips'],
@@ -72,13 +72,13 @@ export default function AIReportsPage() {
         <div style={{ maxWidth: 1100, margin: '0 auto', textAlign: 'center' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 20, padding: '5px 14px', marginBottom: 20 }}>
             <Sparkles size={12} color="#16a34a"/>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#15803d' }}>Powered by Claude AI</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#15803d' }}>AI-powered reports</span>
           </div>
           <h1 style={{ fontSize: 'clamp(32px,5vw,52px)', fontWeight: 900, color: '#111', margin: '0 0 16px', letterSpacing: '-.025em' }}>
             AI-powered property intelligence
           </h1>
           <p style={{ fontSize: 17, color: '#666', maxWidth: 540, margin: '0 auto 32px', lineHeight: 1.7 }}>
-            Professional fraud detection, valuations, and contract analysis — powered by Claude AI in Amharic and English. Available 24/7.
+            Professional fraud detection, valuations, and contract analysis — in Amharic and English. Available 24/7.
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link href="/search" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#16a34a', color: '#fff', padding: '12px 24px', borderRadius: 12, fontSize: 14, fontWeight: 700, textDecoration: 'none' }}>
@@ -128,18 +128,18 @@ export default function AIReportsPage() {
         </div>
       </section>
 
-      {/* How Claude AI works */}
+      {/* How AI works */}
       <section style={{ padding: '80px 24px', background: '#fff', borderTop: '1px solid #eae9e4' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
           <div>
-            <h2 style={{ fontSize: 32, fontWeight: 900, color: '#111', margin: '0 0 14px', letterSpacing: '-.025em' }}>Why Claude AI?</h2>
+            <h2 style={{ fontSize: 32, fontWeight: 900, color: '#111', margin: '0 0 14px', letterSpacing: '-.025em' }}>Why our AI?</h2>
             <p style={{ fontSize: 15, color: '#666', lineHeight: 1.7, marginBottom: 24 }}>
-              Claude is the only AI that handles Amharic fluently. With a 200,000 token context window, Claude can read entire legal contracts in one shot — something other AIs cannot do.
+              Our AI handles Amharic fluently. With a 200,000 token context window, it can read entire legal contracts in one shot — something most AIs cannot do.
             </p>
             {[
-              { icon: <MessageCircle size={18}/>, t: 'Speaks Amharic fluently', d: 'Native Amharic support — not translation. Claude understands Ethiopian legal and property terminology.' },
-              { icon: <FileText size={18}/>, t: 'Reads full contracts', d: '200K context window means Claude reads your entire lease or sale agreement in one go, missing nothing.' },
-              { icon: <Shield size={18}/>, t: 'Vision AI for documents', d: 'Claude can analyze photos of title documents, detecting forged stamps and inconsistencies visually.' },
+              { icon: <MessageCircle size={18}/>, t: 'Speaks Amharic fluently', d: 'Native Amharic support — not translation. Understands Ethiopian legal and property terminology.' },
+              { icon: <FileText size={18}/>, t: 'Reads full contracts', d: '200K context window means the AI reads your entire lease or sale agreement in one go, missing nothing.' },
+              { icon: <Shield size={18}/>, t: 'Vision AI for documents', d: 'AI can analyze photos of title documents, detecting forged stamps and inconsistencies visually.' },
             ].map(({ icon, t, d }) => (
               <div key={t} style={{ display: 'flex', gap: 14, marginBottom: 20 }}>
                 <div style={{ width: 40, height: 40, borderRadius: 10, background: '#f0fdf4', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#16a34a', flexShrink: 0 }}>{icon}</div>
@@ -151,7 +151,7 @@ export default function AIReportsPage() {
             ))}
           </div>
           <div style={{ background: '#0d2318', borderRadius: 20, padding: 32 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#4ade80', marginBottom: 16 }}>🤖 Claude AI — live example</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: '#4ade80', marginBottom: 16 }}>🤖 AI Assistant — live example</div>
             {[
               { role: 'user', msg: 'ዋጋው ለቦሌ ትክክለኛ ነው? Is ETB 2.8M fair for this apartment?' },
               { role: 'ai', msg: 'Based on current Bole market data (ETB 65,000-80,000/m²), this 45m² apartment should be priced ETB 2.9M-3.6M. At ETB 2.8M it is slightly below market — a good deal. Rental yield estimate: 8.2%/year. ዋጋው ጥሩ ነው!' },

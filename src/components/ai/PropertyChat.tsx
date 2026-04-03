@@ -88,7 +88,7 @@ export function PropertyChat({ property, initialLanguage = 'en' }: Props) {
           <span style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>
             {lang === 'am' ? 'AI ረዳት' : 'AI Property Assistant'}
           </span>
-          <span style={{ fontSize: 10, background: 'rgba(255,255,255,0.2)', color: '#fff', padding: '2px 8px', borderRadius: 'var(--r-full)', fontWeight: 500 }}>Claude AI</span>
+          <span style={{ fontSize: 10, background: 'rgba(255,255,255,0.2)', color: '#fff', padding: '2px 8px', borderRadius: 'var(--r-full)', fontWeight: 500 }}>AI Assistant</span>
         </div>
         <button onClick={() => setLang(l => l === 'en' ? 'am' : 'en')} style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'rgba(255,255,255,0.15)', border: 'none', color: '#fff', padding: '4px 10px', borderRadius: 'var(--r-full)', cursor: 'pointer', fontSize: 12 }}>
           <Globe size={11} /> {lang === 'en' ? 'አማርኛ' : 'English'}

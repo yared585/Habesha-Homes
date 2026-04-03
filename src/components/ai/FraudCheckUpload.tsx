@@ -79,7 +79,7 @@ export function FraudCheckUpload({ propertyId, existingResult }: FraudCheckUploa
           </h3>
         </div>
         <p style={{ fontSize: 13, color: '#555', margin: 0, lineHeight: 1.6 }}>
-          Upload the property's title document (ካርታ / ሊዝ ሰነድ) and Claude AI will scan it for fraud,
+          Upload the property's title document (ካርታ / ሊዝ ሰነድ) and our AI will scan it for fraud,
           forged stamps, duplicate registrations, and legal inconsistencies.
           Get a SAFE / RISKY / FRAUD verdict before paying any deposit.
         </p>
@@ -136,7 +136,7 @@ export function FraudCheckUpload({ propertyId, existingResult }: FraudCheckUploa
             }}
           >
             {loading ? (
-              <><Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> Analyzing with Claude AI...</>
+              <><Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> Analyzing...</>
             ) : (
               <><Shield size={18} /> Run Fraud Analysis — $49</>
             )}
