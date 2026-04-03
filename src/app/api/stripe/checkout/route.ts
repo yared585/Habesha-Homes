@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     const product = PRODUCTS[report_type as keyof typeof PRODUCTS]
     if (!product) return NextResponse.json({ error: 'Invalid report type' }, { status: 400 })
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://habeshaproperties.com'
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://habesha-homes.vercel.app'
 
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
@@ -36,13 +36,14 @@ export async function POST(req: NextRequest) {
           product_data: {
             name: product.name,
             description: product.description,
-            images: ['https://habeshaproperties.com/og-image.png'],
+            images: ['https://habesha-homes.vercel.app/og-image.png'],
           },
           unit_amount: product.price,
         },
         quantity: 1,
       }],
       mode: 'payment',
+      allow_promotion_codes: true,
       customer_email: user_email,
       success_url: `${appUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}&report_type=${report_type}`,
       cancel_url: `${appUrl}/payment/cancel`,

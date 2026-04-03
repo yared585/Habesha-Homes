@@ -426,6 +426,7 @@ Keep each paragraph under 100 words.`
       address: form.address || null,
       neighborhood_id: hood?.id || null,
       cover_image_url: form.cover_image_url || null,
+      photos: form.photos?.length ? form.photos : (form.cover_image_url ? [form.cover_image_url] : []),
       video_url: form.video_url || null,
       is_furnished: form.is_furnished === 'true',
       furnished_status: form.is_furnished === 'semi' ? 'semi' : null,

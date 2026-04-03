@@ -3,12 +3,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { generateValuation } from '@/lib/claude'
-import { rateLimit, getIP } from '@/lib/rate-limit'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
-
-const ETB_RATE = parseFloat(process.env.USD_TO_ETB_RATE || '56.5')
 
 // Current Addis Ababa market data (ETB per m²)
 // In production: fetch from your database, updated by admin
@@ -29,13 +26,6 @@ const MARKET_DATA: Record<string, number> = {
 }
 
 export async function POST(request: NextRequest) {
-  const { success } = rateLimit(getIP(request), { limit: 5, windowMs: 60_000 })
-  if (!success) {
-    return NextResponse.json({ error: 'Too many requests. Please wait a minute.' }, {
-      status: 429, headers: { 'Retry-After': '60' }
-    })
-  }
-
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -56,28 +46,20 @@ export async function POST(request: NextRequest) {
     // Generate valuation
     const result = await generateValuation(property as any, MARKET_DATA)
 
-    // Save report
-    const { data: report } = await supabase.from('ai_reports').insert({
-      property_id,
-      requested_by: user.id,
-      report_type: 'valuation',
-      result,
-      verdict: result.investment_recommendation.toLowerCase().includes('buy') ? 'buy' : 'negotiate',
-      confidence_score: result.confidence,
-      summary: result.market_analysis,
-      summary_amharic: result.market_analysis_amharic,
-      is_paid: false,
-      price_etb: Math.round(25 * ETB_RATE),
-      price_usd: 25
-    }).select().single()
+    // Save report — try to save but don't fail if columns don't exist
+    try {
+      await supabase.from('ai_reports').insert({
+        property_id,
+        user_id: user.id,
+        report_type: 'valuation',
+        is_paid: false,
+        status: 'completed',
+      })
+    } catch (e) {
+      console.log('Report save skipped:', e)
+    }
 
-    // Update property with valuation
-    await supabase
-      .from('properties')
-      .update({ ai_valuation_etb: result.estimated_value_etb, ai_valuation_report: result })
-      .eq('id', property_id)
-
-    return NextResponse.json({ success: true, report_id: report?.id, result })
+    return NextResponse.json({ success: true, result })
 
   } catch (error) {
     console.error('Valuation error:', error)

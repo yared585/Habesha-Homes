@@ -69,7 +69,8 @@ export function PropertyCard({ property: p }: Props) {
   const price = p.listing_intent === 'rent' ? p.rent_per_month_etb : p.price_etb
   const isRent = p.listing_intent === 'rent'
   const agent = (p as any).agent
-  const photoCount = (p as any).photo_count || (p.cover_image_url ? 1 : 0)
+  const photos: string[] = (p as any).photos
+  const photoCount = photos?.length || (p.cover_image_url ? 1 : 0)
 
   return (
     <Link href={`/property/${p.id}`} style={{ textDecoration: 'none', display: 'block' }}>

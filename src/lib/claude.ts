@@ -21,7 +21,7 @@ const MODEL = 'claude-sonnet-4-6'
 // ============================================================
 
 const PROPERTY_ASSISTANT_SYSTEM = (property: Property, lang: Language) => `
-You are an expert Ethiopian real estate assistant for Habesha Properties — the most trusted property marketplace in Ethiopia.
+You are an expert Ethiopian real estate assistant for Habesha Homes — the most trusted property marketplace in Ethiopia.
 
 ${lang === 'am' ? `
 IMPORTANT: The user is writing in Amharic (አማርኛ). You MUST respond entirely in Amharic. 
@@ -276,8 +276,8 @@ Property to value:
 - Neighborhood avg price: ETB ${property.neighborhood?.avg_price_per_sqm_etb || 'unknown'}/m²
 - Year built: ${property.year_built || 'Unknown'}
 - Asking price: ${property.price_etb ? `ETB ${property.price_etb.toLocaleString()}` : 'Not specified'}
-- Amenities: ${property.amenities.join(', ') || 'Standard'}
-- Features: ${JSON.stringify(property.features)}
+- Amenities: ${(property.amenities || []).join(', ') || 'Standard'}
+- Features: ${JSON.stringify(property.features || {})}
 `
 
   const response = await anthropic.messages.create({

@@ -58,7 +58,6 @@ export async function GET(request: NextRequest) {
     }
 
     if (filters.neighborhoods?.length) {
-      // Get neighborhood IDs by name
       const { data: hoods } = await supabase
         .from('neighborhoods')
         .select('id')
@@ -86,19 +85,19 @@ export async function GET(request: NextRequest) {
       else if (f === 'unfurnished') query = query.eq('is_furnished', false)
     }
 
-    // Sorting
+    // Sorting — featured listings always appear first, then apply secondary sort
     switch (sort) {
       case 'price_asc':
-        query = query.order('price_etb', { ascending: true })
+        query = query.order('is_featured', { ascending: false }).order('price_etb', { ascending: true })
         break
       case 'price_desc':
-        query = query.order('price_etb', { ascending: false })
+        query = query.order('is_featured', { ascending: false }).order('price_etb', { ascending: false })
         break
       case 'featured':
         query = query.order('is_featured', { ascending: false }).order('listed_at', { ascending: false })
         break
-      default: // newest
-        query = query.order('listed_at', { ascending: false })
+      default: // newest — featured first, then newest
+        query = query.order('is_featured', { ascending: false }).order('listed_at', { ascending: false })
     }
 
     query = query.range(offset, offset + per_page - 1)
@@ -117,7 +116,6 @@ export async function GET(request: NextRequest) {
       },
       {
         headers: {
-          // Cache at the CDN edge for 60s; serve stale for up to 5min while revalidating
           'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
           'Vary': 'Accept-Encoding',
         },
@@ -142,7 +140,6 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
 
-    // Get agent record if user is an agent
     const { data: agent } = await supabase
       .from('agents')
       .select('id, subscription_plan')
