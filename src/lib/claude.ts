@@ -283,11 +283,11 @@ Property to value:
 
   const response = await anthropic.messages.create({
     model: MODEL,
-    max_tokens: 2048,
+    max_tokens: 4096,
     system: VALUATION_SYSTEM(marketData),
     messages: [{
       role: 'user',
-      content: `${propertyDetails}\nGenerate a professional valuation report. Return JSON only.`
+      content: `${propertyDetails}\nGenerate a professional valuation report. Return JSON only. Keep your JSON response concise. Do not include lengthy explanations in the JSON fields — keep each string field under 200 characters.`
     }]
   })
 
@@ -295,8 +295,13 @@ Property to value:
   if (content.type !== 'text') throw new Error('Unexpected response type')
 
   const cleanText = content.text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-  const result = JSON.parse(cleanText) as Omit<ValuationResult, 'generated_at'>
-  return { ...result, generated_at: new Date().toISOString() }
+  try {
+    const result = JSON.parse(cleanText) as Omit<ValuationResult, 'generated_at'>
+    return { ...result, generated_at: new Date().toISOString() }
+  } catch (e) {
+    console.error('JSON parse error. Raw response:', cleanText.substring(0, 500))
+    throw new Error('Failed to parse valuation response')
+  }
 }
 
 // ============================================================
