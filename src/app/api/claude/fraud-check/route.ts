@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      report_id: report?.id,
+      report_id: null,
       result,
     })
 
