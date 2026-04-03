@@ -180,18 +180,58 @@ function ValuationSection() {
           </div>
         </>
       ) : (
-        <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: 20 }}>
-          <div style={{ fontSize: 22, fontWeight: 900, color: '#1d4ed8', marginBottom: 4 }}>
-            ETB {result.estimated_value_etb?.toLocaleString()}
+        <div>
+          {/* Estimated value */}
+          <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: 20, marginBottom: 12 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#2563eb', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 6 }}>Estimated Market Value</div>
+            <div style={{ fontSize: 28, fontWeight: 900, color: '#1d4ed8', marginBottom: 2 }}>
+              ETB {result.estimated_value_etb?.toLocaleString()}
+            </div>
+            <div style={{ fontSize: 14, color: '#555' }}>≈ ${result.estimated_value_usd?.toLocaleString()}</div>
           </div>
-          <div style={{ fontSize: 13, color: '#555', marginBottom: 12 }}>
-            Range: ETB {result.value_range_low?.toLocaleString()} — ETB {result.value_range_high?.toLocaleString()}
+
+          {/* Range + price vs market */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+            <div style={{ background: '#f9f9f7', borderRadius: 10, padding: '12px 14px' }}>
+              <div style={{ fontSize: 11, color: '#aaa', marginBottom: 4 }}>Price Range</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#111' }}>ETB {result.value_range_low?.toLocaleString()}</div>
+              <div style={{ fontSize: 11, color: '#aaa' }}>to ETB {result.value_range_high?.toLocaleString()}</div>
+            </div>
+            <div style={{ background: '#f9f9f7', borderRadius: 10, padding: '12px 14px' }}>
+              <div style={{ fontSize: 11, color: '#aaa', marginBottom: 4 }}>vs Market</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: result.price_vs_market?.includes('-') ? '#16a34a' : '#dc2626' }}>{result.price_vs_market}</div>
+              <div style={{ fontSize: 11, color: '#aaa' }}>avg ETB {result.market_avg_per_sqm?.toLocaleString()}/m²</div>
+            </div>
           </div>
-          {result.rental_yield && <div style={{ fontSize: 13, color: '#555', marginBottom: 4 }}>Rental yield: <strong>{result.rental_yield}%/year</strong></div>}
-          {result.investment_verdict && <div style={{ fontSize: 13, color: '#555', marginBottom: 12 }}>Verdict: <strong>{result.investment_verdict}</strong></div>}
-          {result.summary && <div style={{ fontSize: 13, color: '#555', lineHeight: 1.7 }}>{result.summary}</div>}
+
+          {/* Metrics row */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 12 }}>
+            <div style={{ background: '#f0fdf4', borderRadius: 10, padding: '12px 14px' }}>
+              <div style={{ fontSize: 11, color: '#aaa', marginBottom: 4 }}>Rental Yield</div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: '#16a34a' }}>{result.rental_yield}%</div>
+              <div style={{ fontSize: 11, color: '#aaa' }}>per year</div>
+            </div>
+            <div style={{ background: '#f9f9f7', borderRadius: 10, padding: '12px 14px' }}>
+              <div style={{ fontSize: 11, color: '#aaa', marginBottom: 4 }}>Price/m²</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#111' }}>ETB {result.price_per_sqm?.toLocaleString()}</div>
+            </div>
+            <div style={{ background: result.recommendation === 'BUY' ? '#f0fdf4' : result.recommendation === 'AVOID' ? '#fef2f2' : '#fefce8', borderRadius: 10, padding: '12px 14px' }}>
+              <div style={{ fontSize: 11, color: '#aaa', marginBottom: 4 }}>Verdict</div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: result.recommendation === 'BUY' ? '#16a34a' : result.recommendation === 'AVOID' ? '#dc2626' : '#d97706' }}>{result.recommendation}</div>
+              <div style={{ fontSize: 11, color: '#555' }}>{result.investment_verdict}</div>
+            </div>
+          </div>
+
+          {/* Summary */}
+          {result.summary && (
+            <div style={{ background: '#f9f9f7', borderRadius: 10, padding: '12px 14px', marginBottom: 12 }}>
+              <div style={{ fontSize: 13, color: '#444', lineHeight: 1.7 }}>{result.summary}</div>
+              {result.summary_amharic && <div style={{ fontSize: 12, color: '#888', marginTop: 6, lineHeight: 1.6 }}>{result.summary_amharic}</div>}
+            </div>
+          )}
+
           <button onClick={() => { setResult(null); setPropertyUrl('') }}
-            style={{ marginTop: 16, background: 'none', border: '1px solid #e0dfd9', padding: '8px 16px', borderRadius: 8, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}
+            style={{ background: 'none', border: '1px solid #e0dfd9', padding: '8px 16px', borderRadius: 8, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}
           >Valuate another property</button>
         </div>
       )}

@@ -109,21 +109,20 @@ Consider these Ethiopian market factors:
 4. Amenities (generator: +8%, borehole: +5%, garden: +10%, elevator: +12%)
 5. Rental yield for Addis is typically 6-9% annually
 
-Return ONLY valid JSON with this EXACT structure:
+Return ONLY valid JSON with no markdown, no code fences, no explanation outside the JSON object. Use this EXACT structure:
 {
-  "estimated_value_etb": number,
-  "estimated_value_usd": number,
-  "price_range": { "low_etb": number, "high_etb": number },
-  "rental_yield_percent": number,
-  "estimated_monthly_rent_etb": number,
-  "comparable_properties": [
-    { "address": "string", "price_etb": number, "size_sqm": number, "price_per_sqm": number }
-  ],
-  "market_analysis": "English analysis of current market conditions",
-  "market_analysis_amharic": "Amharic translation of market analysis",
-  "investment_recommendation": "English investment recommendation",
-  "investment_recommendation_amharic": "Amharic translation",
-  "confidence": 0.0 to 1.0
+  "estimated_value_etb": 12355200,
+  "value_range_low": 10500000,
+  "value_range_high": 14200000,
+  "estimated_value_usd": 85000,
+  "rental_yield": 8.2,
+  "investment_verdict": "Good buy",
+  "price_per_sqm": 68000,
+  "market_avg_per_sqm": 78000,
+  "price_vs_market": "-13% below market",
+  "summary": "Brief 2 sentence summary in English",
+  "summary_amharic": "Brief summary in Amharic",
+  "recommendation": "BUY"
 }
 `
 
