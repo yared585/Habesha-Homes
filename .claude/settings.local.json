@@ -7,7 +7,12 @@
       "Bash(curl -s http://localhost:3000/)",
       "Bash(curl -s http://localhost:3002/)",
       "Bash(npm run:*)",
-      "Bash(xargs grep:*)"
+      "Bash(xargs grep:*)",
+      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\('next:', p.dependencies.next, '\\\\nnext-intl:', p.dependencies['next-intl'] || 'not installed'\\)\")",
+      "Bash(npm install:*)",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/next-intl/package.json'\\).version\\)\")",
+      "Bash(node -e \"require\\('next-intl/plugin'\\); console.log\\('plugin ok'\\)\" --prefix \"C:/Users/User/OneDrive/Desktop/All Projects/habesha-homes/habesha-homes\")",
+      "Bash(node -e \"require\\('next-intl/plugin'\\); console.log\\('plugin ok'\\)\")"
     ]
   }
 }

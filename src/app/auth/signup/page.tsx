@@ -4,10 +4,12 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Eye, EyeOff, Sparkles, Mail, Lock, User, Phone, Building2, Home, ArrowRight, Check } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { createClient } from '@/lib/supabase/client'
 import { Spinner } from '@/components/ui/Spinner'
 
 export default function SignupPage() {
+  const t = useTranslations('auth')
   const router = useRouter()
   const [step, setStep] = useState<'role' | 'details'>('role')
   const [role, setRole] = useState<'buyer' | 'agent' | null>(null)
@@ -155,7 +157,7 @@ export default function SignupPage() {
 
           {step === 'role' && (
             <>
-              <h1 style={{ fontSize:24,fontWeight:800,color:'#111',margin:'0 0 6px',letterSpacing:'-.02em' }}>Create your account</h1>
+              <h1 style={{ fontSize:24,fontWeight:800,color:'#111',margin:'0 0 6px',letterSpacing:'-.02em' }}>{t('create_your_account')}</h1>
               <p style={{ fontSize:14,color:'#888',margin:'0 0 24px' }}>Who are you? · እርስዎ ማን ናቸው?</p>
 
               <button onClick={handleGoogle} className="auth-btn-google" style={{ marginBottom:20 }}>
@@ -165,7 +167,7 @@ export default function SignupPage() {
                   <path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
                   <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
                 </svg>
-                Continue with Google
+                {t('google')}
               </button>
 
               <div style={{ display:'flex',alignItems:'center',gap:12,marginBottom:24 }}>
@@ -248,7 +250,7 @@ export default function SignupPage() {
                 )}
 
                 <button type="submit" disabled={loading} className="auth-btn-primary">
-                  {loading ? <><Spinner size="sm" color="#fff"/><span>Creating account...</span></> : <><Check size={15}/> Create account</>}
+                  {loading ? <><Spinner size="sm" color="#fff"/><span>{t('creating_account')}</span></> : <><Check size={15}/> {t('create_account')}</>}
                 </button>
 
                 <p style={{ fontSize:11,color:'#bbb',textAlign:'center',margin:0,lineHeight:1.6 }}>
@@ -260,8 +262,8 @@ export default function SignupPage() {
         </div>
 
         <p style={{ textAlign:'center',fontSize:13,color:'#888',marginTop:20 }}>
-          Already have an account?{' '}
-          <Link href="/auth/login" style={{ color:'#16a34a',fontWeight:700,textDecoration:'none' }}>Sign in</Link>
+          {t('have_account')}{' '}
+          <Link href="/auth/login" style={{ color:'#16a34a',fontWeight:700,textDecoration:'none' }}>{t('sign_in')}</Link>
         </p>
       </div>
     </div>

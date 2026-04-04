@@ -4,10 +4,12 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Sparkles } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { createClient } from '@/lib/supabase/client'
 import { Spinner } from '@/components/ui/Spinner'
 
 export default function LoginPage() {
+  const t = useTranslations('auth')
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -74,7 +76,7 @@ export default function LoginPage() {
         {/* Card */}
         <div style={{ background: '#fff', borderRadius: 24, padding: '36px 32px', boxShadow: '0 32px 80px rgba(0,0,0,0.4)' }}>
           <h1 style={{ fontSize: 26, fontWeight: 900, color: '#111', margin: '0 0 4px', letterSpacing: '-.025em', textAlign: 'center' }}>
-            Welcome back
+            {t('welcome_back')}
           </h1>
           <p style={{ fontSize: 14, color: '#aaa', margin: '0 0 28px', textAlign: 'center' }}>
             Sign in to your Habesha Properties account
@@ -92,7 +94,7 @@ export default function LoginPage() {
               <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
               <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
             </svg>
-            {googleLoading ? 'Redirecting...' : 'Continue with Google'}
+            {googleLoading ? 'Redirecting...' : t('google')}
           </button>
 
           {/* Divider */}
@@ -105,7 +107,7 @@ export default function LoginPage() {
           {/* Form */}
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div>
-              <label style={{ fontSize: 12, fontWeight: 600, color: '#555', display: 'block', marginBottom: 6 }}>Email address</label>
+              <label style={{ fontSize: 12, fontWeight: 600, color: '#555', display: 'block', marginBottom: 6 }}>{t('email')}</label>
               <div style={{ position: 'relative' }}>
                 <div style={{ position: 'absolute', left: 13, top: '50%', transform: 'translateY(-50%)', color: '#ccc', display: 'flex', pointerEvents: 'none' }}>
                   <Mail size={15}/>
@@ -120,8 +122,8 @@ export default function LoginPage() {
 
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                <label style={{ fontSize: 12, fontWeight: 600, color: '#555' }}>Password</label>
-                <Link href="/auth/reset" style={{ fontSize: 12, color: '#1a3d2b', textDecoration: 'none', fontWeight: 500 }}>Forgot password?</Link>
+                <label style={{ fontSize: 12, fontWeight: 600, color: '#555' }}>{t('password')}</label>
+                <Link href="/auth/reset" style={{ fontSize: 12, color: '#1a3d2b', textDecoration: 'none', fontWeight: 500 }}>{t('forgot_password')}</Link>
               </div>
               <div style={{ position: 'relative' }}>
                 <div style={{ position: 'absolute', left: 13, top: '50%', transform: 'translateY(-50%)', color: '#ccc', display: 'flex', pointerEvents: 'none' }}>
@@ -149,13 +151,13 @@ export default function LoginPage() {
               onMouseEnter={e => { if (!loading) { (e.currentTarget as HTMLButtonElement).style.background = '#2d5a3d'; (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)' }}}
               onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#1a3d2b'; (e.currentTarget as HTMLButtonElement).style.transform = 'none' }}
             >
-              {loading ? <><Spinner size="sm" color="#fff"/><span>Signing in...</span></> : <><span>Sign in</span><ArrowRight size={16}/></>}
+              {loading ? <><Spinner size="sm" color="#fff"/><span>{t('signing_in')}</span></> : <><span>{t('sign_in')}</span><ArrowRight size={16}/></>}
             </button>
           </form>
 
           <p style={{ textAlign: 'center', fontSize: 13, color: '#aaa', marginTop: 22, marginBottom: 0 }}>
-            Don't have an account?{' '}
-            <Link href="/auth/signup" style={{ color: '#1a3d2b', fontWeight: 700, textDecoration: 'none' }}>Create account</Link>
+            {t('no_account')}{' '}
+            <Link href="/auth/signup" style={{ color: '#1a3d2b', fontWeight: 700, textDecoration: 'none' }}>{t('signup')}</Link>
           </p>
         </div>
 

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Search, MapPin, TrendingUp, Home, Building2, Map, ChevronDown, Check } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 const CITIES      = ['Addis Ababa','Dire Dawa','Hawassa','Bahir Dar','Mekelle','Adama','Jimma']
 const TYPES       = ['Any type','Apartment','Villa','House','Condominium','Commercial','Land','Office']
@@ -79,6 +80,7 @@ function Divider() {
 }
 
 export function Hero() {
+  const tl = useTranslations('hero')
   const [intent, setIntent]     = useState<'sale' | 'rent'>('sale')
   const [city, setCity]         = useState('Addis Ababa')
   const [type, setType]         = useState('Any type')
@@ -129,8 +131,8 @@ export function Hero() {
             fontWeight: 400, color: '#fff',
             lineHeight: 1.06, letterSpacing: '-.02em', margin: 0,
           }}>
-            Find Your Home{' '}
-            <span style={{ color: '#f59e0b' }}>in Ethiopia</span>
+            {tl('title')}{' '}
+            <span style={{ color: '#f59e0b' }}>{tl('title_highlight')}</span>
           </h1>
         </div>
 
@@ -149,26 +151,26 @@ export function Hero() {
                     background: intent === i ? '#f0fdf4' : 'transparent',
                     color: intent === i ? '#1a3d2b' : '#bbb',
                   }}>
-                  {i === 'sale' ? 'Buy' : 'Rent'}
+                  {i === 'sale' ? tl('buy') : tl('rent')}
                 </button>
               ))}
             </div>
 
             <Divider/>
-            <Dropdown id="city"  value={city}  options={CITIES}   onChange={setCity}  icon={<MapPin size={13}/>}    placeholder="Location"     active={activeDD} setActive={setActiveDD}/>
+            <Dropdown id="city"  value={city}  options={CITIES}   onChange={setCity}  icon={<MapPin size={13}/>}    placeholder={tl('location')}      active={activeDD} setActive={setActiveDD}/>
             <Divider/>
-            <Dropdown id="type"  value={type}  options={TYPES}    onChange={setType}  icon={<Building2 size={13}/>} placeholder="Property type" active={activeDD} setActive={setActiveDD}/>
+            <Dropdown id="type"  value={type}  options={TYPES}    onChange={setType}  icon={<Building2 size={13}/>} placeholder={tl('property_type')} active={activeDD} setActive={setActiveDD}/>
             <Divider/>
-            <Dropdown id="price" value={price} options={intent === 'sale' ? SALE_PRICES : RENT_PRICES} onChange={setPrice} icon={<TrendingUp size={13}/>} placeholder="Price range" active={activeDD} setActive={setActiveDD}/>
+            <Dropdown id="price" value={price} options={intent === 'sale' ? SALE_PRICES : RENT_PRICES} onChange={setPrice} icon={<TrendingUp size={13}/>} placeholder={tl('price_range')} active={activeDD} setActive={setActiveDD}/>
             <Divider/>
-            <Dropdown id="beds"  value={beds}  options={BEDS}     onChange={setBeds}  icon={<Home size={13}/>}      placeholder="Bedrooms"     active={activeDD} setActive={setActiveDD}/>
+            <Dropdown id="beds"  value={beds}  options={BEDS}     onChange={setBeds}  icon={<Home size={13}/>}      placeholder={tl('bedrooms')}      active={activeDD} setActive={setActiveDD}/>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 10px 0 8px', marginLeft: 'auto', flexShrink: 0 }}>
               <Link href="/search?view=map"
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#bbb', padding: '8px 10px', borderRadius: 8, textDecoration: 'none', transition: 'all .12s', border: '1px solid #eae9e4' }}
                 onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#1a3d2b'; (e.currentTarget as HTMLAnchorElement).style.borderColor = '#1a3d2b' }}
                 onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#bbb'; (e.currentTarget as HTMLAnchorElement).style.borderColor = '#eae9e4' }}
-              ><Map size={12}/> Map</Link>
+              ><Map size={12}/> {tl('map')}</Link>
 
               <Link href={buildUrl()}
                 style={{
@@ -181,7 +183,7 @@ export function Hero() {
                 }}
                 onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#2d5a3d'; (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-1px)' }}
                 onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#1a3d2b'; (e.currentTarget as HTMLAnchorElement).style.transform = 'none' }}
-              ><Search size={14}/> Search</Link>
+              ><Search size={14}/> {tl('search')}</Link>
             </div>
           </div>
 
@@ -193,17 +195,17 @@ export function Hero() {
                 padding: '14px', fontSize: 16, fontWeight: 700, textDecoration: 'none',
               }}
             >
-              <Search size={18}/> Search
+              <Search size={18}/> {tl('search')}
             </Link>
             <div style={{ display: 'flex', gap: 8, marginTop: 10, justifyContent: 'center' }}>
-              <Link href="/search?intent=sale" style={{ flex: 1, textAlign: 'center', padding: '10px', background: '#f0fdf4', color: '#1a3d2b', borderRadius: 8, fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid #bbf7d0' }}>Buy</Link>
-              <Link href="/search?intent=rent" style={{ flex: 1, textAlign: 'center', padding: '10px', background: '#f0fdf4', color: '#1a3d2b', borderRadius: 8, fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid #bbf7d0' }}>Rent</Link>
-              <Link href="/search?view=map" style={{ flex: 1, textAlign: 'center', padding: '10px', background: '#f5f5f2', color: '#555', borderRadius: 8, fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid #e8e7e2' }}>Map</Link>
+              <Link href="/search?intent=sale" style={{ flex: 1, textAlign: 'center', padding: '10px', background: '#f0fdf4', color: '#1a3d2b', borderRadius: 8, fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid #bbf7d0' }}>{tl('buy')}</Link>
+              <Link href="/search?intent=rent" style={{ flex: 1, textAlign: 'center', padding: '10px', background: '#f0fdf4', color: '#1a3d2b', borderRadius: 8, fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid #bbf7d0' }}>{tl('rent')}</Link>
+              <Link href="/search?view=map" style={{ flex: 1, textAlign: 'center', padding: '10px', background: '#f5f5f2', color: '#555', borderRadius: 8, fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid #e8e7e2' }}>{tl('map')}</Link>
             </div>
           </div>
 
           <div style={{ padding: '8px 16px 10px', display: 'flex', alignItems: 'center', gap: 6, borderTop: '1px solid #f5f5f2', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 11, color: '#ccc', fontWeight: 500 }}>Popular:</span>
+            <span style={{ fontSize: 11, color: '#ccc', fontWeight: 500 }}>{tl('popular')}:</span>
             {['Bole', 'Kazanchis', 'CMC', 'Megenagna', 'Land'].map(t => (
               <Link key={t} href={`/search?q=${encodeURIComponent(t)}`}
                 style={{ fontSize: 11, color: '#999', padding: '3px 10px', border: '1px solid #eae9e4', borderRadius: 20, textDecoration: 'none', transition: 'all .12s' }}

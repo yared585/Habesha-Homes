@@ -1,0 +1,77 @@
+{
+  "nav": {
+    "buy": "Buy",
+    "rent": "Rent",
+    "diaspora": "Diaspora",
+    "developments": "Real Estates",
+    "ai_reports": "AI Reports",
+    "about": "About",
+    "contact": "Contact",
+    "search": "Search",
+    "login": "Log in",
+    "get_started": "Get started",
+    "dashboard": "Dashboard",
+    "saved": "Saved",
+    "sign_out": "Sign out",
+    "saved_properties": "Saved properties",
+    "add_listing": "Add listing",
+    "my_profile": "My profile",
+    "public_profile": "Public profile",
+    "admin_panel": "Admin panel",
+    "developer_dashboard": "Developer dashboard"
+  },
+  "hero": {
+    "title": "Find Your Home",
+    "title_highlight": "in Ethiopia",
+    "buy": "Buy",
+    "rent": "Rent",
+    "location": "Location",
+    "property_type": "Property type",
+    "price_range": "Price range",
+    "bedrooms": "Bedrooms",
+    "search": "Search",
+    "map": "Map",
+    "popular": "Popular"
+  },
+  "property": {
+    "for_sale": "FOR SALE",
+    "for_rent": "FOR RENT",
+    "featured": "Featured",
+    "beds": "bd",
+    "baths": "ba",
+    "verified": "Verified",
+    "save": "Save",
+    "view": "View property",
+    "inquire": "Inquire"
+  },
+  "search": {
+    "results": "properties found",
+    "no_results": "No properties found",
+    "sort_newest": "Newest first",
+    "sort_price_asc": "Price: Low to high",
+    "sort_price_desc": "Price: High to low",
+    "sort_featured": "Featured first",
+    "filters": "Filters"
+  },
+  "auth": {
+    "login": "Log in",
+    "signup": "Sign up",
+    "logout": "Log out",
+    "email": "Email address",
+    "password": "Password",
+    "forgot_password": "Forgot password?",
+    "no_account": "Don't have an account?",
+    "have_account": "Already have an account?",
+    "google": "Continue with Google",
+    "welcome_back": "Welcome back",
+    "sign_in": "Sign in",
+    "signing_in": "Signing in...",
+    "create_account": "Create account",
+    "creating_account": "Creating account...",
+    "create_your_account": "Create your account"
+  },
+  "footer": {
+    "tagline": "Ethiopia's smartest property marketplace",
+    "rights": "All rights reserved"
+  }
+}

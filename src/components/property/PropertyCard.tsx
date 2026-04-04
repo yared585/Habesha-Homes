@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { MapPin, Bed, Bath, Maximize2, Camera, Heart } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { createClient } from '@/lib/supabase/client'
 import type { Property } from '@/types'
 
@@ -64,6 +65,7 @@ interface Props {
 }
 
 export function PropertyCard({ property: p }: Props) {
+  const t = useTranslations('property')
   const [hov, setHov] = useState(false)
   const [imgLoaded, setImgLoaded] = useState(false)
   const price = p.listing_intent === 'rent' ? p.rent_per_month_etb : p.price_etb
@@ -120,7 +122,7 @@ export function PropertyCard({ property: p }: Props) {
             color: '#fff', fontSize: 11, fontWeight: 700,
             padding: '4px 10px', borderRadius: 6, letterSpacing: '.04em',
           }}>
-            {isRent ? 'FOR RENT' : 'FOR SALE'}
+            {isRent ? t('for_rent') : t('for_sale')}
           </div>
 
           {/* Verified badge — top left, below intent */}
@@ -132,7 +134,7 @@ export function PropertyCard({ property: p }: Props) {
               padding: '3px 8px', borderRadius: 6,
               display: 'flex', alignItems: 'center', gap: 3,
             }}>
-              ✓ Verified
+              ✓ {t('verified')}
             </div>
           )}
 
@@ -167,9 +169,9 @@ export function PropertyCard({ property: p }: Props) {
 
           {/* Specs — pipe-separated single line */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12.5, color: '#333', fontWeight: 500 }}>
-            {p.bedrooms != null && <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><Bed size={11} color="#888"/> {p.bedrooms} bd</span>}
+            {p.bedrooms != null && <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><Bed size={11} color="#888"/> {p.bedrooms} {t('beds')}</span>}
             {p.bedrooms != null && p.bathrooms != null && <span style={{ color: '#ccc' }}>|</span>}
-            {p.bathrooms != null && <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><Bath size={11} color="#888"/> {p.bathrooms} ba</span>}
+            {p.bathrooms != null && <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><Bath size={11} color="#888"/> {p.bathrooms} {t('baths')}</span>}
             {(p.bedrooms != null || p.bathrooms != null) && p.size_sqm != null && <span style={{ color: '#ccc' }}>|</span>}
             {p.size_sqm != null && <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><Maximize2 size={10} color="#888"/> {p.size_sqm} m²</span>}
           </div>

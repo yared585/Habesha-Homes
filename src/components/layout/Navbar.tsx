@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams, useRouter } from 'next/navigation'
 import { Suspense } from 'react'
 import { Search, LogOut, LayoutDashboard, Plus, User, Home, Building2, ChevronDown, Menu, X, Shield, Heart } from 'lucide-react'
+import { useTranslations, useLocale } from 'next-intl'
 import { useAuth } from '@/hooks/useAuth'
 import { SearchOverlay } from '@/components/layout/SearchOverlay'
 
@@ -134,21 +135,57 @@ function UserMenu({ profile, signOut }: { profile: any; signOut: () => void }) {
   )
 }
 
-const NAV_LINKS = [
-  { label: 'Buy',          href: '/search?intent=sale' },
-  { label: 'Rent',         href: '/search?intent=rent' },
-  { label: 'Diaspora',     href: '/diaspora' },
-  { label: 'Real Estates', href: '/developments' },
-  { label: 'AI Reports',   href: '/ai-reports', badge: 'AI' },
-  { label: 'About',        href: '/about' },
-  { label: 'Contact',      href: '/contact' },
+// NAV_LINKS hrefs — labels are translated inside the component
+const NAV_HREFS = [
+  { key: 'buy',          href: '/search?intent=sale' },
+  { key: 'rent',         href: '/search?intent=rent' },
+  { key: 'diaspora',     href: '/diaspora' },
+  { key: 'developments', href: '/developments' },
+  { key: 'ai_reports',   href: '/ai-reports', badge: 'AI' },
+  { key: 'about',        href: '/about' },
+  { key: 'contact',      href: '/contact' },
 ]
+
+function LanguageToggle() {
+  const locale = useLocale()
+  const router = useRouter()
+  const [hov, setHov] = useState(false)
+
+  function switchLocale() {
+    const next = locale === 'en' ? 'am' : 'en'
+    document.cookie = `NEXT_LOCALE=${next};path=/;max-age=31536000;SameSite=Lax`
+    router.refresh()
+  }
+
+  return (
+    <button
+      onClick={switchLocale}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      title={locale === 'en' ? 'Switch to Amharic' : 'Switch to English'}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 3,
+        padding: '5px 10px', borderRadius: 8, cursor: 'pointer', fontFamily: 'inherit',
+        border: `1px solid ${hov ? 'rgba(26,61,43,0.4)' : 'rgba(26,61,43,0.22)'}`,
+        background: hov ? 'rgba(26,61,43,0.07)' : 'transparent',
+        fontSize: 12, fontWeight: 600, color: '#1a3d2b',
+        transition: 'all .15s', whiteSpace: 'nowrap', flexShrink: 0,
+        letterSpacing: '.01em',
+      }}
+    >
+      {locale === 'en' ? <>EN <span style={{ opacity: .45 }}>|</span> አማ</> : <>አማ <span style={{ opacity: .45 }}>|</span> EN</>}
+    </button>
+  )
+}
 
 export function Navbar() {
   const { profile, signOut } = useAuth()
+  const t = useTranslations('nav')
   const [searchOpen, setSearchOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+
+  const navLinks = NAV_HREFS.map(l => ({ ...l, label: t(l.key as any) }))
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
@@ -175,12 +212,13 @@ export function Navbar() {
 
           <div className="nav-links-desktop" style={{ display: 'flex', gap: 1, flex: 1, alignItems: 'center' }}>
             <Suspense fallback={null}>
-              {NAV_LINKS.map(l => <NavLink key={l.label} label={l.label} href={l.href} badge={(l as any).badge}/>)}
+              {navLinks.map(l => <NavLink key={l.key} label={l.label} href={l.href} badge={l.badge}/>)}
             </Suspense>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: 'auto' }}>
             <SearchBtn onClick={() => setSearchOpen(true)}/>
+            <LanguageToggle/>
             {profile ? (
               <>
                 <Link
@@ -191,7 +229,7 @@ export function Navbar() {
                   onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(26,61,43,0.07)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(26,61,43,0.25)' }}
                 >
                   {profile.role === 'buyer' ? <Heart size={13}/> : <LayoutDashboard size={13}/>}
-                  {profile.role === 'buyer' ? 'Saved' : 'Dashboard'}
+                  {profile.role === 'buyer' ? t('saved') : t('dashboard')}
                 </Link>
                 <UserMenu profile={profile} signOut={signOut}/>
               </>
@@ -201,12 +239,12 @@ export function Navbar() {
                   style={{ padding: '7px 13px', fontSize: 13.5, fontWeight: 500, color: '#555', textDecoration: 'none', borderRadius: 8, transition: 'all .15s' }}
                   onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#111'; (e.currentTarget as HTMLAnchorElement).style.background = '#f5f5f2' }}
                   onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#555'; (e.currentTarget as HTMLAnchorElement).style.background = 'transparent' }}
-                >Log in</Link>
+                >{t('login')}</Link>
                 <Link href="/auth/signup"
                   style={{ padding: '8px 20px', fontSize: 13.5, fontWeight: 600, background: '#1a3d2b', color: '#fff', borderRadius: 9, textDecoration: 'none', transition: 'all .18s', letterSpacing: '-.01em' }}
                   onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#2d5a3d'; (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-1px)' }}
                   onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#1a3d2b'; (e.currentTarget as HTMLAnchorElement).style.transform = 'none' }}
-                >Get started</Link>
+                >{t('get_started')}</Link>
               </div>
             )}
             <button onClick={() => setMobileOpen(!mobileOpen)} className="mobile-menu-btn"
@@ -218,8 +256,8 @@ export function Navbar() {
 
         {mobileOpen && (
           <div style={{ background: '#fff', borderTop: '1px solid #e8e7e2', padding: '8px 20px 24px' }}>
-            {NAV_LINKS.map(l => (
-              <Link key={l.label} href={l.href} onClick={() => setMobileOpen(false)}
+            {navLinks.map(l => (
+              <Link key={l.key} href={l.href} onClick={() => setMobileOpen(false)}
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '13px 4px', fontSize: 15, color: '#333', textDecoration: 'none', borderBottom: '1px solid #f0f0ee' }}
               >
                 {l.label}
@@ -234,19 +272,19 @@ export function Navbar() {
                 </div>
                 {['agent', 'admin', 'developer'].includes(profile.role) && (
                   <Link href={profile.role === 'developer' ? '/dashboard/developer' : '/dashboard'} onClick={() => setMobileOpen(false)}
-                    style={{ display: 'block', padding: '12px 4px', fontSize: 14, color: '#333', textDecoration: 'none', borderBottom: '1px solid #f0f0ee' }}>Dashboard</Link>
+                    style={{ display: 'block', padding: '12px 4px', fontSize: 14, color: '#333', textDecoration: 'none', borderBottom: '1px solid #f0f0ee' }}>{t('dashboard')}</Link>
                 )}
                 {profile.role === 'buyer' && (
-                  <Link href="/saved" onClick={() => setMobileOpen(false)} style={{ display: 'block', padding: '12px 4px', fontSize: 14, color: '#333', textDecoration: 'none', borderBottom: '1px solid #f0f0ee' }}>Saved properties</Link>
+                  <Link href="/saved" onClick={() => setMobileOpen(false)} style={{ display: 'block', padding: '12px 4px', fontSize: 14, color: '#333', textDecoration: 'none', borderBottom: '1px solid #f0f0ee' }}>{t('saved_properties')}</Link>
                 )}
                 <button onClick={() => { setMobileOpen(false); signOut() }}
                   style={{ display: 'block', width: '100%', textAlign: 'left', padding: '13px 4px', fontSize: 14, color: '#f87171', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', marginTop: 4 }}
-                >Sign out</button>
+                >{t('sign_out')}</button>
               </div>
             ) : (
               <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
-                <Link href="/auth/login" onClick={() => setMobileOpen(false)} style={{ flex: 1, textAlign: 'center', padding: 12, background: '#f5f5f2', color: '#333', borderRadius: 10, textDecoration: 'none', fontSize: 14, border: '1px solid #e8e7e2' }}>Log in</Link>
-                <Link href="/auth/signup" onClick={() => setMobileOpen(false)} style={{ flex: 1, textAlign: 'center', padding: 12, background: '#1a3d2b', color: '#fff', borderRadius: 10, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>Get started</Link>
+                <Link href="/auth/login" onClick={() => setMobileOpen(false)} style={{ flex: 1, textAlign: 'center', padding: 12, background: '#f5f5f2', color: '#333', borderRadius: 10, textDecoration: 'none', fontSize: 14, border: '1px solid #e8e7e2' }}>{t('login')}</Link>
+                <Link href="/auth/signup" onClick={() => setMobileOpen(false)} style={{ flex: 1, textAlign: 'center', padding: 12, background: '#1a3d2b', color: '#fff', borderRadius: 10, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>{t('get_started')}</Link>
               </div>
             )}
           </div>

@@ -1,0 +1,77 @@
+{
+  "nav": {
+    "buy": "ግዛ",
+    "rent": "ተከራይ",
+    "diaspora": "ዲያስፖራ",
+    "developments": "ሪል እስቴት",
+    "ai_reports": "AI ሪፖርት",
+    "about": "ስለ እኛ",
+    "contact": "አግኙን",
+    "search": "ፈልግ",
+    "login": "ግባ",
+    "get_started": "ጀምር",
+    "dashboard": "ዳሽቦርድ",
+    "saved": "የተቀመጡ",
+    "sign_out": "ውጣ",
+    "saved_properties": "የተቀመጡ ቤቶች",
+    "add_listing": "ቤት አስገባ",
+    "my_profile": "የእኔ መገለጫ",
+    "public_profile": "ይፋዊ መገለጫ",
+    "admin_panel": "አስተዳደር",
+    "developer_dashboard": "የዴቨሎፐር ዳሽቦርድ"
+  },
+  "hero": {
+    "title": "ቤትዎን ያግኙ",
+    "title_highlight": "በኢትዮጵያ",
+    "buy": "ግዛ",
+    "rent": "ተከራይ",
+    "location": "አካባቢ",
+    "property_type": "የቤት አይነት",
+    "price_range": "የዋጋ ደረጃ",
+    "bedrooms": "መኝታ ቤት",
+    "search": "ፈልግ",
+    "map": "ካርታ",
+    "popular": "ታዋቂ"
+  },
+  "property": {
+    "for_sale": "ለሽያጭ",
+    "for_rent": "ለኪራይ",
+    "featured": "ተለይቷል",
+    "beds": "መኝታ",
+    "baths": "ባኞ",
+    "verified": "የተረጋገጠ",
+    "save": "አስቀምጥ",
+    "view": "ቤቱን ይመልከቱ",
+    "inquire": "ይጠይቁ"
+  },
+  "search": {
+    "results": "ቤቶች ተገኝተዋล",
+    "no_results": "ቤት አልተገኘም",
+    "sort_newest": "አዲስ መጀመሪያ",
+    "sort_price_asc": "ዋጋ: ዝቅተኛ ወደ ከፍተኛ",
+    "sort_price_desc": "ዋጋ: ከፍተኛ ወደ ዝቅተኛ",
+    "sort_featured": "ተለይተው የቀደሙ",
+    "filters": "ማጣሪያዎች"
+  },
+  "auth": {
+    "login": "ግባ",
+    "signup": "ተመዝገብ",
+    "logout": "ውጣ",
+    "email": "ኢሜይል አድራሻ",
+    "password": "የምስጢር ቃል",
+    "forgot_password": "የምስጢር ቃል ረሱ?",
+    "no_account": "መለያ የለዎትም?",
+    "have_account": "መለያ አለዎት?",
+    "google": "በGoogle ይቀጥሉ",
+    "welcome_back": "እንኳን ደህና መጡ",
+    "sign_in": "ግባ",
+    "signing_in": "በመግባት ላይ...",
+    "create_account": "መለያ ፍጠር",
+    "creating_account": "መለያ በመፍጠር ላይ...",
+    "create_your_account": "መለያዎን ይፍጠሩ"
+  },
+  "footer": {
+    "tagline": "የኢትዮጵያ ምርጥ የሪል እስቴት ገበያ",
+    "rights": "መብቱ በህግ የተጠበቀ ነው"
+  }
+}
