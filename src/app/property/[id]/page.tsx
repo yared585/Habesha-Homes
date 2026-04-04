@@ -262,7 +262,28 @@ export default function PropertyDetailPage() {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  if (loading) return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: '#aaa', fontSize: 14 }}>Loading property...</div>
+  if (loading) return (
+    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '24px 16px' }}>
+      <div className="skeleton" style={{ width: '100%', height: 420, borderRadius: 16, marginBottom: 28 }}/>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 340px', gap: 32 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div className="skeleton" style={{ width: '60%', height: 32, borderRadius: 8 }}/>
+          <div className="skeleton" style={{ width: '35%', height: 28, borderRadius: 8 }}/>
+          <div className="skeleton" style={{ width: '45%', height: 16, borderRadius: 6 }}/>
+          <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+            {[70, 70, 80].map((w, i) => <div key={i} className="skeleton" style={{ width: w, height: 13, borderRadius: 6 }}/>)}
+          </div>
+          <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {['100%','95%','88%','72%'].map((w, i) => <div key={i} className="skeleton" style={{ width: w, height: 13, borderRadius: 6 }}/>)}
+          </div>
+        </div>
+        <div style={{ background: '#f9f9f7', borderRadius: 16, padding: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div className="skeleton" style={{ width: '55%', height: 18, borderRadius: 6 }}/>
+          {[44, 44, 80, 46].map((h, i) => <div key={i} className="skeleton" style={{ width: '100%', height: h, borderRadius: 10 }}/>)}
+        </div>
+      </div>
+    </div>
+  )
   if (!property) return <div style={{ textAlign: 'center', padding: 60 }}>Property not found. <Link href="/search">Back to search</Link></div>
 
   const photos: string[] = (property as any).photos?.length ? (property as any).photos : property.cover_image_url ? [property.cover_image_url] : []

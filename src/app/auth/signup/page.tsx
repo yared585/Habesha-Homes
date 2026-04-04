@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Eye, EyeOff, Sparkles, Mail, Lock, User, Phone, Building2, Home, ArrowRight, Check } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { Spinner } from '@/components/ui/Spinner'
 
 export default function SignupPage() {
   const router = useRouter()
@@ -247,7 +248,7 @@ export default function SignupPage() {
                 )}
 
                 <button type="submit" disabled={loading} className="auth-btn-primary">
-                  {loading ? 'Creating account...' : <><Check size={15}/> Create account</>}
+                  {loading ? <><Spinner size="sm" color="#fff"/><span>Creating account...</span></> : <><Check size={15}/> Create account</>}
                 </button>
 
                 <p style={{ fontSize:11,color:'#bbb',textAlign:'center',margin:0,lineHeight:1.6 }}>

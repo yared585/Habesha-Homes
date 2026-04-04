@@ -8,6 +8,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Search, SlidersHorizontal, MapIcon, List, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { Spinner } from '@/components/ui/Spinner'
 import { PropertyMap } from '@/components/property/PropertyMap'
 import { formatETB } from '@/lib/utils'
 import type { Property, PropertyFilters, Neighborhood } from '@/types'
@@ -229,8 +230,13 @@ function SearchContent() {
 
       {/* Map view */}
       {viewMode === 'map' && (
-        <div style={{ marginBottom: 20 }}>
+        <div style={{ marginBottom: 20, position: 'relative' }}>
           <PropertyMap properties={properties} height={500} center={{ lat: 9.0192, lng: 38.7892 }} zoom={13} />
+          {loading && (
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.65)', borderRadius: 12, zIndex: 20 }}>
+              <Spinner size="lg" />
+            </div>
+          )}
         </div>
       )}
 
@@ -239,7 +245,7 @@ function SearchContent() {
         <>
           {loading ? (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
-              {[1,2,3,4,5,6].map(i => (
+              {[1,2,3,4,5,6,7,8].map(i => (
                 <div key={i} className="skeleton-card">
                   <div className="skeleton-img"/>
                   <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 9 }}>

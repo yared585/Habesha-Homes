@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Sparkles } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { Spinner } from '@/components/ui/Spinner'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -148,7 +149,7 @@ export default function LoginPage() {
               onMouseEnter={e => { if (!loading) { (e.currentTarget as HTMLButtonElement).style.background = '#2d5a3d'; (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)' }}}
               onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#1a3d2b'; (e.currentTarget as HTMLButtonElement).style.transform = 'none' }}
             >
-              {loading ? 'Signing in...' : <><span>Sign in</span><ArrowRight size={16}/></>}
+              {loading ? <><Spinner size="sm" color="#fff"/><span>Signing in...</span></> : <><span>Sign in</span><ArrowRight size={16}/></>}
             </button>
           </form>
 
