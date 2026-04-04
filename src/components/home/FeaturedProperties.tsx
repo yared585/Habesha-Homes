@@ -45,7 +45,7 @@ function ScrollRow({
   const { properties, loading, count } = useProperties({ limit: 6, intent, sortBy })
 
   const cardSlot = {
-    flex: '0 0 clamp(220px, calc((100% - 48px) / 3.8), 300px)',
+    flex: '0 0 clamp(280px, 80vw, 340px)',
     minWidth: 0,
     scrollSnapAlign: 'start' as const,
   }

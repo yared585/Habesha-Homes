@@ -89,7 +89,7 @@ export function PropertyCard({ property: p }: Props) {
         }}
       >
         {/* ── Image ───────────────────────────────────────── */}
-        <div style={{ position: 'relative', paddingBottom: '57%', background: '#f0f0ec', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', paddingBottom: '63%', background: '#f0f0ec', overflow: 'hidden' }}>
           {p.cover_image_url
             ? <img
                 src={p.cover_image_url}
@@ -98,7 +98,7 @@ export function PropertyCard({ property: p }: Props) {
                   position: 'absolute', inset: 0,
                   width: '100%', height: '100%', objectFit: 'cover',
                   transition: 'transform .4s',
-                  transform: hov ? 'scale(1.04)' : 'scale(1)',
+                  transform: hov ? 'scale(1.03)' : 'scale(1)',
                   opacity: imgLoaded ? 1 : 0,
                 }}
                 loading="lazy"
@@ -152,11 +152,11 @@ export function PropertyCard({ property: p }: Props) {
         </div>
 
         {/* ── Card body ───────────────────────────────────── */}
-        <div style={{ padding: '10px 12px 12px' }}>
+        <div style={{ padding: '8px 12px 10px', display: 'flex', flexDirection: 'column', gap: 1 }}>
 
           {/* Price */}
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 3 }}>
-            <span style={{ fontSize: 15, fontWeight: 800, color: '#111', letterSpacing: '-.02em' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+            <span style={{ fontSize: 22, fontWeight: 800, color: '#111', letterSpacing: '-.02em' }}>
               ETB {(price || 0).toLocaleString()}
             </span>
             {isRent && <span style={{ fontSize: 10.5, color: '#888', fontWeight: 500 }}>/mo</span>}
@@ -165,29 +165,29 @@ export function PropertyCard({ property: p }: Props) {
             )}
           </div>
 
-          {/* Specs — compact inline with dots */}
-          <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 3, marginBottom: 4, fontSize: 12, color: '#444', fontWeight: 500 }}>
-            {p.bedrooms != null && <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><Bed size={11} color="#aaa"/> {p.bedrooms} bd</span>}
-            {p.bedrooms != null && p.bathrooms != null && <span style={{ color: '#ccc', fontSize: 10 }}>·</span>}
-            {p.bathrooms != null && <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><Bath size={11} color="#aaa"/> {p.bathrooms} ba</span>}
-            {(p.bedrooms != null || p.bathrooms != null) && p.size_sqm != null && <span style={{ color: '#ccc', fontSize: 10 }}>·</span>}
-            {p.size_sqm != null && <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><Maximize2 size={10} color="#aaa"/> {p.size_sqm} m²</span>}
+          {/* Specs — pipe-separated single line */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12.5, color: '#333', fontWeight: 500 }}>
+            {p.bedrooms != null && <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><Bed size={11} color="#888"/> {p.bedrooms} bd</span>}
+            {p.bedrooms != null && p.bathrooms != null && <span style={{ color: '#ccc' }}>|</span>}
+            {p.bathrooms != null && <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><Bath size={11} color="#888"/> {p.bathrooms} ba</span>}
+            {(p.bedrooms != null || p.bathrooms != null) && p.size_sqm != null && <span style={{ color: '#ccc' }}>|</span>}
+            {p.size_sqm != null && <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><Maximize2 size={10} color="#888"/> {p.size_sqm} m²</span>}
           </div>
 
-          {/* Title — single line */}
-          <div style={{ fontSize: 12.5, fontWeight: 600, color: '#222', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {/* Title — single line, below specs */}
+          <div style={{ fontSize: 12.5, fontWeight: 600, color: '#333', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {p.title}
           </div>
 
           {/* Location */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: '#999' }}>
-            <MapPin size={10} color="#ccc"/>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 10.5, color: '#bbb' }}>
+            <MapPin size={10} color="#d0d0d0"/>
             {(p as any).neighborhood?.name ? `${(p as any).neighborhood.name}, ${p.city}` : p.city}
           </div>
 
           {/* Agent strip */}
           {agent && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 8, paddingTop: 8, borderTop: '1px solid #f0f0ee' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 4, paddingTop: 6, borderTop: '1px solid #f0f0ee' }}>
               <div style={{ width: 18, height: 18, borderRadius: '50%', flexShrink: 0, background: '#e8e7e2', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#888' }}>
                 {agent?.profile?.avatar_url
                   ? <img src={agent.profile.avatar_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
@@ -207,7 +207,7 @@ export function PropertyCard({ property: p }: Props) {
 
 // ── Property grid ─────────────────────────────────────────────────────────────
 export function PropertyGrid({ properties, loading, columns = 3 }: { properties: Property[]; loading: boolean; columns?: number }) {
-  const grid = { display: 'grid', gridTemplateColumns: `repeat(auto-fill, minmax(${columns === 2 ? 300 : 260}px, 1fr))`, gap: 16 }
+  const grid = { display: 'grid', gridTemplateColumns: `repeat(auto-fill, minmax(${columns === 2 ? 400 : 300}px, 1fr))`, gap: 16 }
 
   if (loading) return (
     <div className="property-card-grid" style={grid}>
