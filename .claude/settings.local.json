@@ -6,7 +6,8 @@
       "Bash(npx next:*)",
       "Bash(curl -s http://localhost:3000/)",
       "Bash(curl -s http://localhost:3002/)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(xargs grep:*)"
     ]
   }
 }

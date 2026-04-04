@@ -17,7 +17,7 @@ export default function SignupPage() {
 
   async function handleGoogle() {
     const sb = createClient()
-    await sb.auth.signInWithOAuth({ provider:'google', options:{ redirectTo:`${window.location.origin}/` } })
+    await sb.auth.signInWithOAuth({ provider:'google', options:{ redirectTo:`${window.location.origin}/auth/callback` } })
   }
 
   async function handleSignup(e: React.FormEvent) {
