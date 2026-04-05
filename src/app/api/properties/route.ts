@@ -140,10 +140,42 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
 
+    // ── Subscription plan & listing limits ─────────────────────────────────
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('subscription_plan')
+      .eq('id', user.id)
+      .single()
+
+    const plan = (profile?.subscription_plan as string) || 'free'
+    const LIMITS: Record<string, number> = { free: 3, basic: 10, pro: Infinity, premium: Infinity }
+    const UPGRADES: Record<string, string> = {
+      free: 'Upgrade to Basic for ETB 100/month to add more listings.',
+      basic: 'Upgrade to Pro for ETB 500/month for unlimited listings.',
+    }
+    const limit = LIMITS[plan] ?? 3
+
+    if (isFinite(limit)) {
+      const { count } = await supabase
+        .from('properties')
+        .select('*', { count: 'exact', head: true })
+        .eq('owner_id', user.id)
+        .not('status', 'eq', 'rejected')
+
+      if ((count || 0) >= limit) {
+        return NextResponse.json({
+          error: `You've reached your ${limit} listing limit. ${UPGRADES[plan] || 'Upgrade your plan to add more listings.'}`,
+          code: 'LISTING_LIMIT_REACHED',
+          plan,
+          limit,
+        }, { status: 403 })
+      }
+    }
+
     const { data: agent } = await supabase
       .from('agents')
       .select('id, subscription_plan')
-      .eq('profile_id', user.id)
+      .eq('id', user.id)
       .single()
 
     const propertyData = {

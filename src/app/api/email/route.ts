@@ -204,6 +204,31 @@ ${data.phone ? `<tr><td style="font-size:13px;color:#888;padding:6px 0;">Phone</
 </body></html>`
         break
 
+      case 'bank_transfer_notify':
+        subject = `Bank transfer payment — ${data.agentName} signed up for ${data.plan} plan`
+        html = `
+<!DOCTYPE html><html><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f9f9f7;font-family:system-ui,sans-serif;">
+<div style="max-width:560px;margin:0 auto;padding:32px 16px;">
+<div style="background:#0d2318;border-radius:14px 14px 0 0;padding:24px 32px;">
+<h1 style="color:#fff;font-size:20px;font-weight:800;margin:0;">💳 Bank Transfer Payment Received</h1>
+<p style="color:rgba(255,255,255,0.6);font-size:14px;margin:8px 0 0;">Agent has sent payment — please verify and activate</p>
+</div>
+<div style="background:#fff;padding:28px 32px;border:1px solid #eae9e4;border-top:none;border-radius:0 0 14px 14px;">
+<table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+<tr><td style="font-size:13px;color:#888;padding:7px 0;width:110px;">Agent Name</td><td style="font-size:14px;font-weight:600;color:#111;">${data.agentName}</td></tr>
+<tr><td style="font-size:13px;color:#888;padding:7px 0;">Agent Email</td><td style="font-size:14px;color:#111;"><a href="mailto:${data.agentEmail}" style="color:#16a34a;">${data.agentEmail}</a></td></tr>
+<tr><td style="font-size:13px;color:#888;padding:7px 0;">Plan Selected</td><td style="font-size:14px;font-weight:700;color:#1a3d2b;">${data.plan} (${data.planEtb}/month)</td></tr>
+</table>
+<div style="background:#fef9ec;border:1px solid #fde68a;border-radius:10px;padding:14px 16px;font-size:14px;color:#92400e;margin-bottom:20px;">
+⚠️ Agent has submitted payment notification. Please check your WhatsApp/email for payment screenshot, then go to Admin → Subscriptions and activate their plan.
+</div>
+<a href="${APP_URL}/admin" style="display:inline-block;background:#1a3d2b;color:#fff;padding:12px 24px;border-radius:9px;font-size:14px;font-weight:700;text-decoration:none;">Go to Admin Panel →</a>
+</div>
+</div>
+</body></html>`
+        break
+
       default:
         return NextResponse.json({ error: 'Unknown email type' }, { status: 400 })
     }

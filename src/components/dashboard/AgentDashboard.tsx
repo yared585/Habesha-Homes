@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { Home, Eye, MessageSquare, TrendingUp, Plus, Building2, Star, Phone, Mail, Edit, BarChart3, Clock, CheckCircle, XCircle, AlertCircle, ArrowUp, ArrowDown } from 'lucide-react'
+import { Home, Eye, MessageSquare, TrendingUp, Plus, Building2, Star, Phone, Mail, Edit, BarChart3, Clock, CheckCircle, XCircle, AlertCircle, ArrowUp, ArrowDown, CreditCard, ArrowRight } from 'lucide-react'
 import { Card, StatCard, EmptyState } from '@/components/ui'
 import { formatETB } from '@/lib/utils'
 import type { Property, Profile } from '@/types'
@@ -117,6 +117,9 @@ export function AgentDashboard({ profile, properties, stats }: Props) {
   const [inquiryCounts, setInquiryCounts] = useState<Record<string, number>>({})
   const [loadingInquiries, setLoadingInquiries] = useState(false)
   const [agentData, setAgentData] = useState<any>(null)
+  const [subProfile, setSubProfile] = useState<any>(null)
+  const [cancelLoading, setCancelLoading] = useState(false)
+  const [cancelResult, setCancelResult] = useState<{ message: string; access_until: string } | null>(null)
 
   useEffect(() => {
     loadExtra()
@@ -149,6 +152,26 @@ export function AgentDashboard({ profile, properties, stats }: Props) {
     // Load agent data
     const { data: agent } = await sb.from('agents').select('*').eq('id', user.id).single()
     setAgentData(agent)
+
+    // Load subscription profile data
+    const { data: sub } = await sb
+      .from('profiles')
+      .select('subscription_plan, stripe_subscription_id, stripe_customer_id, subscription_cancel_at_period_end, subscription_current_period_end')
+      .eq('id', user.id)
+      .single()
+    setSubProfile(sub)
+  }
+
+  async function handleCancel() {
+    if (!confirm('Cancel your subscription? You\'ll keep access until the end of your current billing period, then drop to the Free plan.')) return
+    setCancelLoading(true)
+    setCancelResult(null)
+    const res = await fetch('/api/stripe/cancel-subscription', { method: 'POST' })
+    const json = await res.json()
+    setCancelLoading(false)
+    if (json.error) { alert(json.error); return }
+    setCancelResult({ message: json.message, access_until: json.access_until })
+    setSubProfile((p: any) => p ? { ...p, subscription_cancel_at_period_end: true } : p)
   }
 
   // Stats derived from real data
@@ -165,13 +188,30 @@ export function AgentDashboard({ profile, properties, stats }: Props) {
   return (
     <>
       {/* Welcome bar */}
-      <div style={{ background: '#0d2318', borderRadius: 14, padding: '18px 22px', marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+      <div style={{ background: '#0d2318', borderRadius: 14, padding: '18px 22px', marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 2 }}>
+          <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 4 }}>
             Welcome back, {profile.full_name?.split(' ')[0] || 'Agent'} 👋
           </div>
-          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)' }}>
-            {agentData?.agency_name} · {agentData?.is_verified ? '✓ Verified agent' : 'Unverified — contact admin to verify'}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)' }}>
+              {agentData?.agency_name} · {agentData?.is_verified ? '✓ Verified agent' : 'Unverified'}
+            </span>
+            {(() => {
+              const plan = agentData?.subscription_plan || 'free'
+              const planStyle: Record<string, { bg: string; color: string }> = {
+                free:    { bg: 'rgba(255,255,255,0.1)',   color: 'rgba(255,255,255,0.6)' },
+                basic:   { bg: 'rgba(37,99,235,0.3)',     color: '#93c5fd' },
+                pro:     { bg: 'rgba(74,222,128,0.2)',    color: '#4ade80' },
+                premium: { bg: 'rgba(124,58,237,0.3)',    color: '#c4b5fd' },
+              }
+              const ps = planStyle[plan] || planStyle.free
+              return (
+                <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 10px', borderRadius: 20, background: ps.bg, color: ps.color, textTransform: 'capitalize', letterSpacing: '.04em' }}>
+                  {plan} plan
+                </span>
+              )
+            })()}
           </div>
         </div>
         <Link href="/dashboard/listings/new"
@@ -180,6 +220,24 @@ export function AgentDashboard({ profile, properties, stats }: Props) {
           <Plus size={15}/> Add listing
         </Link>
       </div>
+
+      {/* Upgrade banner — free plan with 2+ listings */}
+      {(agentData?.subscription_plan === 'free' || !agentData?.subscription_plan) && properties.length >= 2 && (
+        <div style={{ background: '#fef9ec', border: '1px solid #fde68a', borderRadius: 12, padding: '12px 18px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 18 }}>⚡</span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#92400e' }}>
+              You're using {properties.length}/3 free listings.
+            </div>
+            <div style={{ fontSize: 12, color: '#a16207', marginTop: 2 }}>
+              Upgrade to Basic for only ETB 100/month and list up to 10 properties with featured placement.
+            </div>
+          </div>
+          <Link href="/pricing" style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: '#d97706', color: '#fff', padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 700, textDecoration: 'none', whiteSpace: 'nowrap', flexShrink: 0 }}>
+            Upgrade now →
+          </Link>
+        </div>
+      )}
 
       {/* Stats row */}
       <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: 12, marginBottom: 24 }}>
@@ -325,6 +383,95 @@ export function AgentDashboard({ profile, properties, stats }: Props) {
               {agentData?.is_verified ? 'Your profile shows a verified badge to buyers.' : 'Contact the admin to get your account verified. Verified agents get more inquiries.'}
             </div>
           </div>
+
+          {/* Subscription management */}
+          <Card>
+            <h3 style={{ fontSize: 17, fontWeight: 700, color: '#111', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <CreditCard size={17} color="#1a3d2b"/> Subscription
+            </h3>
+
+            {(() => {
+              const plan = subProfile?.subscription_plan || agentData?.subscription_plan || 'free'
+              const isFree = plan === 'free'
+              const cancelPending = subProfile?.subscription_cancel_at_period_end
+              const periodEnd = subProfile?.subscription_current_period_end
+              const PLAN_PRICES: Record<string, { etb: string; usd: string }> = {
+                free:    { etb: 'ETB 0',     usd: '$0' },
+                basic:   { etb: 'ETB 100',   usd: '$1' },
+                pro:     { etb: 'ETB 500',   usd: '$3' },
+                premium: { etb: 'ETB 1,000', usd: '$5' },
+              }
+              const price = PLAN_PRICES[plan] || PLAN_PRICES.free
+
+              return (
+                <>
+                  {/* Plan details row */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(140px,1fr))', gap: 12, marginBottom: 16 }}>
+                    {[
+                      { label: 'Current plan', value: <span style={{ textTransform: 'capitalize', fontWeight: 700 }}>{plan}</span> },
+                      { label: 'Price', value: isFree ? 'Free forever' : `${price.etb}/mo · ${price.usd}/mo` },
+                      { label: 'Billing', value: periodEnd ? `Renews ${new Date(periodEnd).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}` : isFree ? '—' : 'Monthly' },
+                    ].map(({ label, value }) => (
+                      <div key={label} style={{ background: '#f9f9f7', borderRadius: 10, padding: '12px 14px', border: '1px solid #eae9e4' }}>
+                        <div style={{ fontSize: 11, color: '#aaa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 4 }}>{label}</div>
+                        <div style={{ fontSize: 14, color: '#111' }}>{value}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Cancellation pending notice */}
+                  {cancelPending && !cancelResult && (
+                    <div style={{ background: '#fef9ec', border: '1px solid #fde68a', borderRadius: 10, padding: '12px 14px', marginBottom: 14, fontSize: 13, color: '#92400e' }}>
+                      ⚠ Cancellation scheduled. Your {plan} plan remains active until{' '}
+                      {periodEnd ? new Date(periodEnd).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'end of billing period'},
+                      then downgrades to Free.
+                    </div>
+                  )}
+
+                  {/* Cancel result confirmation */}
+                  {cancelResult && (
+                    <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 10, padding: '12px 14px', marginBottom: 14, fontSize: 13, color: '#15803d' }}>
+                      ✓ {cancelResult.message}
+                    </div>
+                  )}
+
+                  {/* Actions */}
+                  <div style={{ display: 'flex', gap: 9, flexWrap: 'wrap' }}>
+                    {isFree ? (
+                      <Link href="/pricing"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#1a3d2b', color: '#fff', padding: '10px 18px', borderRadius: 9, fontSize: 13, fontWeight: 700, textDecoration: 'none' }}
+                      >
+                        <ArrowRight size={13}/> Upgrade plan
+                      </Link>
+                    ) : (
+                      <>
+                        <Link href="/pricing"
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#f0fdf4', color: '#16a34a', padding: '10px 18px', borderRadius: 9, fontSize: 13, fontWeight: 600, textDecoration: 'none', border: '1px solid #bbf7d0' }}
+                        >
+                          Change plan
+                        </Link>
+                        {!cancelPending && !cancelResult && subProfile?.stripe_subscription_id && (
+                          <button
+                            onClick={handleCancel}
+                            disabled={cancelLoading}
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: cancelLoading ? '#f5f5f2' : '#fff', color: '#dc2626', padding: '10px 18px', borderRadius: 9, fontSize: 13, fontWeight: 600, border: '1px solid #fecaca', cursor: cancelLoading ? 'not-allowed' : 'pointer', fontFamily: 'inherit', transition: 'all .15s' }}
+                          >
+                            {cancelLoading ? 'Cancelling...' : 'Cancel subscription'}
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </div>
+
+                  {!isFree && !subProfile?.stripe_subscription_id && (
+                    <div style={{ fontSize: 12, color: '#aaa', marginTop: 10, lineHeight: 1.6 }}>
+                      Activated via bank transfer. To cancel, email <a href="mailto:yohanesy585@gmail.com" style={{ color: '#1a3d2b' }}>yohanesy585@gmail.com</a>.
+                    </div>
+                  )}
+                </>
+              )
+            })()}
+          </Card>
         </div>
       )}
     </>

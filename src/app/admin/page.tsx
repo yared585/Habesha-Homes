@@ -11,7 +11,7 @@ import {
   BarChart3, Building2, Globe, Trash2, RefreshCw, Download, Plus, Save
 } from 'lucide-react'
 
-type Tab = 'overview' | 'listings' | 'agents' | 'users' | 'reports' | 'inquiries' | 'developments'
+type Tab = 'overview' | 'listings' | 'agents' | 'users' | 'reports' | 'inquiries' | 'developments' | 'subscriptions'
 type ListingFilter = 'all' | 'pending_review' | 'active' | 'rejected'
 
 function StatCard({ icon, label, value, sub, color = '#16a34a' }: { icon: React.ReactNode; label: string; value: number | string; sub?: string; color?: string }) {
@@ -62,6 +62,7 @@ export default function AdminPage() {
   const [reports, setReports] = useState<any[]>([])
   const [projects, setProjects] = useState<any[]>([])
   const [developers, setDevelopers] = useState<any[]>([])
+  const [agentProfiles, setAgentProfiles] = useState<any[]>([])
   const [showNewProject, setShowNewProject] = useState(false)
   const [newProject, setNewProject] = useState<any>({ ...BLANK_PROJECT })
   const [savingProject, setSavingProject] = useState(false)
@@ -116,6 +117,13 @@ export default function AdminPage() {
 
     const revenue = (payments || []).reduce((sum: number, p: any) => sum + (p.amount_usd || 0), 0)
     const devUsers = (usersData || []).filter((u: any) => u.role === 'developer')
+
+    const { data: agentProfilesData } = await sb
+      .from('profiles')
+      .select('id, full_name, email, subscription_plan, created_at')
+      .eq('role', 'agent')
+      .order('created_at', { ascending: false })
+    setAgentProfiles(agentProfilesData || [])
 
     setProperties(props || [])
     setAgents(agentsData || [])
@@ -186,6 +194,12 @@ export default function AdminPage() {
     setUsers(u => u.map(x => x.id === id ? { ...x, role } : x))
   }
 
+  async function changeAgentPlan(userId: string, plan: string) {
+    const { error } = await createClient().from('profiles').update({ subscription_plan: plan }).eq('id', userId)
+    if (error) { alert('Failed to update plan: ' + error.message); return }
+    setAgentProfiles(p => p.map(x => x.id === userId ? { ...x, subscription_plan: plan } : x))
+  }
+
   async function featureProperty(id: string, featured: boolean) {
     const until = featured ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() : null
     const { error } = await createClient().from('properties').update({ is_featured: featured, featured_until: until }).eq('id', id)
@@ -243,6 +257,7 @@ export default function AdminPage() {
     { id: 'inquiries', label: 'Inquiries', count: stats.totalInquiries },
     { id: 'reports', label: 'AI Reports', count: stats.totalReports },
     { id: 'developments', label: 'Developments', count: projects.length },
+    { id: 'subscriptions', label: 'Subscriptions', count: agentProfiles.length },
   ]
 
   const inp = (key: string, label: string, placeholder = '', type = 'text') => (
@@ -671,6 +686,65 @@ export default function AdminPage() {
                   </div>
                 </div>
               ))
+            )}
+          </>
+        )}
+
+        {/* ── SUBSCRIPTIONS ── */}
+        {tab === 'subscriptions' && (
+          <>
+            <div style={{ display: 'flex', gap: 10, marginBottom: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+              <div style={{ fontSize: 13, color: '#888' }}>{agentProfiles.length} agents</div>
+              <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
+                {(['free', 'basic', 'pro', 'premium'] as const).map(p => (
+                  <span key={p} style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 20, background: '#f0f0ec', color: '#555' }}>
+                    {p}: {agentProfiles.filter(a => (a.subscription_plan || 'free') === p).length}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {agentProfiles.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '48px', background: '#fff', borderRadius: 14, border: '1px solid #eae9e4', color: '#aaa', fontSize: 14 }}>No agents yet.</div>
+            ) : (
+              agentProfiles.map(a => {
+                const plan = a.subscription_plan || 'free'
+                const listingCount = properties.filter(p => p.owner_id === a.id).length
+                const planColors: Record<string, { bg: string; color: string }> = {
+                  free:    { bg: '#f9f9f7', color: '#888' },
+                  basic:   { bg: '#eff6ff', color: '#2563eb' },
+                  pro:     { bg: '#f0fdf4', color: '#16a34a' },
+                  premium: { bg: '#f5f3ff', color: '#7c3aed' },
+                }
+                const pc = planColors[plan] || planColors.free
+                return (
+                  <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 16px', background: '#fff', border: '1px solid #eae9e4', borderRadius: 12, marginBottom: 8 }}>
+                    <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#1a3d2b', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: '#fff', fontWeight: 700, flexShrink: 0 }}>
+                      {a.full_name?.[0]?.toUpperCase() || 'A'}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 600, fontSize: 14, color: '#111' }}>{a.full_name || 'Unnamed agent'}</div>
+                      <div style={{ fontSize: 12, color: '#888', marginTop: 2 }}>{a.email}</div>
+                      <div style={{ fontSize: 11, color: '#bbb', marginTop: 2 }}>
+                        Joined {new Date(a.created_at).toLocaleDateString()} · {listingCount} listing{listingCount !== 1 ? 's' : ''}
+                      </div>
+                    </div>
+                    <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 12px', borderRadius: 20, background: pc.bg, color: pc.color, textTransform: 'capitalize', flexShrink: 0 }}>
+                      {plan}
+                    </span>
+                    <select
+                      value={plan}
+                      onChange={e => changeAgentPlan(a.id, e.target.value)}
+                      style={{ fontSize: 12, padding: '7px 10px', borderRadius: 7, border: '1px solid #e0dfd9', background: '#fff', cursor: 'pointer', fontFamily: 'inherit', outline: 'none', flexShrink: 0 }}
+                    >
+                      <option value="free">Free</option>
+                      <option value="basic">Basic</option>
+                      <option value="pro">Pro</option>
+                      <option value="premium">Premium</option>
+                    </select>
+                  </div>
+                )
+              })
             )}
           </>
         )}

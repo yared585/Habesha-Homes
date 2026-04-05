@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from 'next'
 import { Toaster } from 'react-hot-toast'
 import { GoogleAnalytics } from '@next/third-parties/google'
-import { NextIntlClientProvider } from 'next-intl'
-import { getLocale, getMessages } from 'next-intl/server'
+import { cookies } from 'next/headers'
+import { IntlProvider } from '@/components/providers/IntlProvider'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import './globals.css'
@@ -91,8 +91,10 @@ export const metadata: Metadata = {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const locale = await getLocale()
-  const messages = await getMessages()
+  const cookieStore = cookies()
+  const raw = cookieStore.get('NEXT_LOCALE')?.value
+  const locale = ['en', 'am'].includes(raw || '') ? (raw as string) : 'en'
+  const messages = (await import(`../../messages/${locale}.json`)).default
 
   return (
     <html lang={locale}>
@@ -102,7 +104,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet" />
       </head>
       <body>
-        <NextIntlClientProvider locale={locale} messages={messages}>
+        <IntlProvider locale={locale} messages={messages}>
           <Navbar />
           <main style={{ minHeight: '100vh' }}>{children}</main>
           <Footer />
@@ -121,7 +123,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             success: { iconTheme: { primary: 'var(--green)', secondary: '#fff' } },
           }}
         />
-        </NextIntlClientProvider>
+        </IntlProvider>
       </body>
       {process.env.NEXT_PUBLIC_GA_ID && (
         <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />

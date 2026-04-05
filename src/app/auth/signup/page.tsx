@@ -129,31 +129,36 @@ export default function SignupPage() {
         value={(form as any)[field]}
         onChange={e=>setForm(p=>({...p,[field]:e.target.value}))}
         className={`auth-input${right ? ' auth-input-pw' : ''}`}
+        onFocus={e => { (e.target as HTMLInputElement).style.borderColor = '#1a3d2b'; (e.target as HTMLInputElement).style.background = '#fff' }}
+        onBlur={e => { (e.target as HTMLInputElement).style.borderColor = '#eae9e4'; (e.target as HTMLInputElement).style.background = '#fafaf8' }}
       />
       {right && <div style={{ position:'absolute',right:14,top:'50%',transform:'translateY(-50%)',cursor:'pointer',color:'#aaa',display:'flex' }} onClick={()=>setShowPw(!showPw)}>{right}</div>}
     </div>
   )
 
   return (
-    <div style={{ minHeight:'100vh',background:'#f5f4f0',display:'flex',alignItems:'center',justifyContent:'center',padding:'24px' }}>
+    <div style={{ minHeight:'100vh',background:'linear-gradient(135deg, #0d1f15 0%, #1a3d2b 40%, #111 100%)',display:'flex',alignItems:'center',justifyContent:'center',padding:'24px' }}>
       <div style={{ width:'100%',maxWidth: step==='role' ? 560 : 460 }}>
 
         <div style={{ textAlign:'center',marginBottom:28 }}>
           <Link href="/" style={{ textDecoration:'none',display:'inline-flex',flexDirection:'column',alignItems:'center',gap:8 }}>
-            <svg width="48" height="48" viewBox="0 0 40 40" fill="none">
-              <rect width="40" height="40" rx="11" fill="#0d2318"/>
-              <path d="M6 22L20 9L34 22" stroke="#16a34a" strokeWidth="2.2" strokeLinecap="round"/>
-              <path d="M10 20v13h7v-7h6v7h7V20" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <circle cx="31" cy="12" r="5.5" stroke="#4ade80" strokeWidth="2.5" fill="rgba(74,222,128,0.15)"/>
-              <circle cx="31" cy="12" r="2" fill="#4ade80"/>
-              <path d="M31 17.5v8" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round"/>
-              <path d="M28.5 22h5M28.5 25h5" stroke="#4ade80" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-            <div style={{ fontSize:18,fontWeight:800,color:'#111',letterSpacing:'-.02em' }}>Habesha Properties</div>
+            <div style={{ width: 62, height: 62, borderRadius: 16, background: '#1a3d2b', border: '2px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
+              <svg width="36" height="36" viewBox="0 0 40 40" fill="none">
+                <path d="M7 22L20 9L33 22" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <rect x="14" y="22" width="12" height="11" rx="2" fill="white" opacity="0.95"/>
+                <rect x="17" y="25" width="6" height="8" rx="1.5" fill="#1a3d2b"/>
+                <circle cx="31" cy="13" r="4" fill="none" stroke="white" strokeWidth="1.8"/>
+                <circle cx="31" cy="13" r="1.5" fill="white" opacity="0.4"/>
+                <line x1="35" y1="13" x2="38" y2="13" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
+                <line x1="37.2" y1="13" x2="37.2" y2="15.5" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
+                <line x1="35.8" y1="13" x2="35.8" y2="16" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
+              </svg>
+            </div>
+            <div style={{ fontSize:20,fontWeight:800,color:'#fff',letterSpacing:'-.02em' }}>Habesha Properties</div>
           </Link>
         </div>
 
-        <div style={{ background:'#fff',border:'1px solid #eae9e4',borderRadius:20,padding:32,boxShadow:'0 4px 24px rgba(0,0,0,0.06)' }}>
+        <div style={{ background:'#fff',border:'1px solid rgba(255,255,255,0.1)',borderRadius:24,padding:32,boxShadow:'0 24px 80px rgba(0,0,0,0.5)' }}>
 
           {step === 'role' && (
             <>
@@ -182,15 +187,15 @@ export default function SignupPage() {
                   { r:'agent' as const, icon:<Building2 size={26}/>, label:'I am a real estate agent', sub:'List properties and manage clients', features:['List properties','AI listing writer','Dashboard analytics','Priority support'] },
                 ]).map(({ r, icon, label, sub, features }) => (
                   <div key={r} onClick={()=>setRole(r)}
-                    style={{ border:`2px solid ${role===r?'#16a34a':'#e0dfd9'}`,background:role===r?'#f0fdf4':'#fff',borderRadius:14,padding:16,cursor:'pointer',transition:'all .15s',position:'relative' }}
+                    style={{ border:`2px solid ${role===r?'#1a3d2b':'#e0dfd9'}`,background:role===r?'#f0fdf4':'#fff',borderRadius:14,padding:16,cursor:'pointer',transition:'all .15s',position:'relative' }}
                   >
-                    {role===r && <div style={{ position:'absolute',top:10,right:10,width:18,height:18,borderRadius:'50%',background:'#16a34a',display:'flex',alignItems:'center',justifyContent:'center' }}><Check size={11} color="#fff"/></div>}
-                    <div style={{ color:role===r?'#16a34a':'#888',marginBottom:8 }}>{icon}</div>
+                    {role===r && <div style={{ position:'absolute',top:10,right:10,width:18,height:18,borderRadius:'50%',background:'#1a3d2b',display:'flex',alignItems:'center',justifyContent:'center' }}><Check size={11} color="#fff"/></div>}
+                    <div style={{ color:role===r?'#1a3d2b':'#888',marginBottom:8 }}>{icon}</div>
                     <div style={{ fontSize:13,fontWeight:700,color:'#111',marginBottom:4,lineHeight:1.3 }}>{label}</div>
                     <div style={{ fontSize:11,color:'#888',marginBottom:10,lineHeight:1.4 }}>{sub}</div>
                     {features.map(f=>(
                       <div key={f} style={{ display:'flex',alignItems:'center',gap:5,fontSize:11,color:'#666',marginBottom:3 }}>
-                        <Check size={9} color="#16a34a" style={{flexShrink:0}}/>{f}
+                        <Check size={9} color="#1a3d2b" style={{flexShrink:0}}/>{f}
                       </div>
                     ))}
                   </div>
@@ -198,9 +203,9 @@ export default function SignupPage() {
               </div>
 
               <div onClick={()=>setForm(p=>({...p,isDiaspora:!p.isDiaspora}))}
-                style={{ border:`1.5px solid ${form.isDiaspora?'#16a34a':'#e0dfd9'}`,background:form.isDiaspora?'#f0fdf4':'#fff',borderRadius:10,padding:'10px 14px',cursor:'pointer',display:'flex',alignItems:'center',gap:10,marginBottom:20,transition:'all .15s' }}
+                style={{ border:`1.5px solid ${form.isDiaspora?'#1a3d2b':'#e0dfd9'}`,background:form.isDiaspora?'#f0fdf4':'#fff',borderRadius:10,padding:'10px 14px',cursor:'pointer',display:'flex',alignItems:'center',gap:10,marginBottom:20,transition:'all .15s' }}
               >
-                <div style={{ width:20,height:20,borderRadius:5,border:`2px solid ${form.isDiaspora?'#16a34a':'#d0d0cc'}`,background:form.isDiaspora?'#16a34a':'transparent',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0 }}>
+                <div style={{ width:20,height:20,borderRadius:5,border:`2px solid ${form.isDiaspora?'#1a3d2b':'#d0d0cc'}`,background:form.isDiaspora?'#1a3d2b':'transparent',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0 }}>
                   {form.isDiaspora && <Check size={12} color="#fff"/>}
                 </div>
                 <div>
@@ -209,7 +214,11 @@ export default function SignupPage() {
                 </div>
               </div>
 
-              <button onClick={()=>{ if(role) setStep('details') }} disabled={!role} className="auth-btn-primary">
+              <button onClick={()=>{ if(role) setStep('details') }} disabled={!role} className="auth-btn-primary"
+                style={{ background: role ? '#1a3d2b' : undefined, boxShadow: role ? '0 4px 14px rgba(26,61,43,0.4)' : undefined }}
+                onMouseEnter={e => { if(role) (e.currentTarget as HTMLButtonElement).style.background = '#2d5a3d' }}
+                onMouseLeave={e => { if(role) (e.currentTarget as HTMLButtonElement).style.background = '#1a3d2b' }}
+              >
                 Continue <ArrowRight size={16}/>
               </button>
             </>
@@ -249,7 +258,11 @@ export default function SignupPage() {
                   <div style={{ background:'#fef2f2',border:'1px solid #fecaca',borderRadius:8,padding:'10px 14px',fontSize:13,color:'#dc2626' }}>{error}</div>
                 )}
 
-                <button type="submit" disabled={loading} className="auth-btn-primary">
+                <button type="submit" disabled={loading} className="auth-btn-primary"
+                  style={{ background: loading ? undefined : '#1a3d2b', boxShadow: loading ? undefined : '0 4px 14px rgba(26,61,43,0.4)' }}
+                  onMouseEnter={e => { if(!loading) (e.currentTarget as HTMLButtonElement).style.background = '#2d5a3d' }}
+                  onMouseLeave={e => { if(!loading) (e.currentTarget as HTMLButtonElement).style.background = '#1a3d2b' }}
+                >
                   {loading ? <><Spinner size="sm" color="#fff"/><span>{t('creating_account')}</span></> : <><Check size={15}/> {t('create_account')}</>}
                 </button>
 
@@ -261,9 +274,9 @@ export default function SignupPage() {
           )}
         </div>
 
-        <p style={{ textAlign:'center',fontSize:13,color:'#888',marginTop:20 }}>
+        <p style={{ textAlign:'center',fontSize:13,color:'rgba(255,255,255,0.7)',marginTop:20 }}>
           {t('have_account')}{' '}
-          <Link href="/auth/login" style={{ color:'#16a34a',fontWeight:700,textDecoration:'none' }}>{t('sign_in')}</Link>
+          <Link href="/auth/login" style={{ color:'#4ade80',fontWeight:700,textDecoration:'none' }}>{t('sign_in')}</Link>
         </p>
       </div>
     </div>
