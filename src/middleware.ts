@@ -15,14 +15,16 @@ export async function middleware(request: NextRequest) {
         set(name: string, value: string, options: CookieOptions) {
           // Must update both request and response so the refreshed token
           // is available to the rest of the middleware chain and the page
-          request.cookies.set({ name, value, ...options })
+          const cookieOpts = { sameSite: 'lax' as const, ...options }
+          request.cookies.set({ name, value, ...cookieOpts })
           response = NextResponse.next({ request: { headers: request.headers } })
-          response.cookies.set({ name, value, ...options })
+          response.cookies.set({ name, value, ...cookieOpts })
         },
         remove(name: string, options: CookieOptions) {
-          request.cookies.set({ name, value: '', ...options })
+          const cookieOpts = { sameSite: 'lax' as const, ...options }
+          request.cookies.set({ name, value: '', ...cookieOpts })
           response = NextResponse.next({ request: { headers: request.headers } })
-          response.cookies.set({ name, value: '', ...options })
+          response.cookies.set({ name, value: '', ...cookieOpts })
         },
       },
     }

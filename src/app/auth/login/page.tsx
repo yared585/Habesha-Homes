@@ -27,10 +27,10 @@ export default function LoginPage() {
     if (err) { setError(err.message); setLoading(false); return }
     const { data: profile } = await sb.from('profiles').select('role').eq('id', data.user.id).single()
     const role = profile?.role
-    if (role === 'admin') router.push('/admin')
-    else if (role === 'developer') router.push('/dashboard/developer')
-    else if (role === 'agent') router.push('/dashboard')
-    else router.push('/saved')
+    if (role === 'admin') window.location.href = '/admin'
+    else if (role === 'developer') window.location.href = '/dashboard/developer'
+    else if (role === 'agent') window.location.href = '/dashboard'
+    else window.location.href = '/'
   }
 
   async function handleGoogle() {

@@ -2,22 +2,26 @@
 //   https://www.habeshaproperties.com/auth/callback
 //   http://localhost:3000/auth/callback
 
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
-export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url)
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url)
   const code = searchParams.get('code')
 
   if (!code) {
-    return NextResponse.redirect(`${origin}/auth/login?error=missing_code`)
+    const res = NextResponse.redirect(new URL('/auth/login?error=missing_code', request.url))
+    res.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate')
+    return res
   }
 
   const supabase = createClient()
 
   const { data: sessionData, error: sessionError } = await supabase.auth.exchangeCodeForSession(code)
   if (sessionError || !sessionData.user) {
-    return NextResponse.redirect(`${origin}/auth/login?error=exchange_failed`)
+    const res = NextResponse.redirect(new URL('/auth/login?error=exchange_failed', request.url))
+    res.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate')
+    return res
   }
 
   const user = sessionData.user
@@ -42,8 +46,12 @@ export async function GET(request: Request) {
 
   // Redirect based on role
   const role = profile?.role ?? 'buyer'
-  if (role === 'admin') return NextResponse.redirect(`${origin}/admin`)
-  if (role === 'agent') return NextResponse.redirect(`${origin}/dashboard`)
-  if (role === 'developer') return NextResponse.redirect(`${origin}/dashboard/developer`)
-  return NextResponse.redirect(`${origin}/saved`)
+  let redirectPath = '/saved'
+  if (role === 'admin') redirectPath = '/admin'
+  else if (role === 'agent') redirectPath = '/dashboard'
+  else if (role === 'developer') redirectPath = '/dashboard/developer'
+
+  const response = NextResponse.redirect(new URL(redirectPath, request.url))
+  response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate')
+  return response
 }
