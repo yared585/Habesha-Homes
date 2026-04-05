@@ -184,6 +184,14 @@ export function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [showAuth, setShowAuth] = useState(false)
+
+  useEffect(() => {
+    if (!profile) { setShowAuth(false); return }
+    // Small delay to sync with page redirect — prevents profile flickering on login
+    const timer = setTimeout(() => setShowAuth(true), 300)
+    return () => clearTimeout(timer)
+  }, [profile])
 
   const navLinks = NAV_HREFS.map(l => ({ ...l, label: t(l.key as any) }))
 
@@ -219,7 +227,7 @@ export function Navbar() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: 'auto' }}>
             <SearchBtn onClick={() => setSearchOpen(true)}/>
             <LanguageToggle/>
-            {profile ? (
+            {showAuth && profile ? (
               <>
                 <Link
                   href={profile.role === 'buyer' ? '/saved' : profile.role === 'admin' ? '/admin' : profile.role === 'developer' ? '/dashboard/developer' : '/dashboard'}
@@ -264,7 +272,7 @@ export function Navbar() {
                 {(l as any).badge && <span style={{ fontSize: 10, fontWeight: 700, color: '#4ade80', background: 'rgba(74,222,128,0.15)', border: '1px solid rgba(74,222,128,0.3)', padding: '2px 7px', borderRadius: 20 }}>{(l as any).badge}</span>}
               </Link>
             ))}
-            {profile ? (
+            {showAuth && profile ? (
               <div style={{ marginTop: 16 }}>
                 <div style={{ padding: '12px 4px', borderBottom: '1px solid #f0f0ee', marginBottom: 4 }}>
                   <div style={{ fontSize: 14, fontWeight: 600, color: '#111' }}>{profile.full_name}</div>
