@@ -77,6 +77,46 @@ function inquiryEmailHtml({ agentName, buyerName, buyerEmail, buyerPhone, messag
 </html>`
 }
 
+function buyerConfirmationHtml({ buyerName, propertyTitle, propertyUrl }: any) {
+  return `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width"></head>
+<body style="margin:0;padding:0;background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;">
+  <div style="max-width:560px;margin:0 auto;padding:32px 16px;">
+    <div style="background:#0d2318;border-radius:14px 14px 0 0;padding:28px 32px;text-align:center;">
+      <h1 style="color:#fff;font-size:22px;font-weight:800;margin:0 0 6px;letter-spacing:-0.02em;">Inquiry Received ✓</h1>
+      <p style="color:rgba(255,255,255,0.6);font-size:14px;margin:0;">The agent will contact you shortly</p>
+    </div>
+    <div style="background:#fff;padding:32px;border:1px solid #eae9e4;border-top:none;">
+      <p style="font-size:15px;color:#333;margin:0 0 16px;">Hi <strong>${buyerName}</strong>,</p>
+      <p style="font-size:15px;color:#333;margin:0 0 24px;">
+        Your inquiry has been sent successfully. The agent will reach out to you soon.
+      </p>
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:16px;margin-bottom:28px;">
+        <div style="font-size:12px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Property</div>
+        <a href="${propertyUrl}" style="font-size:16px;font-weight:700;color:#111;text-decoration:none;">${propertyTitle}</a>
+      </div>
+      <div style="text-align:center;">
+        <a href="${propertyUrl}" style="display:inline-block;background:#16a34a;color:#fff;padding:13px 32px;border-radius:10px;font-size:15px;font-weight:700;text-decoration:none;margin-right:10px;">
+          View listing →
+        </a>
+        <a href="${APP_URL}/search" style="display:inline-block;background:#f9f9f7;color:#555;padding:13px 24px;border-radius:10px;font-size:14px;font-weight:500;text-decoration:none;border:1px solid #eae9e4;">
+          Browse more
+        </a>
+      </div>
+    </div>
+    <div style="background:#f9f9f7;border:1px solid #eae9e4;border-top:none;border-radius:0 0 14px 14px;padding:20px 32px;text-align:center;">
+      <p style="font-size:12px;color:#aaa;margin:0;">
+        Habesha Properties · Ethiopian Property Marketplace<br/>
+        <a href="${APP_URL}" style="color:#16a34a;text-decoration:none;">${APP_URL}</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>`
+}
+
 function listingApprovedHtml({ agentName, propertyTitle, propertyUrl }: any) {
   return `
 <!DOCTYPE html>
@@ -246,6 +286,27 @@ ${data.phone ? `<tr><td style="font-size:13px;color:#888;padding:6px 0;">Phone</
     if (error) {
       console.error('Resend error:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    // Send buyer confirmation for inquiry emails
+    if (type === 'inquiry' && data.buyerEmail) {
+      try {
+        const buyerRecipient = process.env.DOMAIN_VERIFIED === 'true' ? data.buyerEmail : ADMIN_EMAIL
+        const buyerSubject = `Your inquiry for "${data.propertyTitle}" was received`
+        await resend.emails.send({
+          from: FROM,
+          to: buyerRecipient,
+          subject: buyerRecipient !== data.buyerEmail ? `[To: ${data.buyerEmail}] ${buyerSubject}` : buyerSubject,
+          html: buyerConfirmationHtml({
+            buyerName: data.buyerName,
+            propertyTitle: data.propertyTitle,
+            propertyUrl: `${APP_URL}/property/${data.propertyId}`,
+          }),
+        })
+      } catch (emailError) {
+        console.error('Buyer confirmation email failed:', emailError)
+        // continue — agent email was already sent
+      }
     }
 
     return NextResponse.json({ success: true, id: result?.id })
