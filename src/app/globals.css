@@ -347,6 +347,13 @@ img { max-width: 100%; display: block; }
   }
 }
 
+/* Hide About & Contact nav links on medium screens to reduce crowding */
+@media (max-width: 1200px) {
+  .nav-link-medium-hide {
+    display: none !important;
+  }
+}
+
 @media (max-width: 480px) {
   .stats-grid {
     grid-template-columns: 1fr 1fr !important;

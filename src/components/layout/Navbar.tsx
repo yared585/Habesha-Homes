@@ -4,12 +4,12 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useSearchParams, useRouter } from 'next/navigation'
 import { Suspense } from 'react'
-import { Search, LogOut, LayoutDashboard, Plus, User, Home, Building2, ChevronDown, Menu, X, Shield, Heart } from 'lucide-react'
+import { Search, LogOut, LayoutDashboard, Plus, User, Home, Building2, ChevronDown, Menu, X, Shield, Heart, Globe } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
 import { useAuth } from '@/hooks/useAuth'
 import { SearchOverlay } from '@/components/layout/SearchOverlay'
 
-function HabeshaLogo({ size = 46 }: { size?: number }) {
+function HabeshaLogo({ size = 38 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
       <rect width="40" height="40" rx="10" fill="#1a3d2b"/>
@@ -38,13 +38,15 @@ function NavLink({ label, href, badge }: { label: string; href: string; badge?: 
   return (
     <Link href={href} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
       style={{
-        display: 'inline-flex', alignItems: 'center', gap: 5,
-        padding: '7px 13px', borderRadius: 8, textDecoration: 'none', fontSize: 13.5,
+        display: 'inline-flex', alignItems: 'center', gap: 4,
+        padding: '4px 8px', paddingBottom: active ? '4px' : hov ? '2px' : '4px',
+        borderRadius: 7, textDecoration: 'none', fontSize: 13,
         fontWeight: active ? 600 : 500,
         letterSpacing: '-.01em',
         color: active ? '#1a3d2b' : hov ? '#1a3d2b' : '#1a1a18',
-        background: active ? 'rgba(26,61,43,0.08)' : hov ? 'rgba(26,61,43,0.06)' : 'transparent',
-        transition: 'all .15s', whiteSpace: 'nowrap',
+        background: active ? 'rgba(26,61,43,0.08)' : hov ? 'rgba(26,61,43,0.04)' : 'transparent',
+        borderBottom: active ? 'none' : hov ? '2px solid #1a3d2b' : '2px solid transparent',
+        transition: 'all 0.2s ease', whiteSpace: 'nowrap',
       }}
     >
       {label}
@@ -57,11 +59,10 @@ function SearchBtn({ onClick }: { onClick: () => void }) {
   const [hov, setHov] = useState(false)
   return (
     <button onClick={onClick} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
-      style={{ display: 'flex', alignItems: 'center', gap: 7, cursor: 'pointer', background: '#fff', border: `1px solid ${hov ? 'rgba(26,61,43,0.35)' : '#e5e4df'}`, borderRadius: 9, padding: '7px 13px', transition: 'all .18s', fontFamily: 'inherit', boxShadow: hov ? '0 2px 12px rgba(26,61,43,0.1)' : '0 1px 3px rgba(0,0,0,0.07)' }}
+      style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', background: '#fff', border: `1px solid ${hov ? 'rgba(26,61,43,0.35)' : '#e5e4df'}`, borderRadius: 9, padding: '7px 14px', transition: 'all .18s', fontFamily: 'inherit', boxShadow: hov ? '0 2px 12px rgba(26,61,43,0.1)' : '0 1px 3px rgba(0,0,0,0.07)' }}
     >
       <Search size={13} color={hov ? '#1a3d2b' : '#888'}/>
-      <span className="nav-search-text" style={{ fontSize: 13, color: hov ? '#1a3d2b' : '#888', fontWeight: 500 }}>Search</span>
-      <kbd className="nav-search-kbd" style={{ fontSize: 10, color: '#c0bfba', background: '#f5f5f2', padding: '1px 5px', borderRadius: 4, fontFamily: 'monospace', border: '1px solid #e8e7e2' }}>⌘K</kbd>
+      <span style={{ fontSize: 13, color: hov ? '#1a3d2b' : '#888', fontWeight: 500 }}>Search</span>
     </button>
   )
 }
@@ -95,18 +96,15 @@ function UserMenu({ profile, signOut }: { profile: any; signOut: () => void }) {
   return (
     <div style={{ position: 'relative' }}>
       <button onClick={() => setOpen(!open)}
-        style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(26,61,43,0.05)', border: '1px solid rgba(26,61,43,0.18)', borderRadius: 24, padding: '5px 10px 5px 5px', cursor: 'pointer', transition: 'all .18s', fontFamily: 'inherit', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
+        style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(26,61,43,0.05)', border: '1px solid rgba(26,61,43,0.18)', borderRadius: 24, padding: '4px 8px 4px 4px', cursor: 'pointer', transition: 'all .18s', fontFamily: 'inherit', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
         onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(26,61,43,0.1)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(26,61,43,0.35)' }}
         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(26,61,43,0.05)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(26,61,43,0.18)' }}
       >
-        <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#1a3d2b,#2d5a3d)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#fff', fontWeight: 700 }}>
+        <div style={{ width: 26, height: 26, borderRadius: '50%', background: 'linear-gradient(135deg,#1a3d2b,#2d5a3d)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: '#fff', fontWeight: 700 }}>
           {profile.full_name?.[0]?.toUpperCase() || 'U'}
         </div>
-        <div>
-          <div style={{ fontSize: 13, color: '#111', fontWeight: 600, lineHeight: 1.2 }}>{profile.full_name?.split(' ')[0]}</div>
-          <div style={{ fontSize: 10, color: '#1a3d2b', fontWeight: 700, letterSpacing: '.04em', textTransform: 'capitalize' }}>{profile.role}</div>
-        </div>
-        <ChevronDown size={12} color="#aaa" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}/>
+        <div style={{ fontSize: 12, color: '#111', fontWeight: 600 }}>{profile.full_name?.split(' ')[0]}</div>
+        <ChevronDown size={11} color="#aaa" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}/>
       </button>
       {open && (
         <>
@@ -136,14 +134,15 @@ function UserMenu({ profile, signOut }: { profile: any; signOut: () => void }) {
 }
 
 // NAV_LINKS hrefs — labels are translated inside the component
+// hideOnMedium: hidden on screens ≤1200px to reduce crowding
 const NAV_HREFS = [
   { key: 'buy',          href: '/search?intent=sale' },
   { key: 'rent',         href: '/search?intent=rent' },
   { key: 'diaspora',     href: '/diaspora' },
   { key: 'developments', href: '/developments' },
   { key: 'ai_reports',   href: '/ai-reports', badge: 'AI' },
-  { key: 'about',        href: '/about' },
-  { key: 'contact',      href: '/contact' },
+  { key: 'about',        href: '/about',   hideOnMedium: true },
+  { key: 'contact',      href: '/contact', hideOnMedium: true },
 ]
 
 function LanguageToggle() {
@@ -164,16 +163,17 @@ function LanguageToggle() {
       onMouseLeave={() => setHov(false)}
       title={locale === 'en' ? 'Switch to Amharic' : 'Switch to English'}
       style={{
-        display: 'flex', alignItems: 'center', gap: 3,
-        padding: '5px 10px', borderRadius: 8, cursor: 'pointer', fontFamily: 'inherit',
+        display: 'flex', alignItems: 'center', gap: 4,
+        padding: '5px 8px', borderRadius: 8, cursor: 'pointer', fontFamily: 'inherit',
         border: `1px solid ${hov ? 'rgba(26,61,43,0.4)' : 'rgba(26,61,43,0.22)'}`,
         background: hov ? 'rgba(26,61,43,0.07)' : 'transparent',
-        fontSize: 12, fontWeight: 600, color: '#1a3d2b',
+        fontSize: 11, fontWeight: 600, color: '#1a3d2b',
         transition: 'all .15s', whiteSpace: 'nowrap', flexShrink: 0,
-        letterSpacing: '.01em',
+        letterSpacing: '.02em',
       }}
     >
-      {locale === 'en' ? <>EN <span style={{ opacity: .45 }}>|</span> አማ</> : <>አማ <span style={{ opacity: .45 }}>|</span> EN</>}
+      <Globe size={11} color="#1a3d2b"/>
+      {locale === 'en' ? 'EN' : 'አማ'}
     </button>
   )
 }
@@ -208,23 +208,27 @@ export function Navbar() {
   return (
     <>
       <nav style={{ position: 'sticky', top: 0, zIndex: 100, background: scrolled ? 'rgba(255,255,255,0.97)' : '#ffffff', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(0,0,0,0.08)', boxShadow: scrolled ? '0 2px 20px rgba(0,0,0,0.07)' : 'none', transition: 'all .25s' }}>
-        <div className="nav-inner" style={{ maxWidth: 1280, margin: '0 auto', height: 68, padding: '0 28px', display: 'flex', alignItems: 'center', gap: 4 }}>
+        <div className="nav-inner" style={{ maxWidth: 1280, margin: '0 auto', height: 60, padding: '0 20px', display: 'flex', alignItems: 'center', gap: 4 }}>
 
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginRight: 16, flexShrink: 0 }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', marginRight: 12, flexShrink: 0 }}>
             <HabeshaLogo/>
             <div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#111', lineHeight: 1.15, letterSpacing: '-.02em' }}>Habesha Properties</div>
-              <div style={{ fontSize: 8.5, color: '#bbb', letterSpacing: '.14em', fontWeight: 600 }}>ETHIOPIA</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#111', lineHeight: 1.15, letterSpacing: '-.02em' }}>Habesha Properties</div>
+              <div style={{ fontSize: 8, color: '#bbb', letterSpacing: '.14em', fontWeight: 600 }}>ETHIOPIA</div>
             </div>
           </Link>
 
-          <div className="nav-links-desktop" style={{ display: 'flex', gap: 1, flex: 1, alignItems: 'center' }}>
+          <div className="nav-links-desktop" style={{ display: 'flex', gap: 0, flex: 1, alignItems: 'center' }}>
             <Suspense fallback={null}>
-              {navLinks.map(l => <NavLink key={l.key} label={l.label} href={l.href} badge={l.badge}/>)}
+              {navLinks.map(l => (
+                <span key={l.key} className={(l as any).hideOnMedium ? 'nav-link-medium-hide' : undefined}>
+                  <NavLink label={l.label} href={l.href} badge={l.badge}/>
+                </span>
+              ))}
             </Suspense>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: 'auto' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, marginLeft: 'auto' }}>
             <SearchBtn onClick={() => setSearchOpen(true)}/>
             <LanguageToggle/>
             {showAuth && profile ? (
@@ -232,11 +236,11 @@ export function Navbar() {
                 <Link
                   href={profile.role === 'buyer' ? '/saved' : profile.role === 'admin' ? '/admin' : profile.role === 'developer' ? '/dashboard/developer' : '/dashboard'}
                   className="nav-dashboard-btn"
-                  style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 16px', fontSize: 13, fontWeight: 600, color: '#1a3d2b', background: 'rgba(26,61,43,0.07)', border: '1px solid rgba(26,61,43,0.25)', borderRadius: 8, textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all .15s' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', fontSize: 12, fontWeight: 600, color: '#1a3d2b', background: 'rgba(26,61,43,0.07)', border: '1px solid rgba(26,61,43,0.25)', borderRadius: 8, textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all .15s' }}
                   onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(26,61,43,0.14)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(26,61,43,0.4)' }}
                   onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(26,61,43,0.07)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(26,61,43,0.25)' }}
                 >
-                  {profile.role === 'buyer' ? <Heart size={13}/> : <LayoutDashboard size={13}/>}
+                  {profile.role === 'buyer' ? <Heart size={12}/> : <LayoutDashboard size={12}/>}
                   {profile.role === 'buyer' ? t('saved') : t('dashboard')}
                 </Link>
                 <UserMenu profile={profile} signOut={signOut}/>

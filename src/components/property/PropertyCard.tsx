@@ -70,6 +70,7 @@ export function PropertyCard({ property: p }: Props) {
   const [imgLoaded, setImgLoaded] = useState(false)
   const price = p.listing_intent === 'rent' ? p.rent_per_month_etb : p.price_etb
   const isRent = p.listing_intent === 'rent'
+  const isBoth = p.listing_intent === 'both'
   const agent = (p as any).agent
   const photos: string[] = (p as any).photos
   const photoCount = photos?.length || (p.cover_image_url ? 1 : 0)
@@ -118,11 +119,11 @@ export function PropertyCard({ property: p }: Props) {
           {/* Intent badge — top left */}
           <div style={{
             position: 'absolute', top: 12, left: 12,
-            background: isRent ? '#2563eb' : '#16a34a',
+            background: isRent ? '#1a3d2b' : isBoth ? '#7c3aed' : '#2563eb',
             color: '#fff', fontSize: 11, fontWeight: 700,
             padding: '4px 10px', borderRadius: 6, letterSpacing: '.04em',
           }}>
-            {isRent ? t('for_rent') : t('for_sale')}
+            {isRent ? t('for_rent') : isBoth ? `${t('for_sale')} & ${t('for_rent')}` : t('for_sale')}
           </div>
 
           {/* Verified badge — top left, below intent */}
