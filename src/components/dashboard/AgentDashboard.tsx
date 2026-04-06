@@ -272,17 +272,28 @@ export function AgentDashboard({ profile, properties, stats }: Props) {
       <div style={{ display: 'flex', gap: 2, marginBottom: 20, borderBottom: '2px solid #eae9e4', overflowX: 'auto' }}>
         {[
           { id: 'listings', label: `Listings (${properties.length})` },
-          { id: 'inquiries', label: `Inquiries${totalInquiries > 0 ? ` (${totalInquiries})` : ''}`, onSelect: markAllRead },
+          { id: 'inquiries', label: `Inquiries${totalInquiries > 0 ? ` (${totalInquiries})` : ''}` },
           { id: 'ai', label: '🤖 AI Tools' },
           { id: 'settings', label: 'Settings' },
-        ].map(t => (
-          <button key={t.id} onClick={() => { setTab(t.id as any); (t as any).onSelect?.() }} style={{
-            background: 'none', border: 'none', padding: '10px 16px', cursor: 'pointer', fontSize: 13,
-            fontWeight: tab === t.id ? 700 : 400,
-            color: tab === t.id ? '#16a34a' : '#888',
-            borderBottom: tab === t.id ? '2px solid #16a34a' : '2px solid transparent',
-            marginBottom: -2, transition: 'all .15s', fontFamily: 'inherit', whiteSpace: 'nowrap',
-          }}>{t.label}</button>
+        ].map(tabItem => (
+          <button
+            key={tabItem.id}
+            onClick={() => {
+              console.log('Tab clicked:', tabItem.id)
+              setTab(tabItem.id as any)
+              if (tabItem.id === 'inquiries') markAllRead()
+            }}
+            style={{
+              background: 'none', border: 'none', padding: '10px 16px', cursor: 'pointer', fontSize: 13,
+              fontWeight: tab === tabItem.id ? 700 : 400,
+              color: tab === tabItem.id ? '#16a34a' : '#888',
+              borderBottom: tab === tabItem.id ? '2px solid #16a34a' : '2px solid transparent',
+              marginBottom: -2, transition: 'all .15s', fontFamily: 'inherit', whiteSpace: 'nowrap',
+              pointerEvents: 'auto',
+            }}
+          >
+            {tabItem.label}
+          </button>
         ))}
       </div>
 
