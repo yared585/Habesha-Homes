@@ -13,6 +13,16 @@ const supabaseAdmin = createClient(
   { auth: { autoRefreshToken: false, persistSession: false } }
 )
 
+// Safely convert a Stripe Unix timestamp to ISO string — never throws
+function toISO(unixSeconds: number | null | undefined): string | null {
+  if (!unixSeconds || unixSeconds <= 0) return null
+  try {
+    return new Date(unixSeconds * 1000).toISOString()
+  } catch {
+    return null
+  }
+}
+
 // Map Stripe price unit_amount (cents) → plan name
 const AMOUNT_TO_PLAN: Record<number, string> = {
   100: 'basic',
@@ -73,7 +83,7 @@ export async function POST(req: NextRequest) {
             stripe_customer_id: session.customer as string,
             stripe_subscription_id: session.subscription as string,
             subscription_cancel_at_period_end: false,
-            subscription_current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
+            subscription_current_period_end: toISO(sub.current_period_end),
           })
           .eq('id', user_id)
         console.log('Profile update error:', error)
@@ -120,7 +130,7 @@ export async function POST(req: NextRequest) {
       const updates: Record<string, any> = {
         subscription_cancel_at_period_end: sub.cancel_at_period_end,
         stripe_subscription_id: sub.id,
-        subscription_current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
+        subscription_current_period_end: toISO(sub.current_period_end),
       }
       if (plan) updates.subscription_plan = plan
 
