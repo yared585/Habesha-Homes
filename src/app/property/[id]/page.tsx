@@ -49,14 +49,18 @@ function InquiryForm({ property }: { property: Property }) {
 
     console.log('Inquiry submitted for property:', property.id)
 
-    await sb.from('inquiries').insert({
+    const { data: { user } } = await sb.auth.getUser()
+
+    const { data: inquiryData, error: inquiryError } = await sb.from('inquiries').insert({
       property_id: property.id,
       agent_id: property.agent_id,
-      name: form.name,
-      email: form.email,
-      phone: form.phone,
+      buyer_id: user?.id || null,
       message: form.message,
-    })
+      is_read: false,
+    }).select()
+
+    console.log('Inquiry insert result:', inquiryData)
+    console.log('Inquiry insert error:', inquiryError)
 
     console.log('Inquiry saved, agent data:', JSON.stringify((property as any).agent))
 
