@@ -162,6 +162,13 @@ export function AgentDashboard({ profile, properties, stats }: Props) {
     setSubProfile(sub)
   }
 
+  async function markAllRead() {
+    const sb = createClient()
+    const { data: { user } } = await sb.auth.getUser()
+    if (!user) return
+    await sb.from('inquiries').update({ is_read: true }).eq('agent_id', user.id).eq('is_read', false)
+  }
+
   async function handleCancel() {
     if (!confirm('Cancel your subscription? You\'ll keep access until the end of your current billing period, then drop to the Free plan.')) return
     setCancelLoading(true)
@@ -264,11 +271,11 @@ export function AgentDashboard({ profile, properties, stats }: Props) {
       <div style={{ display: 'flex', gap: 2, marginBottom: 20, borderBottom: '2px solid #eae9e4', overflowX: 'auto' }}>
         {[
           { id: 'listings', label: `Listings (${properties.length})` },
-          { id: 'inquiries', label: `Inquiries${totalInquiries > 0 ? ` (${totalInquiries})` : ''}` },
+          { id: 'inquiries', label: `Inquiries${totalInquiries > 0 ? ` (${totalInquiries})` : ''}`, onSelect: markAllRead },
           { id: 'ai', label: '🤖 AI Tools' },
           { id: 'settings', label: 'Settings' },
         ].map(t => (
-          <button key={t.id} onClick={() => setTab(t.id as any)} style={{
+          <button key={t.id} onClick={() => { setTab(t.id as any); (t as any).onSelect?.() }} style={{
             background: 'none', border: 'none', padding: '10px 16px', cursor: 'pointer', fontSize: 13,
             fontWeight: tab === t.id ? 700 : 400,
             color: tab === t.id ? '#16a34a' : '#888',

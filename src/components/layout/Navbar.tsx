@@ -8,6 +8,7 @@ import { Search, LogOut, LayoutDashboard, Plus, User, Home, Building2, ChevronDo
 import { useTranslations, useLocale } from 'next-intl'
 import { useAuth } from '@/hooks/useAuth'
 import { SearchOverlay } from '@/components/layout/SearchOverlay'
+import { createClient } from '@/lib/supabase/client'
 
 function HabeshaLogo({ size = 38 }: { size?: number }) {
   return (
@@ -185,12 +186,41 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [showAuth, setShowAuth] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
 
   useEffect(() => {
     if (!profile) { setShowAuth(false); return }
-    // Small delay to sync with page redirect — prevents profile flickering on login
     const timer = setTimeout(() => setShowAuth(true), 300)
     return () => clearTimeout(timer)
+  }, [profile])
+
+  useEffect(() => {
+    if (!profile || profile.role !== 'agent') return
+
+    const supabase = createClient()
+
+    const fetchUnread = async () => {
+      const { count } = await supabase
+        .from('inquiries')
+        .select('*', { count: 'exact', head: true })
+        .eq('agent_id', profile.id)
+        .eq('is_read', false)
+      setUnreadCount(count || 0)
+    }
+
+    fetchUnread()
+
+    const channel = supabase
+      .channel('navbar-inquiries')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'inquiries',
+        filter: `agent_id=eq.${profile.id}`,
+      }, () => { fetchUnread() })
+      .subscribe()
+
+    return () => { supabase.removeChannel(channel) }
   }, [profile])
 
   const navLinks = NAV_HREFS.map(l => ({ ...l, label: t(l.key as any) }))
@@ -233,16 +263,30 @@ export function Navbar() {
             <LanguageToggle/>
             {showAuth && profile ? (
               <>
-                <Link
-                  href={profile.role === 'buyer' ? '/saved' : profile.role === 'admin' ? '/admin' : profile.role === 'developer' ? '/dashboard/developer' : '/dashboard'}
-                  className="nav-dashboard-btn"
-                  style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', fontSize: 12, fontWeight: 600, color: '#1a3d2b', background: 'rgba(26,61,43,0.07)', border: '1px solid rgba(26,61,43,0.25)', borderRadius: 8, textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all .15s' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(26,61,43,0.14)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(26,61,43,0.4)' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(26,61,43,0.07)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(26,61,43,0.25)' }}
-                >
-                  {profile.role === 'buyer' ? <Heart size={12}/> : <LayoutDashboard size={12}/>}
-                  {profile.role === 'buyer' ? t('saved') : t('dashboard')}
-                </Link>
+                <div style={{ position: 'relative', display: 'inline-flex', flexShrink: 0 }}>
+                  <Link
+                    href={profile.role === 'buyer' ? '/saved' : profile.role === 'admin' ? '/admin' : profile.role === 'developer' ? '/dashboard/developer' : '/dashboard'}
+                    className="nav-dashboard-btn"
+                    style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', fontSize: 12, fontWeight: 600, color: '#1a3d2b', background: 'rgba(26,61,43,0.07)', border: '1px solid rgba(26,61,43,0.25)', borderRadius: 8, textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all .15s' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(26,61,43,0.14)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(26,61,43,0.4)' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(26,61,43,0.07)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(26,61,43,0.25)' }}
+                  >
+                    {profile.role === 'buyer' ? <Heart size={12}/> : <LayoutDashboard size={12}/>}
+                    {profile.role === 'buyer' ? t('saved') : t('dashboard')}
+                  </Link>
+                  {unreadCount > 0 && (
+                    <span style={{
+                      position: 'absolute', top: -6, right: -6,
+                      background: '#dc2626', color: '#fff',
+                      borderRadius: '50%', width: 17, height: 17,
+                      fontSize: 10, fontWeight: 700,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      pointerEvents: 'none', border: '2px solid #fff',
+                    }}>
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                </div>
                 <UserMenu profile={profile} signOut={signOut}/>
               </>
             ) : (
