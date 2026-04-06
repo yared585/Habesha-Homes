@@ -61,8 +61,24 @@ function InquiryForm({ property }: { property: Property }) {
     console.log('Inquiry saved, agent data:', JSON.stringify((property as any).agent))
 
     // Email agent
-    const agentEmail = (property.agent as any)?.profile?.email
-    const agentName = (property.agent as any)?.agency_name || (property.agent as any)?.profile?.full_name || 'Agent'
+    let agentEmail = (property.agent as any)?.profile?.email
+    let agentName = (property.agent as any)?.agency_name || (property.agent as any)?.profile?.full_name || 'Agent'
+    console.log('Agent email from property join:', agentEmail)
+
+    // Fallback: fetch agent profile directly if not in joined data
+    if (!agentEmail && property.agent_id) {
+      console.log('Agent email not in property, fetching directly...')
+      const sb2 = createClient()
+      const { data: agentProfile } = await sb2
+        .from('profiles')
+        .select('email, full_name')
+        .eq('id', property.agent_id)
+        .single()
+      agentEmail = agentProfile?.email
+      agentName = agentProfile?.full_name || agentName
+      console.log('Fetched agent email directly:', agentEmail)
+    }
+
     console.log('Sending inquiry email to:', agentEmail)
 
     if (agentEmail) {
@@ -228,7 +244,7 @@ export default function PropertyDetailPage() {
     const sb = createClient()
     const { data } = await sb
       .from('properties')
-      .select('*,neighborhood:neighborhoods(*),agent:agents(*,profile:profiles(full_name,avatar_url,phone,email))')
+      .select('*,neighborhood:neighborhoods(*),agent:agents(id,agency_name,is_verified,rating,profile:profiles(id,full_name,avatar_url,phone,email))')
       .eq('id', id).single()
     if (data) {
       setProperty(data as unknown as Property)
