@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d2318"/>
+      <stop offset="60%" style="stop-color:#1a3d2b"/>
+      <stop offset="100%" style="stop-color:#0d2318"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:rgba(74,222,128,0.15)"/>
+      <stop offset="100%" style="stop-color:rgba(74,222,128,0)"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Subtle radial glow behind logo -->
+  <ellipse cx="600" cy="260" rx="340" ry="260" fill="url(#glow)"/>
+
+  <!-- Grid dots pattern (decorative) -->
+  <g opacity="0.06">
+    <pattern id="dots" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.5" fill="#4ade80"/>
+    </pattern>
+    <rect width="1200" height="630" fill="url(#dots)"/>
+  </g>
+
+  <!-- Logo icon - house with key -->
+  <g transform="translate(527, 140)">
+    <!-- Logo background pill -->
+    <rect x="-20" y="-20" width="186" height="186" rx="36" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+    <!-- House roof -->
+    <path d="M10 100 L73 37 L136 100" stroke="white" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <!-- House body -->
+    <rect x="47" y="100" width="52" height="46" rx="5" fill="white" opacity="0.95"/>
+    <!-- Door -->
+    <rect x="60" y="112" width="26" height="34" rx="4" fill="#1a3d2b"/>
+    <!-- Key circle -->
+    <circle cx="122" cy="55" r="18" fill="none" stroke="white" stroke-width="5.5"/>
+    <circle cx="122" cy="55" r="7" fill="white" opacity="0.35"/>
+    <!-- Key shaft -->
+    <line x1="136" y1="55" x2="152" y2="55" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="148" y1="55" x2="148" y2="65" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="140" y1="55" x2="140" y2="63" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- Brand name -->
+  <text x="600" y="390" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="72" font-weight="800" fill="white" text-anchor="middle" letter-spacing="-2">Habesha Properties</text>
+
+  <!-- Subtitle -->
+  <text x="600" y="450" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="28" font-weight="400" fill="rgba(255,255,255,0.55)" text-anchor="middle" letter-spacing="0.5">Ethiopia's #1 Property Marketplace</text>
+
+  <!-- Divider line -->
+  <line x1="480" y1="488" x2="720" y2="488" stroke="rgba(74,222,128,0.3)" stroke-width="1"/>
+
+  <!-- URL -->
+  <text x="600" y="525" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="22" font-weight="600" fill="#4ade80" text-anchor="middle" letter-spacing="1">habeshaproperties.com</text>
+
+</svg>

@@ -72,13 +72,13 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     siteName: 'Habesha Properties',
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Habesha Properties — Ethiopian Real Estate' }],
+    images: [{ url: '/og-image.svg', width: 1200, height: 630, alt: 'Habesha Properties — Ethiopian Real Estate' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Habesha Properties — Buy, Sell & Rent Property in Ethiopia',
     description: "Find houses for sale and apartments for rent in Addis Ababa. AI fraud detection, valuations and Amharic support.",
-    images: ['/og-image.png'],
+    images: ['/og-image.svg'],
   },
   robots: {
     index: true,
