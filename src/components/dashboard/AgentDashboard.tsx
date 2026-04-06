@@ -167,6 +167,7 @@ export function AgentDashboard({ profile, properties, stats }: Props) {
     const { data: { user } } = await sb.auth.getUser()
     if (!user) return
     await sb.from('inquiries').update({ is_read: true }).eq('agent_id', user.id).eq('is_read', false)
+    window.dispatchEvent(new Event('inquiries-read'))
   }
 
   async function handleCancel() {

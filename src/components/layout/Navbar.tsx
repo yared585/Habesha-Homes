@@ -235,6 +235,12 @@ export function Navbar() {
     return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('keydown', onKey) }
   }, [])
 
+  useEffect(() => {
+    const handler = () => setUnreadCount(0)
+    window.addEventListener('inquiries-read', handler)
+    return () => window.removeEventListener('inquiries-read', handler)
+  }, [])
+
   return (
     <>
       <nav style={{ position: 'sticky', top: 0, zIndex: 100, background: scrolled ? 'rgba(255,255,255,0.97)' : '#ffffff', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(0,0,0,0.08)', boxShadow: scrolled ? '0 2px 20px rgba(0,0,0,0.07)' : 'none', transition: 'all .25s' }}>
