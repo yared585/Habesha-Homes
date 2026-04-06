@@ -62,20 +62,21 @@ export async function POST(req: NextRequest) {
       }
 
       // Agent subscription activation — save customer + subscription IDs + period end
-      if (session.mode === 'subscription' && user_id && session.subscription) {
-        console.log('Session metadata:', session.metadata)
-        console.log('Updating plan for user:', user_id, 'to plan:', plan)
+      console.log('Webhook metadata:', session.metadata)
+      console.log('User ID:', user_id, 'Plan:', plan)
+      if (session.mode === 'subscription' && user_id && plan) {
         const sub = await stripe.subscriptions.retrieve(session.subscription as string)
-        await supabaseAdmin
+        const { error } = await supabaseAdmin
           .from('profiles')
           .update({
-            subscription_plan: plan || 'basic',
+            subscription_plan: plan,
             stripe_customer_id: session.customer as string,
             stripe_subscription_id: session.subscription as string,
             subscription_cancel_at_period_end: false,
             subscription_current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
           })
           .eq('id', user_id)
+        console.log('Profile update error:', error)
       }
 
       console.log('Checkout completed:', session.id, 'type:', session.mode, report_type || plan)

@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
         },
         quantity: 1,
       }],
-      metadata: { user_id: user.id, plan },
+      metadata: { user_id: user.id, plan: plan },
       customer_email: user.email,
       success_url: `${APP_URL}/dashboard?subscribed=true&plan=${plan}`,
       cancel_url: `${APP_URL}/pricing`,
