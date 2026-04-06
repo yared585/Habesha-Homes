@@ -198,7 +198,7 @@ export function AgentDashboard({ profile, properties, stats }: Props) {
               {agentData?.agency_name} · {agentData?.is_verified ? '✓ Verified agent' : 'Unverified'}
             </span>
             {(() => {
-              const plan = agentData?.subscription_plan || 'free'
+              const plan = subProfile?.subscription_plan || agentData?.subscription_plan || 'free'
               const planStyle: Record<string, { bg: string; color: string }> = {
                 free:    { bg: 'rgba(255,255,255,0.1)',   color: 'rgba(255,255,255,0.6)' },
                 basic:   { bg: 'rgba(37,99,235,0.3)',     color: '#93c5fd' },
@@ -222,7 +222,7 @@ export function AgentDashboard({ profile, properties, stats }: Props) {
       </div>
 
       {/* Upgrade banner — free plan with 2+ listings */}
-      {(agentData?.subscription_plan === 'free' || !agentData?.subscription_plan) && properties.length >= 2 && (
+      {(subProfile?.subscription_plan || agentData?.subscription_plan || 'free') === 'free' && properties.length >= 2 && (
         <div style={{ background: '#fef9ec', border: '1px solid #fde68a', borderRadius: 12, padding: '12px 18px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 18 }}>⚡</span>
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -358,7 +358,7 @@ export function AgentDashboard({ profile, properties, stats }: Props) {
                 { label: 'Email', value: profile.email },
                 { label: 'Phone', value: profile.phone },
                 { label: 'Agency', value: agentData?.agency_name },
-                { label: 'Plan', value: agentData?.subscription_plan || 'Free' },
+                { label: 'Plan', value: subProfile?.subscription_plan || agentData?.subscription_plan || 'Free' },
               ].map(({ label, value }) => (
                 <div key={label}>
                   <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>{label}</div>
