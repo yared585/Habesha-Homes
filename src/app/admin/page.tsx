@@ -66,6 +66,8 @@ export default function AdminPage() {
   const [showNewProject, setShowNewProject] = useState(false)
   const [newProject, setNewProject] = useState<any>({ ...BLANK_PROJECT })
   const [savingProject, setSavingProject] = useState(false)
+  const [aiUpdating, setAiUpdating] = useState(false)
+  const [aiUpdateResult, setAiUpdateResult] = useState<{ updated: number; timestamp: string } | null>(null)
   const [stats, setStats] = useState({
     totalListings: 0, activeListings: 0, pendingListings: 0, rejectedListings: 0,
     totalAgents: 0, verifiedAgents: 0,
@@ -83,6 +85,21 @@ export default function AdminPage() {
     const { data: profile } = await sb.from('profiles').select('role').eq('id', user.id).single()
     if (!profile || profile.role !== 'admin') { router.push('/'); return }
     await loadAll()
+  }
+
+  async function triggerAiNeighborhoodUpdate() {
+    setAiUpdating(true)
+    setAiUpdateResult(null)
+    try {
+      const res = await fetch('/api/cron/update-neighborhoods', { method: 'POST' })
+      if (!res.ok) throw new Error(await res.text())
+      const data = await res.json()
+      setAiUpdateResult(data)
+    } catch (e) {
+      console.error('AI neighborhood update failed:', e)
+    } finally {
+      setAiUpdating(false)
+    }
   }
 
   async function loadAll() {
@@ -333,6 +350,28 @@ export default function AdminPage() {
               <StatCard icon={<Users size={16}/>} label="Total users" value={stats.totalUsers} sub={`${stats.buyerUsers} buyers`} color="#7c3aed"/>
               <StatCard icon={<Activity size={16}/>} label="Inquiries" value={stats.totalInquiries} color="#d97706"/>
               <StatCard icon={<DollarSign size={16}/>} label="Revenue" value={`$${stats.totalRevenue.toFixed(0)}`} sub="AI reports sold" color="#16a34a"/>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+              <button
+                onClick={triggerAiNeighborhoodUpdate}
+                disabled={aiUpdating}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '9px 18px', borderRadius: 9, border: 'none',
+                  background: aiUpdating ? '#e8f5e9' : '#16a34a', color: aiUpdating ? '#16a34a' : '#fff',
+                  fontWeight: 700, fontSize: 13, cursor: aiUpdating ? 'not-allowed' : 'pointer',
+                  fontFamily: 'inherit', transition: 'background 0.15s',
+                }}
+              >
+                <RefreshCw size={14} style={{ animation: aiUpdating ? 'spin 1s linear infinite' : 'none' }}/>
+                {aiUpdating ? 'Updating...' : '🤖 AI Update Neighborhoods'}
+              </button>
+              {aiUpdateResult && (
+                <span style={{ fontSize: 13, color: '#16a34a', fontWeight: 600 }}>
+                  ✓ Updated {aiUpdateResult.updated} neighborhoods · {new Date(aiUpdateResult.timestamp).toLocaleTimeString()}
+                </span>
+              )}
             </div>
 
             {stats.pendingListings > 0 && (
