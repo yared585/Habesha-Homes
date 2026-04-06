@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
-const FROM = 'Habesha Properties <onboarding@resend.dev>'
+const FROM = 'Habesha Properties <noreply@habeshaproperties.com>'
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://habeshaproperties.com'
-// Until domain is verified, all emails go to admin email
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'yohanesy585@gmail.com'
 
 // ── Email templates ────────────────────────────────────────────────────────
@@ -273,13 +272,12 @@ ${data.phone ? `<tr><td style="font-size:13px;color:#888;padding:6px 0;">Phone</
         return NextResponse.json({ error: 'Unknown email type' }, { status: 400 })
     }
 
-    // Use admin email until domain is verified
-    const recipient = process.env.DOMAIN_VERIFIED === 'true' ? to : ADMIN_EMAIL
+    console.log('Sending email to:', to, 'from: noreply@habeshaproperties.com')
 
     const { data: result, error } = await resend.emails.send({
       from: FROM,
-      to: recipient,
-      subject: recipient !== to ? `[To: ${to}] ${subject}` : subject,
+      to,
+      subject,
       html,
     })
 
@@ -291,12 +289,12 @@ ${data.phone ? `<tr><td style="font-size:13px;color:#888;padding:6px 0;">Phone</
     // Send buyer confirmation for inquiry emails
     if (type === 'inquiry' && data.buyerEmail) {
       try {
-        const buyerRecipient = process.env.DOMAIN_VERIFIED === 'true' ? data.buyerEmail : ADMIN_EMAIL
         const buyerSubject = `Your inquiry for "${data.propertyTitle}" was received`
+        console.log('Sending email to:', data.buyerEmail, 'from: noreply@habeshaproperties.com')
         await resend.emails.send({
           from: FROM,
-          to: buyerRecipient,
-          subject: buyerRecipient !== data.buyerEmail ? `[To: ${data.buyerEmail}] ${buyerSubject}` : buyerSubject,
+          to: data.buyerEmail,
+          subject: buyerSubject,
           html: buyerConfirmationHtml({
             buyerName: data.buyerName,
             propertyTitle: data.propertyTitle,
