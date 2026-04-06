@@ -62,12 +62,14 @@ export async function POST(req: NextRequest) {
       }
 
       // Agent subscription activation — save customer + subscription IDs + period end
-      if (session.mode === 'subscription' && user_id && plan && session.subscription) {
+      if (session.mode === 'subscription' && user_id && session.subscription) {
+        console.log('Session metadata:', session.metadata)
+        console.log('Updating plan for user:', user_id, 'to plan:', plan)
         const sub = await stripe.subscriptions.retrieve(session.subscription as string)
         await supabaseAdmin
           .from('profiles')
           .update({
-            subscription_plan: plan,
+            subscription_plan: plan || 'basic',
             stripe_customer_id: session.customer as string,
             stripe_subscription_id: session.subscription as string,
             subscription_cancel_at_period_end: false,
