@@ -47,6 +47,8 @@ function InquiryForm({ property }: { property: Property }) {
     setError('')
     const sb = createClient()
 
+    console.log('Inquiry submitted for property:', property.id)
+
     await sb.from('inquiries').insert({
       property_id: property.id,
       agent_id: property.agent_id,
@@ -56,11 +58,15 @@ function InquiryForm({ property }: { property: Property }) {
       message: form.message,
     })
 
+    console.log('Inquiry saved, agent data:', JSON.stringify((property as any).agent))
+
     // Email agent
     const agentEmail = (property.agent as any)?.profile?.email
     const agentName = (property.agent as any)?.agency_name || (property.agent as any)?.profile?.full_name || 'Agent'
+    console.log('Sending inquiry email to:', agentEmail)
+
     if (agentEmail) {
-      await fetch('/api/email', {
+      const emailResponse = await fetch('/api/email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -68,7 +74,10 @@ function InquiryForm({ property }: { property: Property }) {
           to: agentEmail,
           data: { agentName, buyerName: form.name, buyerEmail: form.email, buyerPhone: form.phone, message: form.message, propertyTitle: property.title, propertyId: property.id }
         })
-      }).catch(() => {})
+      })
+      console.log('Email API response:', emailResponse.status)
+    } else {
+      console.log('No agent email found — skipping email notification')
     }
 
     setSent(true)
