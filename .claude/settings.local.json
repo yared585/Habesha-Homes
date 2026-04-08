@@ -12,7 +12,10 @@
       "Bash(npm install:*)",
       "Bash(node -e \"console.log\\(require\\('./node_modules/next-intl/package.json'\\).version\\)\")",
       "Bash(node -e \"require\\('next-intl/plugin'\\); console.log\\('plugin ok'\\)\" --prefix \"C:/Users/User/OneDrive/Desktop/All Projects/habesha-homes/habesha-homes\")",
-      "Bash(node -e \"require\\('next-intl/plugin'\\); console.log\\('plugin ok'\\)\")"
+      "Bash(node -e \"require\\('next-intl/plugin'\\); console.log\\('plugin ok'\\)\")",
+      "Bash(node -e \"const l = require\\('lucide-react'\\); console.log\\('HardHat:', !!l.HardHat, 'TreePine:', !!l.TreePine, 'Store:', !!l.Store, 'Home:', !!l.Home, 'Building2:', !!l.Building2\\)\")",
+      "Bash(node -e \"const d=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\); const p=JSON.parse\\(d\\); console.log\\('version:', p.version\\)\")",
+      "Bash(node:*)"
     ]
   }
 }

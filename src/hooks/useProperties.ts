@@ -85,3 +85,28 @@ export function useLiveStats() {
 
   return { stats, loading }
 }
+
+export function usePropertyCounts() {
+  const [counts, setCounts] = useState<Record<string, number>>({})
+  const [loading, setLoading] = useState(true)
+  useEffect(() => {
+    const sb = createClient()
+    Promise.all([
+      sb.from('properties').select('*', { count: 'exact', head: true }).eq('status', 'active').in('property_type', ['house', 'villa']),
+      sb.from('properties').select('*', { count: 'exact', head: true }).eq('status', 'active').in('property_type', ['apartment', 'condominium']),
+      sb.from('properties').select('*', { count: 'exact', head: true }).eq('status', 'active').eq('property_type', 'land'),
+      sb.from('properties').select('*', { count: 'exact', head: true }).eq('status', 'active').in('property_type', ['commercial', 'office']),
+      sb.from('projects').select('*', { count: 'exact', head: true }),
+    ]).then(([houses, apartments, land, commercial, developments]) => {
+      setCounts({
+        house: houses.count || 0,
+        apartment: apartments.count || 0,
+        land: land.count || 0,
+        commercial: commercial.count || 0,
+        developments: developments.count || 0,
+      })
+      setLoading(false)
+    })
+  }, [])
+  return { counts, loading }
+}

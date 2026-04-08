@@ -82,9 +82,9 @@ export function PropertyCard({ property: p }: Props) {
         onMouseLeave={() => setHov(false)}
         style={{
           background: '#fff',
-          borderRadius: 12,
+          borderRadius: 20,
           overflow: 'hidden',
-          border: '1px solid #e5e4df',
+          border: '0.5px solid #ebebeb',
           transition: 'box-shadow .2s, transform .2s',
           boxShadow: hov ? '0 8px 32px rgba(0,0,0,0.13)' : '0 2px 8px rgba(0,0,0,0.05)',
           transform: hov ? 'translateY(-3px)' : 'none',
@@ -92,7 +92,7 @@ export function PropertyCard({ property: p }: Props) {
         }}
       >
         {/* ── Image ───────────────────────────────────────── */}
-        <div style={{ position: 'relative', paddingBottom: '63%', background: '#f0f0ec', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', paddingBottom: '56%', background: '#f0f0ec', overflow: 'hidden', borderRadius: '20px 20px 0 0' }}>
           {p.cover_image_url
             ? <img
                 src={p.cover_image_url}
@@ -119,9 +119,9 @@ export function PropertyCard({ property: p }: Props) {
           {/* Intent badge — top left */}
           <div style={{
             position: 'absolute', top: 12, left: 12,
-            background: isRent ? '#1a3d2b' : isBoth ? '#7c3aed' : '#2563eb',
-            color: '#fff', fontSize: 11, fontWeight: 700,
-            padding: '4px 10px', borderRadius: 6, letterSpacing: '.04em',
+            background: 'rgba(0,0,0,0.52)', color: '#fff', fontSize: 10, fontWeight: 600,
+            padding: '4px 12px', borderRadius: 20, letterSpacing: '.03em',
+            backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.15)',
           }}>
             {isRent ? t('for_rent') : isBoth ? `${t('for_sale')} & ${t('for_rent')}` : t('for_sale')}
           </div>
@@ -155,11 +155,11 @@ export function PropertyCard({ property: p }: Props) {
         </div>
 
         {/* ── Card body ───────────────────────────────────── */}
-        <div style={{ padding: '8px 12px 10px', display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <div style={{ padding: '12px 14px 16px', display: 'flex', flexDirection: 'column', gap: 1 }}>
 
           {/* Price */}
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-            <span style={{ fontSize: 22, fontWeight: 800, color: '#111', letterSpacing: '-.02em' }}>
+            <span style={{ fontSize: 18, fontWeight: 700, color: '#111', letterSpacing: '-.02em' }}>
               ETB {(price || 0).toLocaleString()}
             </span>
             {isRent && <span style={{ fontSize: 10.5, color: '#888', fontWeight: 500 }}>/mo</span>}
@@ -178,7 +178,7 @@ export function PropertyCard({ property: p }: Props) {
           </div>
 
           {/* Title — single line, below specs */}
-          <div style={{ fontSize: 12.5, fontWeight: 600, color: '#333', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#222', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {p.title}
           </div>
 

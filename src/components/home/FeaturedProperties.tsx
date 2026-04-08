@@ -145,18 +145,18 @@ export function FeaturedProperties() {
   }, [])
 
   return (
-    <section style={{ padding: 'clamp(28px, 3vw, 48px) 24px', background: '#fafaf8' }}>
+    <section style={{ padding: '20px 24px', background: '#fafaf8' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
 
         {/* Section heading */}
-        <div style={{ marginBottom: 32 }}>
+        <div style={{ marginBottom: 16 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 20, padding: '4px 12px', marginBottom: 8 }}>
             <Sparkles size={11} color="#16a34a"/>
             <span style={{ fontSize: 11, fontWeight: 700, color: '#16a34a', letterSpacing: '.07em', textTransform: 'uppercase' }}>Featured listings</span>
           </div>
           <h2 style={{
             fontFamily: "'Instrument Serif', Georgia, serif",
-            fontSize: 'clamp(26px, 4vw, 42px)',
+            fontSize: 'clamp(18px, 2.5vw, 28px)',
             fontWeight: 400, color: '#1a1a18',
             margin: 0, lineHeight: 1.08, letterSpacing: '-.02em',
           }}>

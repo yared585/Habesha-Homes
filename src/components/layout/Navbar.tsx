@@ -182,6 +182,8 @@ function LanguageToggle() {
 export function Navbar() {
   const { profile, signOut } = useAuth()
   const t = useTranslations('nav')
+  const pathname = usePathname()
+  const isHome = pathname === '/' || pathname === '/en' || pathname === '/am'
   const [searchOpen, setSearchOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -241,9 +243,31 @@ export function Navbar() {
     return () => window.removeEventListener('inquiries-read', handler)
   }, [])
 
+  useEffect(() => {
+    if (!isHome) return
+    let lastY = window.scrollY
+    const bar = document.getElementById('category-bar')
+    const onScroll = () => {
+      const y = window.scrollY
+      if (!bar) return
+      if (y > lastY && y > 80) {
+        bar.style.transform = 'translateY(-100%)'
+        bar.style.opacity = '0'
+        bar.style.pointerEvents = 'none'
+      } else {
+        bar.style.transform = 'translateY(0)'
+        bar.style.opacity = '1'
+        bar.style.pointerEvents = 'auto'
+      }
+      lastY = y
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [isHome])
+
   return (
     <>
-      <nav style={{ position: 'sticky', top: 0, zIndex: 100, background: scrolled ? 'rgba(255,255,255,0.97)' : '#ffffff', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(0,0,0,0.08)', boxShadow: scrolled ? '0 2px 20px rgba(0,0,0,0.07)' : 'none', transition: 'all .25s' }}>
+      <nav style={{ position: 'sticky', top: 0, zIndex: 100, background: isHome && !scrolled ? 'transparent' : 'rgba(255,255,255,0.97)', backdropFilter: 'blur(20px)', borderBottom: scrolled ? '1px solid rgba(0,0,0,0.08)' : isHome && !scrolled ? 'none' : '1px solid rgba(0,0,0,0.08)', boxShadow: scrolled ? '0 2px 20px rgba(0,0,0,0.07)' : 'none', transition: 'all .25s' }}>
         <div className="nav-inner" style={{ maxWidth: 1280, margin: '0 auto', height: 60, padding: '0 20px', display: 'flex', alignItems: 'center', gap: 4 }}>
 
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', marginRight: 12, flexShrink: 0 }}>
@@ -352,6 +376,53 @@ export function Navbar() {
           </div>
         )}
       </nav>
+      {isHome && (
+        <div
+          id='category-bar'
+          style={{
+            background: '#fff',
+            borderBottom: '1px solid #ebebeb',
+            overflowX: 'auto',
+            scrollbarWidth: 'none' as const,
+            transition: 'transform .3s ease, opacity .3s ease',
+            willChange: 'transform',
+          }}
+        >
+          <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {[
+              { label: 'Houses',           href: '/search?types=house',      emoji: '🏠' },
+              { label: 'Apartments',       href: '/search?types=apartment',  emoji: '🏢' },
+              { label: 'New developments', href: '/developments',            emoji: '🏗️' },
+              { label: 'Land plots',       href: '/search?types=land',       emoji: '🌍' },
+              { label: 'Commercial',       href: '/search?types=commercial', emoji: '🏪' },
+            ].map(({ label, href, emoji }) => (
+              <Link
+                key={label}
+                href={href}
+                style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center',
+                  gap: 3, padding: '8px 20px', textDecoration: 'none',
+                  borderBottom: '2px solid transparent', transition: 'all .2s',
+                  flexShrink: 0, color: '#717171',
+                }}
+                onMouseEnter={e => {
+                  const el = e.currentTarget as HTMLAnchorElement
+                  el.style.borderBottomColor = '#1a3d2b'
+                  el.style.color = '#111'
+                }}
+                onMouseLeave={e => {
+                  const el = e.currentTarget as HTMLAnchorElement
+                  el.style.borderBottomColor = 'transparent'
+                  el.style.color = '#717171'
+                }}
+              >
+                <span style={{ fontSize: 28, lineHeight: 1, display: 'block' }}>{emoji}</span>
+                <span style={{ fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap', color: 'inherit' }}>{label}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
       {searchOpen && <SearchOverlay onClose={() => setSearchOpen(false)}/>}
     </>
   )
