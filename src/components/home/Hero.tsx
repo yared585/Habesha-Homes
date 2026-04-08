@@ -106,7 +106,7 @@ export function Hero() {
   return (
     <section style={{
       background: '#fff',
-      padding: '20px 24px 18px',
+      padding: 'clamp(14px, 3vw, 20px) clamp(16px, 4vw, 24px) clamp(12px, 2vw, 18px)',
       borderBottom: '1px solid #ebebeb',
       position: 'relative',
     }}>
@@ -114,13 +114,9 @@ export function Hero() {
 
         {/* headline */}
         <div style={{ textAlign: 'center', marginBottom: 14 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 20, padding: '3px 12px', marginBottom: 8 }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }}/>
-            <span style={{ fontSize: 11, fontWeight: 600, color: '#15803d', letterSpacing: '.04em' }}>Ethiopia's trusted property marketplace</span>
-          </div>
           <h1 style={{
             fontFamily: "'Instrument Serif', Georgia, serif",
-            fontSize: 'clamp(20px, 2.5vw, 32px)',
+            fontSize: 'clamp(24px, 5vw, 36px)',
             fontWeight: 400, color: '#111',
             lineHeight: 1.1, letterSpacing: '-.02em', margin: '0 0 10px',
           }}>
@@ -195,13 +191,14 @@ export function Hero() {
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
               background: '#1a3d2b', color: '#fff', borderRadius: 50,
-              padding: '14px', fontSize: 15, fontWeight: 700, textDecoration: 'none',
+              padding: '13px 20px', fontSize: 15, fontWeight: 700, textDecoration: 'none',
+              boxShadow: '0 2px 12px rgba(26,61,43,0.25)',
             }}
           ><Search size={17}/> {tl('search')}</Link>
-          <div style={{ display: 'flex', gap: 8, marginTop: 10, justifyContent: 'center' }}>
-            <Link href="/search?intent=sale" style={{ flex: 1, textAlign: 'center', padding: '10px', background: '#f0fdf4', color: '#1a3d2b', borderRadius: 24, fontSize: 13, fontWeight: 600, textDecoration: 'none', border: '1px solid #bbf7d0' }}>{tl('buy')}</Link>
-            <Link href="/search?intent=rent" style={{ flex: 1, textAlign: 'center', padding: '10px', background: '#f0fdf4', color: '#1a3d2b', borderRadius: 24, fontSize: 13, fontWeight: 600, textDecoration: 'none', border: '1px solid #bbf7d0' }}>{tl('rent')}</Link>
-            <Link href="/search?view=map" style={{ flex: 1, textAlign: 'center', padding: '10px', background: '#f5f5f2', color: '#555', borderRadius: 24, fontSize: 13, fontWeight: 600, textDecoration: 'none', border: '1px solid #e8e7e2' }}>{tl('map')}</Link>
+          <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+            <Link href="/search?intent=sale" style={{ flex: 1, textAlign: 'center', padding: '11px 8px', background: '#f0fdf4', color: '#1a3d2b', borderRadius: 24, fontSize: 13, fontWeight: 600, textDecoration: 'none', border: '1px solid #bbf7d0' }}>{tl('buy')}</Link>
+            <Link href="/search?intent=rent" style={{ flex: 1, textAlign: 'center', padding: '11px 8px', background: '#f0fdf4', color: '#1a3d2b', borderRadius: 24, fontSize: 13, fontWeight: 600, textDecoration: 'none', border: '1px solid #bbf7d0' }}>{tl('rent')}</Link>
+            <Link href="/search?view=map" style={{ flex: 1, textAlign: 'center', padding: '11px 8px', background: '#f5f5f2', color: '#555', borderRadius: 24, fontSize: 13, fontWeight: 600, textDecoration: 'none', border: '1px solid #e8e7e2' }}>{tl('map')}</Link>
           </div>
         </div>
 

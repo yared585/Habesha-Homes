@@ -45,17 +45,17 @@ function ScrollRow({
   const { properties, loading, count } = useProperties({ limit: 6, intent, sortBy })
 
   const cardSlot = {
-    flex: '0 0 clamp(260px, 72vw, 320px)',
+    flex: '0 0 clamp(220px, 78vw, 320px)',
     minWidth: 0,
     scrollSnapAlign: 'start' as const,
   }
 
   return (
-    <div style={{ marginBottom: 44 }}>
+    <div style={{ marginBottom: 28 }}>
       {/* Row header */}
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 14, gap: 12 }}>
         <div>
-          <h3 style={{ margin: '0 0 3px', fontSize: 19, fontWeight: 700, color: '#111', letterSpacing: '-.02em' }}>{title}</h3>
+          <h3 style={{ margin: '0 0 3px', fontSize: 'clamp(15px, 4vw, 19px)', fontWeight: 700, color: '#111', letterSpacing: '-.02em' }}>{title}</h3>
           <p style={{ margin: 0, fontSize: 12.5, color: '#aaa' }}>{subtitle}</p>
         </div>
         {!loading && count > 0 && (
@@ -145,18 +145,18 @@ export function FeaturedProperties() {
   }, [])
 
   return (
-    <section style={{ padding: '20px 24px', background: '#fafaf8' }}>
+    <section style={{ padding: '16px 24px', background: '#fafaf8' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
 
         {/* Section heading */}
         <div style={{ marginBottom: 16 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 20, padding: '4px 12px', marginBottom: 8 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 20, padding: '4px 12px', marginBottom: 4 }}>
             <Sparkles size={11} color="#16a34a"/>
             <span style={{ fontSize: 11, fontWeight: 700, color: '#16a34a', letterSpacing: '.07em', textTransform: 'uppercase' }}>Featured listings</span>
           </div>
           <h2 style={{
             fontFamily: "'Instrument Serif', Georgia, serif",
-            fontSize: 'clamp(18px, 2.5vw, 28px)',
+            fontSize: 'clamp(16px, 2vw, 22px)',
             fontWeight: 400, color: '#1a1a18',
             margin: 0, lineHeight: 1.08, letterSpacing: '-.02em',
           }}>

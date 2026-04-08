@@ -381,9 +381,11 @@ export function Navbar() {
           id='category-bar'
           style={{
             background: '#fff',
+            borderTop: '1px solid #ebebeb',
             borderBottom: '1px solid #ebebeb',
             overflowX: 'auto',
             scrollbarWidth: 'none' as const,
+            WebkitOverflowScrolling: 'touch' as any,
             transition: 'transform .3s ease, opacity .3s ease',
             willChange: 'transform',
           }}
@@ -416,8 +418,8 @@ export function Navbar() {
                   el.style.color = '#717171'
                 }}
               >
-                <span style={{ fontSize: 28, lineHeight: 1, display: 'block' }}>{emoji}</span>
-                <span style={{ fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap', color: 'inherit' }}>{label}</span>
+                <span style={{ fontSize: 22, lineHeight: 1, display: 'block' }}>{emoji}</span>
+                <span style={{ fontSize: 10.5, fontWeight: 600, whiteSpace: 'nowrap', color: 'inherit' }}>{label}</span>
               </Link>
             ))}
           </div>

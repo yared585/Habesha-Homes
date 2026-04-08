@@ -282,6 +282,15 @@ img { max-width: 100%; display: block; }
     padding: 0 16px !important;
   }
 
+  /* Category bar — tighter on mobile */
+  #category-bar a {
+    padding: 8px 16px !important;
+    gap: 3px !important;
+  }
+  #category-bar span[style*='font-size: 22'] {
+    font-size: 18px !important;
+  }
+
   /* Show sticky contact bar on mobile */
   .mobile-sticky-bar {
     display: block !important;
