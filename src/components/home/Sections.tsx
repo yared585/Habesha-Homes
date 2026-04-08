@@ -109,17 +109,36 @@ function NeighborhoodCard({ n }: { n: any }) {
   )
 }
 
+function NeighborhoodSkeleton() {
+  return (
+    <div style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 14, padding: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+        <div>
+          <div style={{ width: 80, height: 14, borderRadius: 6, background: '#efefec', marginBottom: 6 }}/>
+          <div style={{ width: 56, height: 11, borderRadius: 5, background: '#f5f5f2' }}/>
+        </div>
+        <div style={{ width: 40, height: 20, borderRadius: 20, background: '#f0fdf4' }}/>
+      </div>
+      <div style={{ width: '100%', height: 36, borderRadius: 6, background: '#f5f5f2', marginBottom: 8 }}/>
+      <div style={{ width: 72, height: 14, borderRadius: 5, background: '#efefec' }}/>
+    </div>
+  )
+}
+
 export function NeighborhoodGrid() {
   const { neighborhoods, loading } = useNeighborhoods(8)
   const FAKE = Object.entries(TRENDS).map(([name, data]) => ({ id: name, name, name_amharic: '', avg_price_per_sqm_etb: data[data.length-1]*1000, price_trend_12m: 12.5 }))
-  const display = neighborhoods.length > 0 ? neighborhoods : FAKE
+  const display = loading ? [] : (neighborhoods.length > 0 ? neighborhoods : FAKE)
 
   return (
     <section style={{ padding: '80px 24px', background: '#fafaf8' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <SectionHeader title="Browse by neighborhood" subtitle="Explore price trends across Addis Ababa and beyond"/>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 14 }}>
-          {display.map((n: any) => <NeighborhoodCard key={n.id || n.name} n={n}/>)}
+          {loading
+            ? Array.from({ length: 8 }).map((_, i) => <NeighborhoodSkeleton key={i}/>)
+            : display.map((n: any) => <NeighborhoodCard key={n.id || n.name} n={n}/>)
+          }
         </div>
       </div>
     </section>

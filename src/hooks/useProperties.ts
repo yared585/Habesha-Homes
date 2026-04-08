@@ -56,7 +56,8 @@ export function useNeighborhoods(limit = 8) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    createClient().from('neighborhoods').select('*')
+    createClient().from('neighborhoods').select('id, name, name_amharic, avg_price_per_sqm_etb, price_trend_12m')
+      .not('avg_price_per_sqm_etb', 'is', null)
       .order('avg_price_per_sqm_etb', { ascending: false })
       .limit(limit)
       .then(({ data }) => { setNeighborhoods(data || []); setLoading(false) })
