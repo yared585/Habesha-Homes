@@ -284,11 +284,8 @@ img { max-width: 100%; display: block; }
 
   /* Category bar — tighter on mobile */
   #category-bar a {
-    padding: 8px 16px !important;
+    padding: 8px 14px !important;
     gap: 3px !important;
-  }
-  #category-bar span[style*='font-size: 22'] {
-    font-size: 18px !important;
   }
 
   /* Show sticky contact bar on mobile */
@@ -353,6 +350,13 @@ img { max-width: 100%; display: block; }
   .nav-dashboard-btn {
     font-size: 12px !important;
     padding: 5px 10px !important;
+  }
+}
+
+/* Category bar — center items on desktop only */
+@media (min-width: 769px) {
+  .category-bar-inner {
+    justify-content: center !important;
   }
 }
 

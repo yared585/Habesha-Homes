@@ -390,7 +390,7 @@ export function Navbar() {
             willChange: 'transform',
           }}
         >
-          <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="category-bar-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '0 20px', display: 'flex', alignItems: 'center' }}>
             {[
               { label: 'Houses',           href: '/search?types=house',      emoji: '🏠' },
               { label: 'Apartments',       href: '/search?types=apartment',  emoji: '🏢' },
