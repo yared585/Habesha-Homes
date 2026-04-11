@@ -111,7 +111,6 @@ export default function SignupPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         type: 'welcome',
-        to: form.email,
         data: { name: form.fullName || form.email.split('@')[0], role }
       })
     }).catch(() => {}) // Don't block signup if email fails

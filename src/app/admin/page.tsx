@@ -173,11 +173,11 @@ export default function AdminPage() {
       const property = properties.find(p => p.id === id)
       const agentEmail = property?.agent?.profile?.email
       const agentName = property?.agent?.agency_name || property?.agent?.profile?.full_name
-      if (agentEmail) {
+      if (property?.id) {
         await fetch('/api/email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'listing_approved', to: agentEmail, data: { agentName, propertyTitle: property?.title, propertyId: id } })
+          body: JSON.stringify({ type: 'listing_approved', data: { propertyId: id } })
         }).catch(() => {})
       }
     }

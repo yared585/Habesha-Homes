@@ -82,8 +82,7 @@ export function PropertyCard({ property: p }: Props) {
         onMouseLeave={() => setHov(false)}
         style={{
           background: '#fff',
-          borderRadius: 20,
-          overflow: 'hidden',
+          borderRadius: 16,
           border: '0.5px solid #ebebeb',
           transition: 'box-shadow .2s, transform .2s',
           boxShadow: hov ? '0 8px 32px rgba(0,0,0,0.13)' : '0 2px 8px rgba(0,0,0,0.05)',
@@ -92,7 +91,7 @@ export function PropertyCard({ property: p }: Props) {
         }}
       >
         {/* ── Image ───────────────────────────────────────── */}
-        <div style={{ position: 'relative', paddingBottom: '56%', background: '#f0f0ec', overflow: 'hidden', borderRadius: '20px 20px 0 0' }}>
+        <div style={{ position: 'relative', paddingBottom: '56%', background: '#f0f0ec', overflow: 'hidden', borderRadius: '16px 16px 0 0' }}>
           {p.cover_image_url
             ? <img
                 src={p.cover_image_url}
@@ -118,12 +117,19 @@ export function PropertyCard({ property: p }: Props) {
 
           {/* Intent badge — top left */}
           <div style={{
-            position: 'absolute', top: 12, left: 12,
-            background: 'rgba(0,0,0,0.52)', color: '#fff', fontSize: 10, fontWeight: 600,
-            padding: '4px 12px', borderRadius: 20, letterSpacing: '.03em',
-            backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.15)',
+            position: 'absolute', top: 10, left: 10,
+            background: 'rgba(0,0,0,0.48)',
+            color: '#fff',
+            fontSize: 10,
+            fontWeight: 600,
+            padding: '3px 10px',
+            borderRadius: 20,
+            letterSpacing: '.04em',
+            backdropFilter: 'blur(6px)',
+            WebkitBackdropFilter: 'blur(6px)',
+            border: '1px solid rgba(255,255,255,0.2)',
           }}>
-            {isRent ? t('for_rent') : isBoth ? `${t('for_sale')} & ${t('for_rent')}` : t('for_sale')}
+            {isRent ? 'For rent' : isBoth ? 'For sale & rent' : 'For sale'}
           </div>
 
           {/* Verified badge — top left, below intent */}

@@ -12,6 +12,7 @@ interface Props {
   profile: Profile
   properties: Property[]
   stats: { listings: number; views: number; inquiries: number }
+  loading?: boolean
 }
 
 function StatusBadge({ status }: { status: string }) {
@@ -31,73 +32,60 @@ function StatusBadge({ status }: { status: string }) {
 
 function ListingCard({ p, inquiryCount }: { p: any; inquiryCount: number }) {
   const price = p.listing_intent === 'rent' ? p.rent_per_month_etb : p.price_etb
-  const viewsPerDay = p.views > 0 ? (p.views / Math.max(1, Math.ceil((Date.now() - new Date(p.listed_at || p.created_at).getTime()) / 86400000))).toFixed(1) : '0'
-  const convRate = p.views > 0 ? ((inquiryCount / p.views) * 100).toFixed(1) : '0'
 
   return (
-    <div style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 14, overflow: 'hidden', marginBottom: 12 }}>
-      <div style={{ display: 'flex', gap: 0 }}>
-        {/* Photo */}
-        <div style={{ width: 120, flexShrink: 0, background: '#f0f0ec', position: 'relative' }}>
-          {p.cover_image_url
-            ? <img src={p.cover_image_url} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', minHeight: 100 }}/>
-            : <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Building2 size={28} color="#d0d0cc"/></div>
-          }
-          {p.is_featured && (
-            <div style={{ position: 'absolute', top: 6, left: 6, background: '#f59e0b', color: '#fff', fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 10 }}>⭐ Featured</div>
-          )}
+    <div style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 12, overflow: 'hidden', marginBottom: 10, display: 'flex', minHeight: 110 }}>
+
+      {/* Photo — fixed 160px wide, full height */}
+      <div style={{ width: 160, flexShrink: 0, background: '#f0f0ec', position: 'relative' }}>
+        {p.cover_image_url
+          ? <img src={p.cover_image_url} alt={p.title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}/>
+          : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Building2 size={24} color="#d0d0cc"/></div>
+        }
+        {p.is_featured && (
+          <div style={{ position: 'absolute', top: 6, left: 6, background: '#f59e0b', color: '#fff', fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 6 }}>⭐ Featured</div>
+        )}
+      </div>
+
+      {/* Content — single row of info + actions on the right */}
+      <div style={{ flex: 1, padding: '12px 16px', minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+
+        {/* Top row: title + status */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: 4 }}>
+          <div style={{ fontWeight: 700, fontSize: 14, color: '#111', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{p.title}</div>
+          <StatusBadge status={p.status}/>
         </div>
 
-        {/* Main info */}
-        <div style={{ flex: 1, padding: '14px 16px', minWidth: 0 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: 6 }}>
-            <div style={{ fontWeight: 700, fontSize: 15, color: '#111', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{p.title}</div>
-            <StatusBadge status={p.status}/>
-          </div>
-          <div style={{ fontSize: 13, color: '#888', marginBottom: 10 }}>
-            {p.city} {p.neighborhood?.name ? `· ${p.neighborhood.name}` : ''} · {p.property_type}
-            {p.bedrooms ? ` · ${p.bedrooms} bed` : ''}{p.size_sqm ? ` · ${p.size_sqm}m²` : ''}
-          </div>
-          <div style={{ fontSize: 18, fontWeight: 800, color: '#16a34a', marginBottom: 12 }}>
-            {formatETB(price)}{p.listing_intent === 'rent' && <span style={{ fontSize: 12, fontWeight: 400, color: '#aaa' }}>/mo</span>}
-          </div>
+        {/* Meta line */}
+        <div style={{ fontSize: 12, color: '#999', marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {p.city}{p.neighborhood?.name ? ` · ${p.neighborhood.name}` : ''} · {p.property_type}
+          {p.bedrooms ? ` · ${p.bedrooms}bd` : ''}{p.bathrooms ? `/${p.bathrooms}ba` : ''}{p.size_sqm ? ` · ${p.size_sqm}m²` : ''}
+        </div>
 
-          {/* Performance stats */}
-          <div style={{ display: 'flex', gap: 20, padding: '10px 14px', background: '#f9f9f7', borderRadius: 10, marginBottom: 12, flexWrap: 'wrap' }}>
-            {[
-              { icon: <Eye size={13}/>, label: 'Views', value: p.views || 0, sub: `${viewsPerDay}/day`, color: '#2563eb' },
-              { icon: <MessageSquare size={13}/>, label: 'Inquiries', value: inquiryCount, sub: `${convRate}% rate`, color: '#d97706' },
-              { icon: <BarChart3 size={13}/>, label: 'Saves', value: p.saves || 0, sub: 'bookmarks', color: '#7c3aed' },
-            ].map(({ icon, label, value, sub, color }) => (
-              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ color, display: 'flex' }}>{icon}</div>
-                <div>
-                  <div style={{ fontSize: 16, fontWeight: 800, color: '#111', lineHeight: 1 }}>{value}</div>
-                  <div style={{ fontSize: 10, color: '#aaa' }}>{label} · {sub}</div>
-                </div>
-              </div>
-            ))}
-          </div>
+        {/* Price + inline stats */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 16, fontWeight: 800, color: '#16a34a' }}>
+            {formatETB(price)}{p.listing_intent === 'rent' && <span style={{ fontSize: 11, fontWeight: 400, color: '#aaa' }}>/mo</span>}
+          </span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 12, color: '#888' }}><Eye size={11} color="#2563eb"/> {p.views || 0}</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 12, color: '#888' }}><MessageSquare size={11} color="#d97706"/> {inquiryCount}</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 12, color: '#888' }}><BarChart3 size={11} color="#7c3aed"/> {p.saves || 0}</span>
+        </div>
 
-          {/* Actions */}
-          <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap' }}>
-            <Link href={`/property/${p.id}`} target="_blank"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, padding: '6px 12px', borderRadius: 7, border: '1px solid #e0dfd9', color: '#555', textDecoration: 'none' }}
-            ><Eye size={12}/> View listing</Link>
-            <Link href={`/dashboard/listings/${p.id}/edit`}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, padding: '6px 12px', borderRadius: 7, border: 'none', background: '#f0fdf4', color: '#16a34a', textDecoration: 'none', fontWeight: 600 }}
-            ><Edit size={12}/> Edit</Link>
-            {p.status === 'pending_review' && (
-              <span style={{ fontSize: 12, padding: '6px 12px', borderRadius: 7, background: '#fef9ec', color: '#d97706', fontWeight: 600 }}>
-                ⏳ Under review
-              </span>
-            )}
-            {p.status === 'rejected' && (
-              <span style={{ fontSize: 12, padding: '6px 12px', borderRadius: 7, background: '#fef2f2', color: '#dc2626', fontWeight: 600 }}>
-                ✗ Rejected — edit and resubmit
-              </span>
-            )}
-          </div>
+        {/* Action buttons */}
+        <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
+          <Link href={`/property/${p.id}`} target="_blank"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, padding: '5px 11px', borderRadius: 7, border: '1px solid #e0dfd9', color: '#555', textDecoration: 'none', background: '#fff' }}
+          ><Eye size={11}/> View</Link>
+          <Link href={`/dashboard/listings/${p.id}/edit`}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, padding: '5px 11px', borderRadius: 7, background: '#f0fdf4', color: '#16a34a', textDecoration: 'none', fontWeight: 600, border: '1px solid #bbf7d0' }}
+          ><Edit size={11}/> Edit</Link>
+          {p.status === 'pending_review' && (
+            <span style={{ fontSize: 11, padding: '5px 10px', borderRadius: 7, background: '#fef9ec', color: '#d97706', fontWeight: 600 }}>⏳ Under review</span>
+          )}
+          {p.status === 'rejected' && (
+            <span style={{ fontSize: 11, padding: '5px 10px', borderRadius: 7, background: '#fef2f2', color: '#dc2626', fontWeight: 600 }}>✗ Rejected</span>
+          )}
         </div>
       </div>
     </div>
@@ -111,7 +99,7 @@ const AI_TOOLS = [
   { emoji: '📄', title: 'Contract analyzer', desc: 'Highlight dangerous clauses in any contract.', href: '/ai-reports', btn: 'Analyze', color: '#d97706' },
 ]
 
-export function AgentDashboard({ profile, properties, stats }: Props) {
+export function AgentDashboard({ profile, properties, stats, loading = false }: Props) {
   const [tab, setTab] = useState<'listings' | 'inquiries' | 'ai' | 'settings'>('listings')
   const [inquiries, setInquiries] = useState<any[]>([])
   const [inquiryCounts, setInquiryCounts] = useState<Record<string, number>>({})
@@ -299,11 +287,22 @@ export function AgentDashboard({ profile, properties, stats }: Props) {
 
       {/* LISTINGS TAB */}
       {tab === 'listings' && (
-        properties.length === 0
-          ? <EmptyState icon={<Building2 size={48}/>} title="No listings yet" description="Add your first property to start getting inquiries"
-              action={<Link href="/dashboard/listings/new" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: '#16a34a', color: '#fff', padding: '11px 22px', borderRadius: 10, fontSize: 14, fontWeight: 700, textDecoration: 'none' }}><Plus size={15}/> Add first listing</Link>}
-            />
-          : <div>{properties.map(p => <ListingCard key={p.id} p={p} inquiryCount={inquiryCounts[p.id] || 0}/>)}</div>
+        loading
+          ? <div>{[1,2,3].map(i => (
+              <div key={i} style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 12, overflow: 'hidden', marginBottom: 10, display: 'flex', height: 110 }}>
+                <div className="skeleton" style={{ width: 160, flexShrink: 0, borderRadius: 0 }}/>
+                <div style={{ flex: 1, padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div className="skeleton-line" style={{ width: '55%', height: 14 }}/>
+                  <div className="skeleton-line" style={{ width: '35%', height: 10 }}/>
+                  <div className="skeleton-line" style={{ width: '25%', height: 16 }}/>
+                </div>
+              </div>
+            ))}</div>
+          : properties.length === 0
+            ? <EmptyState icon={<Building2 size={48}/>} title="No listings yet" description="Add your first property to start getting inquiries"
+                action={<Link href="/dashboard/listings/new" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: '#16a34a', color: '#fff', padding: '11px 22px', borderRadius: 10, fontSize: 14, fontWeight: 700, textDecoration: 'none' }}><Plus size={15}/> Add first listing</Link>}
+              />
+            : <div>{properties.map(p => <ListingCard key={p.id} p={p} inquiryCount={inquiryCounts[p.id] || 0}/>)}</div>
       )}
 
       {/* INQUIRIES TAB */}

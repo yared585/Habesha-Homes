@@ -381,8 +381,7 @@ export function Navbar() {
           id='category-bar'
           style={{
             background: '#fff',
-            borderTop: '1px solid #ebebeb',
-            borderBottom: '1px solid #ebebeb',
+            borderBottom: '1px solid #f0f0ec',
             overflowX: 'auto',
             scrollbarWidth: 'none' as const,
             WebkitOverflowScrolling: 'touch' as any,
@@ -403,7 +402,7 @@ export function Navbar() {
                 href={href}
                 style={{
                   display: 'flex', flexDirection: 'column', alignItems: 'center',
-                  gap: 3, padding: '8px 20px', textDecoration: 'none',
+                  gap: 3, padding: '8px 16px', textDecoration: 'none',
                   borderBottom: '2px solid transparent', transition: 'all .2s',
                   flexShrink: 0, color: '#717171',
                 }}
@@ -418,7 +417,7 @@ export function Navbar() {
                   el.style.color = '#717171'
                 }}
               >
-                <span style={{ fontSize: 22, lineHeight: 1, display: 'block' }}>{emoji}</span>
+                <span style={{ fontSize: 20, lineHeight: 1, display: 'block' }}>{emoji}</span>
                 <span style={{ fontSize: 10.5, fontWeight: 600, whiteSpace: 'nowrap', color: 'inherit' }}>{label}</span>
               </Link>
             ))}

@@ -27,6 +27,8 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   )
 }
 
+const PLAN_LIMITS: Record<string, number> = { free: 3, basic: 10, pro: Infinity, premium: Infinity }
+
 export default function EditListingPage() {
   const router = useRouter()
   const params = useParams()
@@ -36,14 +38,27 @@ export default function EditListingPage() {
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [forbidden, setForbidden] = useState(false)
 
   useEffect(() => {
-    if (params.id) loadListing(params.id as string)
-  }, [params.id])
+    if (params.id && profile) loadListing(params.id as string)
+  }, [params.id, profile])
 
   async function loadListing(id: string) {
-    const { data } = await createClient().from('properties').select('*').eq('id', id).single()
-    if (data) setForm(data)
+    const sb = createClient()
+    const { data: { user } } = await sb.auth.getUser()
+    if (!user) return
+
+    const { data } = await sb.from('properties').select('*').eq('id', id).single()
+    if (!data) return
+
+    // Ownership check — only the agent who owns it (or admin) can edit
+    if (data.agent_id !== user.id && profile?.role !== 'admin') {
+      setForbidden(true)
+      return
+    }
+
+    setForm(data)
   }
 
   function set(partial: any) {
@@ -53,7 +68,34 @@ export default function EditListingPage() {
   async function handleSave() {
     setSaving(true)
     setError('')
-    const { error: err } = await createClient()
+    const sb = createClient()
+    const { data: { user } } = await sb.auth.getUser()
+    if (!user) { setError('Not authenticated'); setSaving(false); return }
+
+    // If listing was rejected, resubmit for review — but check limit first
+    let newStatus: string | undefined
+    if (form.status === 'rejected') {
+      const planRaw = profile?.subscription_plan as string | undefined
+      const plan = planRaw || 'free'
+      const limit = PLAN_LIMITS[plan] ?? 3
+
+      if (isFinite(limit)) {
+        const { count } = await sb
+          .from('properties')
+          .select('*', { count: 'exact', head: true })
+          .eq('agent_id', user.id)
+          .not('status', 'in', '("rejected","withdrawn","expired")')
+
+        if ((count || 0) >= limit) {
+          setError(`You've reached your ${limit}-listing limit on the ${plan} plan. Upgrade to resubmit this listing.`)
+          setSaving(false)
+          return
+        }
+      }
+      newStatus = 'pending_review'
+    }
+
+    const { error: err } = await sb
       .from('properties')
       .update({
         title: form.title,
@@ -74,8 +116,12 @@ export default function EditListingPage() {
         photos: form.photos || [],
         video_url: form.video_url,
         updated_at: new Date().toISOString(),
+        // Only set status if resubmitting a rejected listing
+        ...(newStatus ? { status: newStatus } : {}),
       })
+      // Ownership enforced at DB level too — agent_id must match
       .eq('id', form.id)
+      .eq('agent_id', user.id)
 
     if (err) { setError(err.message); setSaving(false); return }
     setSuccess(true)
@@ -85,13 +131,27 @@ export default function EditListingPage() {
   async function handleDelete() {
     if (!confirm('Are you sure you want to delete this listing? This cannot be undone.')) return
     setDeleting(true)
-    await createClient().from('properties').delete().eq('id', form.id)
+    const sb = createClient()
+    const { data: { user } } = await sb.auth.getUser()
+    if (!user) return
+    // Ownership enforced — agent_id must match
+    await sb.from('properties').delete().eq('id', form.id).eq('agent_id', user.id)
     router.push('/dashboard')
   }
 
-  if (loading || !form) return (
+  if (loading || (!form && !forbidden)) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: '#aaa', fontSize: 14 }}>
       Loading listing...
+    </div>
+  )
+
+  if (forbidden) return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', gap: 12, color: '#111' }}>
+      <div style={{ fontSize: 18, fontWeight: 700 }}>Access denied</div>
+      <div style={{ fontSize: 14, color: '#888' }}>You don't have permission to edit this listing.</div>
+      <button onClick={() => router.push('/dashboard')} style={{ marginTop: 8, padding: '9px 20px', background: '#1a3d2b', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 14, fontFamily: 'inherit' }}>
+        Back to dashboard
+      </button>
     </div>
   )
 

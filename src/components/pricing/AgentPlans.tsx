@@ -68,8 +68,7 @@ function BankTransferModal({ plan, onClose }: { plan: Plan; onClose: () => void 
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         type: 'bank_transfer_notify',
-        to: 'yohanesy585@gmail.com',
-        data: { agentName, agentEmail, plan: plan.name, planEtb: plan.etb },
+        data: { plan: plan.name, planEtb: plan.etb },
       }),
     }).catch(() => {})
     setSending(false)

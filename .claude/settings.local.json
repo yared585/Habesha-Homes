@@ -15,7 +15,8 @@
       "Bash(node -e \"require\\('next-intl/plugin'\\); console.log\\('plugin ok'\\)\")",
       "Bash(node -e \"const l = require\\('lucide-react'\\); console.log\\('HardHat:', !!l.HardHat, 'TreePine:', !!l.TreePine, 'Store:', !!l.Store, 'Home:', !!l.Home, 'Building2:', !!l.Building2\\)\")",
       "Bash(node -e \"const d=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\); const p=JSON.parse\\(d\\); console.log\\('version:', p.version\\)\")",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(grep -n \"width.*[0-9]\\\\{3,\\\\}px\\\\|height.*[0-9]\\\\{3,\\\\}px\" \"C:\\\\Users\\\\User\\\\OneDrive\\\\Desktop\\\\All Projects\\\\habesha-homes\\\\habesha-homes/src/app/property\"/*.tsx)"
     ]
   }
 }

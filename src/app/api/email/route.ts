@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
+import { createClient } from '@/lib/supabase/server'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const FROM = 'Habesha Properties <noreply@habeshaproperties.com>'
@@ -187,38 +188,30 @@ function welcomeEmailHtml({ name, role }: any) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { type, to, data } = body
+    const { type, data } = body
 
-    if (!type || !to) {
-      return NextResponse.json({ error: 'Missing type or to' }, { status: 400 })
+    if (!type || !data) {
+      return NextResponse.json({ error: 'Missing type or data' }, { status: 400 })
     }
 
+    const supabase = createClient()
+
+    // ── Per-type auth & recipient resolution ──────────────────────────────
+    // The `to` address is NEVER trusted from the request body.
+    // We resolve it server-side based on the type and authenticated user.
+
+    let resolvedTo: string | string[]
     let subject = ''
     let html = ''
 
     switch (type) {
-      case 'inquiry':
-        subject = `New inquiry for "${data.propertyTitle}" — Habesha Properties`
-        html = inquiryEmailHtml({
-          ...data,
-          propertyUrl: `${APP_URL}/property/${data.propertyId}`,
-        })
-        break
 
-      case 'listing_approved':
-        subject = `Your listing "${data.propertyTitle}" is now live! ✓`
-        html = listingApprovedHtml({
-          ...data,
-          propertyUrl: `${APP_URL}/property/${data.propertyId}`,
-        })
-        break
-
-      case 'welcome':
-        subject = `Welcome to Habesha Properties, ${data.name}! 🇪🇹`
-        html = welcomeEmailHtml(data)
-        break
-
-      case 'contact':
+      // ── contact: public (no auth required), always goes to ADMIN_EMAIL ──
+      case 'contact': {
+        if (!data.name || !data.email || !data.subject || !data.message) {
+          return NextResponse.json({ error: 'Missing contact fields' }, { status: 400 })
+        }
+        resolvedTo = ADMIN_EMAIL
         subject = `Contact form: ${data.subject} — from ${data.name}`
         html = `
 <!DOCTYPE html><html><head><meta charset="utf-8"></head>
@@ -242,9 +235,115 @@ ${data.phone ? `<tr><td style="font-size:13px;color:#888;padding:6px 0;">Phone</
 </div>
 </body></html>`
         break
+      }
 
-      case 'bank_transfer_notify':
-        subject = `Bank transfer payment — ${data.agentName} signed up for ${data.plan} plan`
+      // ── inquiry: requires auth; agent email resolved from DB ──────────────
+      case 'inquiry': {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+        if (!data.propertyId) {
+          return NextResponse.json({ error: 'Missing propertyId' }, { status: 400 })
+        }
+
+        // Fetch agent email directly from DB — never trust client-supplied `to`
+        const { data: property } = await supabase
+          .from('properties')
+          .select('title, agent_id, profiles:agent_id(email, full_name)')
+          .eq('id', data.propertyId)
+          .single()
+
+        if (!property) return NextResponse.json({ error: 'Property not found' }, { status: 404 })
+
+        const agentEmail = (property.profiles as any)?.email
+        const agentName = (property.profiles as any)?.full_name || 'Agent'
+        if (!agentEmail) return NextResponse.json({ error: 'Agent email not found' }, { status: 404 })
+
+        resolvedTo = agentEmail
+        subject = `New inquiry for "${property.title}" — Habesha Properties`
+        html = inquiryEmailHtml({
+          agentName,
+          buyerName: data.buyerName || user.email,
+          buyerEmail: data.buyerEmail || user.email,
+          buyerPhone: data.buyerPhone,
+          message: data.message,
+          propertyTitle: property.title,
+          propertyUrl: `${APP_URL}/property/${data.propertyId}`,
+        })
+        break
+      }
+
+      // ── welcome: requires auth; always sends to the signed-in user ────────
+      case 'welcome': {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+        resolvedTo = user.email!
+        subject = `Welcome to Habesha Properties, ${data.name}! 🇪🇹`
+        html = welcomeEmailHtml(data)
+        break
+      }
+
+      // ── listing_approved: requires admin role ─────────────────────────────
+      case 'listing_approved': {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single()
+
+        if (profile?.role !== 'admin') {
+          return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+        }
+
+        if (!data.propertyId) {
+          return NextResponse.json({ error: 'Missing propertyId' }, { status: 400 })
+        }
+
+        // Fetch agent email from DB
+        const { data: property } = await supabase
+          .from('properties')
+          .select('title, agent_id, profiles:agent_id(email, full_name)')
+          .eq('id', data.propertyId)
+          .single()
+
+        if (!property) return NextResponse.json({ error: 'Property not found' }, { status: 404 })
+
+        const agentEmail = (property.profiles as any)?.email
+        const agentName = (property.profiles as any)?.full_name || 'Agent'
+        if (!agentEmail) return NextResponse.json({ error: 'Agent email not found' }, { status: 404 })
+
+        resolvedTo = agentEmail
+        subject = `Your listing "${property.title}" is now live! ✓`
+        html = listingApprovedHtml({
+          agentName,
+          propertyTitle: property.title,
+          propertyUrl: `${APP_URL}/property/${data.propertyId}`,
+        })
+        break
+      }
+
+      // ── bank_transfer_notify: requires auth (agent); always goes to admin ─
+      case 'bank_transfer_notify': {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role, full_name, email')
+          .eq('id', user.id)
+          .single()
+
+        if (!profile || profile.role !== 'agent') {
+          return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+        }
+
+        // Override with authenticated user's actual name/email — ignore client data
+        resolvedTo = ADMIN_EMAIL
+        subject = `Bank transfer payment — ${profile.full_name} signed up for ${data.plan} plan`
         html = `
 <!DOCTYPE html><html><head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f9f9f7;font-family:system-ui,sans-serif;">
@@ -255,8 +354,8 @@ ${data.phone ? `<tr><td style="font-size:13px;color:#888;padding:6px 0;">Phone</
 </div>
 <div style="background:#fff;padding:28px 32px;border:1px solid #eae9e4;border-top:none;border-radius:0 0 14px 14px;">
 <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
-<tr><td style="font-size:13px;color:#888;padding:7px 0;width:110px;">Agent Name</td><td style="font-size:14px;font-weight:600;color:#111;">${data.agentName}</td></tr>
-<tr><td style="font-size:13px;color:#888;padding:7px 0;">Agent Email</td><td style="font-size:14px;color:#111;"><a href="mailto:${data.agentEmail}" style="color:#16a34a;">${data.agentEmail}</a></td></tr>
+<tr><td style="font-size:13px;color:#888;padding:7px 0;width:110px;">Agent Name</td><td style="font-size:14px;font-weight:600;color:#111;">${profile.full_name}</td></tr>
+<tr><td style="font-size:13px;color:#888;padding:7px 0;">Agent Email</td><td style="font-size:14px;color:#111;"><a href="mailto:${profile.email}" style="color:#16a34a;">${profile.email}</a></td></tr>
 <tr><td style="font-size:13px;color:#888;padding:7px 0;">Plan Selected</td><td style="font-size:14px;font-weight:700;color:#1a3d2b;">${data.plan} (${data.planEtb}/month)</td></tr>
 </table>
 <div style="background:#fef9ec;border:1px solid #fde68a;border-radius:10px;padding:14px 16px;font-size:14px;color:#92400e;margin-bottom:20px;">
@@ -267,49 +366,39 @@ ${data.phone ? `<tr><td style="font-size:13px;color:#888;padding:6px 0;">Phone</
 </div>
 </body></html>`
         break
+      }
 
       default:
         return NextResponse.json({ error: 'Unknown email type' }, { status: 400 })
     }
 
-    console.log('Sending email to:', to, 'from: noreply@habeshaproperties.com')
-
     const { data: result, error } = await resend.emails.send({
       from: FROM,
-      to,
+      to: resolvedTo,
       subject,
       html,
     })
 
     if (error) {
-      console.error('Resend error:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     // Send buyer confirmation for inquiry emails
     if (type === 'inquiry' && data.buyerEmail) {
-      try {
-        const buyerSubject = `Your inquiry for "${data.propertyTitle}" was received`
-        console.log('Sending email to:', data.buyerEmail, 'from: noreply@habeshaproperties.com')
-        await resend.emails.send({
-          from: FROM,
-          to: data.buyerEmail,
-          subject: buyerSubject,
-          html: buyerConfirmationHtml({
-            buyerName: data.buyerName,
-            propertyTitle: data.propertyTitle,
-            propertyUrl: `${APP_URL}/property/${data.propertyId}`,
-          }),
-        })
-      } catch (emailError) {
-        console.error('Buyer confirmation email failed:', emailError)
-        // continue — agent email was already sent
-      }
+      await resend.emails.send({
+        from: FROM,
+        to: data.buyerEmail,
+        subject: `Your inquiry for "${data.propertyTitle}" was received`,
+        html: buyerConfirmationHtml({
+          buyerName: data.buyerName,
+          propertyTitle: data.propertyTitle,
+          propertyUrl: `${APP_URL}/property/${data.propertyId}`,
+        }),
+      }).catch(() => { /* non-critical — agent email already sent */ })
     }
 
     return NextResponse.json({ success: true, id: result?.id })
   } catch (err: any) {
-    console.error('Email API error:', err)
     return NextResponse.json({ error: err.message }, { status: 500 })
   }
 }

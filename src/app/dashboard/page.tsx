@@ -34,7 +34,7 @@ export default function DashboardPage() {
     }
     if (profile?.role === 'agent') {
       const [{ data: props, count }, { count: inqCount }] = await Promise.all([
-        sb.from('properties').select('*', { count: 'exact' }).eq('agent_id', user.id).order('created_at', { ascending: false }).limit(20),
+        sb.from('properties').select('*, neighborhood:neighborhoods(name)', { count: 'exact' }).eq('agent_id', user.id).order('created_at', { ascending: false }).limit(20),
         sb.from('inquiries').select('*', { count: 'exact', head: true }).eq('agent_id', user.id),
       ])
       const totalViews = (props || []).reduce((sum: number, p: any) => sum + (p.views || 0), 0)
@@ -82,7 +82,7 @@ export default function DashboardPage() {
         </div>
 
         {isAgent
-          ? <AgentDashboard profile={profile} properties={properties} stats={{ listings: stats.listings, views: stats.views, inquiries: stats.inquiries }}/>
+          ? <AgentDashboard profile={profile} properties={properties} stats={{ listings: stats.listings, views: stats.views, inquiries: stats.inquiries }} loading={dataLoading}/>
           : <BuyerDashboard profile={profile} saved={saved} stats={{ saved: stats.saved, inquiries: stats.inquiries, reports: stats.reports }}/>
         }
       </div>

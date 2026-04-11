@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { analyzeTitleDocument } from '@/lib/claude'
+import { rateLimit } from '@/lib/rate-limit'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -15,6 +16,15 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+    }
+
+    // 5 fraud checks per user per hour
+    const rl = rateLimit(`fraud-check:${user.id}`, { limit: 5, windowMs: 60 * 60 * 1000 })
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Try again later.' },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil(rl.resetIn / 1000)) } }
+      )
     }
 
     const formData = await request.formData()
@@ -67,8 +77,8 @@ export async function POST(request: NextRequest) {
         is_paid: false,
         status: 'completed',
       })
-    } catch (e) {
-      console.log('Report save skipped:', e)
+    } catch {
+      // Report save skipped — non-critical
     }
 
     // If property_id provided, update property record

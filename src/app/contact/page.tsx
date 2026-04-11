@@ -24,7 +24,7 @@ export default function ContactPage() {
       await fetch('/api/email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'contact', to: process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'yohanesy585@gmail.com', data: form })
+        body: JSON.stringify({ type: 'contact', data: form })
       })
       setSent(true)
     } catch { setError('Something went wrong. Please try again.') }

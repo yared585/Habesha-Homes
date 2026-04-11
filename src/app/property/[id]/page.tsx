@@ -83,22 +83,14 @@ function InquiryForm({ property }: { property: Property }) {
       console.log('Fetched agent email directly:', agentEmail)
     }
 
-    console.log('Sending inquiry email to:', agentEmail)
-
-    if (agentEmail) {
-      const emailResponse = await fetch('/api/email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'inquiry',
-          to: agentEmail,
-          data: { agentName, buyerName: form.name, buyerEmail: form.email, buyerPhone: form.phone, message: form.message, propertyTitle: property.title, propertyId: property.id }
-        })
+    await fetch('/api/email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'inquiry',
+        data: { propertyId: property.id, buyerName: form.name, buyerEmail: form.email, buyerPhone: form.phone, message: form.message }
       })
-      console.log('Email API response:', emailResponse.status)
-    } else {
-      console.log('No agent email found — skipping email notification')
-    }
+    }).catch(() => {})
 
     setSent(true)
     setSending(false)

@@ -116,7 +116,7 @@ export function Hero() {
         <div style={{ textAlign: 'center', marginBottom: 14 }}>
           <h1 style={{
             fontFamily: "'Instrument Serif', Georgia, serif",
-            fontSize: 'clamp(24px, 5vw, 36px)',
+            fontSize: 'clamp(28px, 6vw, 46px)',
             fontWeight: 400, color: '#111',
             lineHeight: 1.1, letterSpacing: '-.02em', margin: '0 0 10px',
           }}>

@@ -56,20 +56,14 @@ function InquiryForm({ property }: { property: Property }) {
       message: form.message,
     })
 
-    // Email agent
-    const agentEmail = (property.agent as any)?.profile?.email
-    const agentName = (property.agent as any)?.agency_name || (property.agent as any)?.profile?.full_name || 'Agent'
-    if (agentEmail) {
-      await fetch('/api/email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'inquiry',
-          to: agentEmail,
-          data: { agentName, buyerName: form.name, buyerEmail: form.email, buyerPhone: form.phone, message: form.message, propertyTitle: property.title, propertyId: property.id }
-        })
-      }).catch(() => {})
-    }
+    await fetch('/api/email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'inquiry',
+        data: { propertyId: property.id, buyerName: form.name, buyerEmail: form.email, buyerPhone: form.phone, message: form.message }
+      })
+    }).catch(() => {})
 
     setSent(true)
     setSending(false)

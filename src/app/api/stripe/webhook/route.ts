@@ -72,8 +72,6 @@ export async function POST(req: NextRequest) {
       }
 
       // Agent subscription activation — save customer + subscription IDs + period end
-      console.log('Webhook metadata:', session.metadata)
-      console.log('User ID:', user_id, 'Plan:', plan)
       if (session.mode === 'subscription' && user_id && plan) {
         const sub = await stripe.subscriptions.retrieve(session.subscription as string)
         const { error } = await supabaseAdmin
@@ -86,10 +84,9 @@ export async function POST(req: NextRequest) {
             subscription_current_period_end: toISO(sub.current_period_end),
           })
           .eq('id', user_id)
-        console.log('Profile update error:', error)
+        if (error) console.error('Profile update error:', error)
       }
 
-      console.log('Checkout completed:', session.id, 'type:', session.mode, report_type || plan)
       break
     }
 
@@ -98,7 +95,6 @@ export async function POST(req: NextRequest) {
       await supabaseAdmin.from('payments')
         .update({ status: 'expired' })
         .eq('stripe_session_id', session.id)
-      console.log('Checkout expired:', session.id)
       break
     }
 
@@ -135,7 +131,6 @@ export async function POST(req: NextRequest) {
       if (plan) updates.subscription_plan = plan
 
       await supabaseAdmin.from('profiles').update(updates).eq('id', profile.id)
-      console.log('Subscription updated for profile', profile.id, updates)
       break
     }
 
@@ -167,7 +162,7 @@ export async function POST(req: NextRequest) {
             subscription_current_period_end: null,
           })
           .eq('id', profileId)
-        console.log('Subscription deleted, downgraded to free:', profileId)
+        // Subscription deleted, profile downgraded to free
       }
 
       // Also update legacy agents table if it exists

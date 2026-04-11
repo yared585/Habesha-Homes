@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { generateValuation } from '@/lib/claude'
+import { rateLimit } from '@/lib/rate-limit'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -31,6 +32,15 @@ export async function POST(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'Auth required' }, { status: 401 })
 
+    // 20 valuations per user per hour
+    const rl = rateLimit(`valuation:${user.id}`, { limit: 20, windowMs: 60 * 60 * 1000 })
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Try again later.' },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil(rl.resetIn / 1000)) } }
+      )
+    }
+
     const { property_id } = await request.json()
     if (!property_id) return NextResponse.json({ error: 'property_id required' }, { status: 400 })
 
@@ -55,8 +65,8 @@ export async function POST(request: NextRequest) {
         is_paid: false,
         status: 'completed',
       })
-    } catch (e) {
-      console.log('Report save skipped:', e)
+    } catch {
+      // Report save skipped — non-critical
     }
 
     return NextResponse.json({ success: true, result })
