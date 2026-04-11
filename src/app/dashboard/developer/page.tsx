@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { Building2, Eye, MessageSquare, TrendingUp, Plus, CheckCircle, Clock, XCircle, Edit, BarChart3, Users, DollarSign } from 'lucide-react'
 import { formatETB } from '@/lib/utils'
@@ -129,9 +130,9 @@ export default function DeveloperDashboard() {
                 <div key={p.id} style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 14, overflow: 'hidden' }}>
                   <div style={{ display: 'flex', gap: 0 }}>
                     {/* Cover */}
-                    <div style={{ width: 140, flexShrink: 0, background: '#f0f0ec' }}>
+                    <div style={{ width: 140, minHeight: 110, flexShrink: 0, background: '#f0f0ec', position: 'relative' }}>
                       {p.cover_image_url
-                        ? <img src={p.cover_image_url} style={{ width: '100%', height: '100%', objectFit: 'cover', minHeight: 110 }} loading="lazy"/>
+                        ? <Image src={p.cover_image_url} alt={p.name || ''} fill style={{ objectFit: 'cover' }}/>
                         : <div style={{ height: 110, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Building2 size={32} color="#ccc"/></div>
                       }
                     </div>

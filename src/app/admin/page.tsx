@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { PhotoUpload } from '@/components/property/PhotoUpload'
 import {
@@ -11,7 +12,7 @@ import {
   BarChart3, Building2, Globe, Trash2, RefreshCw, Download, Plus, Save
 } from 'lucide-react'
 
-type Tab = 'overview' | 'listings' | 'agents' | 'users' | 'reports' | 'inquiries' | 'developments' | 'subscriptions'
+type Tab = 'overview' | 'listings' | 'agents' | 'users' | 'reports' | 'inquiries' | 'developments' | 'subscriptions' | 'audit'
 type ListingFilter = 'all' | 'pending_review' | 'active' | 'rejected'
 
 function StatCard({ icon, label, value, sub, color = '#16a34a' }: { icon: React.ReactNode; label: string; value: number | string; sub?: string; color?: string }) {
@@ -49,6 +50,86 @@ const BLANK_PROJECT = {
   description: '', amenities: '', status: 'active',
 }
 
+function AuditLogTab({ logs, onLoad }: { logs: any[]; onLoad: () => void }) {
+  useEffect(() => { onLoad() }, [])
+
+  const ACTION_LABELS: Record<string, string> = {
+    role_change: 'Role changed',
+  }
+
+  if (logs.length === 0) return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <div style={{ fontSize: 13, color: '#888' }}>No audit events yet.</div>
+        <button onClick={onLoad} style={{ fontSize: 12, padding: '6px 14px', borderRadius: 8, border: '1px solid #e0dfd9', background: '#fff', cursor: 'pointer', fontFamily: 'inherit' }}>Refresh</button>
+      </div>
+      <div style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 12, padding: 24 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: '#111', marginBottom: 8 }}>Setup required</div>
+        <div style={{ fontSize: 12, color: '#888', marginBottom: 12 }}>Run this SQL in your Supabase dashboard to enable audit logging:</div>
+        <pre style={{ background: '#f9f9f7', border: '1px solid #eae9e4', borderRadius: 8, padding: 16, fontSize: 12, overflowX: 'auto', color: '#333', margin: 0 }}>{`create table if not exists audit_logs (
+  id uuid default gen_random_uuid() primary key,
+  admin_id uuid references profiles(id) on delete set null,
+  action text not null,
+  target_user_id uuid references profiles(id) on delete set null,
+  old_value text,
+  new_value text,
+  metadata jsonb,
+  created_at timestamptz default now()
+);
+
+-- Index for fast queries
+create index if not exists audit_logs_created_at_idx on audit_logs(created_at desc);
+create index if not exists audit_logs_admin_id_idx on audit_logs(admin_id);
+
+-- Only admins can read; service role writes via API
+alter table audit_logs enable row level security;
+create policy "Admins can read audit logs"
+  on audit_logs for select
+  using (exists (
+    select 1 from profiles where id = auth.uid() and role = 'admin'
+  ));`}</pre>
+      </div>
+    </div>
+  )
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <div style={{ fontSize: 13, color: '#888' }}>{logs.length} recent events</div>
+        <button onClick={onLoad} style={{ fontSize: 12, padding: '6px 14px', borderRadius: 8, border: '1px solid #e0dfd9', background: '#fff', cursor: 'pointer', fontFamily: 'inherit' }}>Refresh</button>
+      </div>
+      {logs.map(log => (
+        <div key={log.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, padding: '14px 16px', background: '#fff', border: '1px solid #eae9e4', borderRadius: 12, marginBottom: 8 }}>
+          <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#f0fdf4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Shield size={16} color="#16a34a"/>
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: '#111' }}>
+              {ACTION_LABELS[log.action] ?? log.action}
+              {log.old_value && log.new_value && (
+                <span style={{ fontWeight: 400, color: '#555' }}>
+                  {' '}<span style={{ background: '#fef2f2', color: '#dc2626', padding: '1px 7px', borderRadius: 6, fontSize: 12 }}>{log.old_value}</span>
+                  {' → '}
+                  <span style={{ background: '#f0fdf4', color: '#16a34a', padding: '1px 7px', borderRadius: 6, fontSize: 12 }}>{log.new_value}</span>
+                </span>
+              )}
+            </div>
+            <div style={{ fontSize: 12, color: '#888', marginTop: 3 }}>
+              Target: <strong>{log.target?.full_name ?? log.metadata?.target_name ?? 'Unknown'}</strong>
+              {(log.target?.email ?? log.metadata?.target_email) && (
+                <span style={{ color: '#bbb' }}> · {log.target?.email ?? log.metadata?.target_email}</span>
+              )}
+            </div>
+            <div style={{ fontSize: 11, color: '#bbb', marginTop: 2 }}>
+              By {log.admin?.full_name ?? 'Admin'} · {new Date(log.created_at).toLocaleString()}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function AdminPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
@@ -66,6 +147,7 @@ export default function AdminPage() {
   const [showNewProject, setShowNewProject] = useState(false)
   const [newProject, setNewProject] = useState<any>({ ...BLANK_PROJECT })
   const [savingProject, setSavingProject] = useState(false)
+  const [auditLogs, setAuditLogs] = useState<any[]>([])
   const [aiUpdating, setAiUpdating] = useState(false)
   const [aiUpdateResult, setAiUpdateResult] = useState<{ updated: number; timestamp: string } | null>(null)
   const [stats, setStats] = useState({
@@ -206,9 +288,29 @@ export default function AdminPage() {
   }
 
   async function changeUserRole(id: string, role: string) {
-    const { error } = await createClient().from('profiles').update({ role: role as any }).eq('id', id)
-    if (error) { console.error('Role change error:', error); alert('Failed to change role: ' + error.message); return }
+    const res = await fetch('/api/admin/change-role', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ targetUserId: id, newRole: role }),
+    })
+    if (!res.ok) {
+      const err = await res.json()
+      alert('Failed to change role: ' + err.error)
+      return
+    }
     setUsers(u => u.map(x => x.id === id ? { ...x, role } : x))
+    // Refresh audit log if tab is visible
+    if (tab === 'audit') loadAuditLogs()
+  }
+
+  async function loadAuditLogs() {
+    const sb = createClient()
+    const { data } = await sb
+      .from('audit_logs')
+      .select('*, admin:profiles!audit_logs_admin_id_fkey(full_name, email), target:profiles!audit_logs_target_user_id_fkey(full_name, email)')
+      .order('created_at', { ascending: false })
+      .limit(100)
+    if (data) setAuditLogs(data)
   }
 
   async function changeAgentPlan(userId: string, plan: string) {
@@ -275,6 +377,7 @@ export default function AdminPage() {
     { id: 'reports', label: 'AI Reports', count: stats.totalReports },
     { id: 'developments', label: 'Developments', count: projects.length },
     { id: 'subscriptions', label: 'Subscriptions', count: agentProfiles.length },
+    { id: 'audit', label: 'Audit Log' },
   ]
 
   const inp = (key: string, label: string, placeholder = '', type = 'text') => (
@@ -383,8 +486,8 @@ export default function AdminPage() {
                 </div>
                 {properties.filter(p => p.status === 'pending_review').slice(0, 3).map(p => (
                   <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderTop: '1px solid #f5f5f2' }}>
-                    <div style={{ width: 48, height: 38, borderRadius: 7, background: '#f0f0ec', overflow: 'hidden', flexShrink: 0 }}>
-                      {p.cover_image_url && <img src={p.cover_image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>}
+                    <div style={{ width: 48, height: 38, borderRadius: 7, background: '#f0f0ec', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
+                      {p.cover_image_url && <Image src={p.cover_image_url} alt="" fill style={{ objectFit: 'cover' }}/>}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 13, fontWeight: 600, color: '#111', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.title}</div>
@@ -457,8 +560,8 @@ export default function AdminPage() {
             ) : (
               filteredProps.map(p => (
                 <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', background: '#fff', border: '1px solid #eae9e4', borderRadius: 12, marginBottom: 8 }}>
-                  <div style={{ width: 64, height: 50, borderRadius: 8, background: '#f0f0ec', overflow: 'hidden', flexShrink: 0 }}>
-                    {p.cover_image_url && <img src={p.cover_image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>}
+                  <div style={{ width: 64, height: 50, borderRadius: 8, background: '#f0f0ec', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
+                    {p.cover_image_url && <Image src={p.cover_image_url} alt="" fill style={{ objectFit: 'cover' }}/>}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontWeight: 600, fontSize: 14, color: '#111', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.title}</div>
@@ -497,8 +600,8 @@ export default function AdminPage() {
             </div>
             {agents.filter(a => !search || a.agency_name?.toLowerCase().includes(search.toLowerCase()) || a.profile?.email?.toLowerCase().includes(search.toLowerCase())).map(a => (
               <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 16px', background: '#fff', border: '1px solid #eae9e4', borderRadius: 12, marginBottom: 8 }}>
-                <div style={{ width: 46, height: 46, borderRadius: '50%', background: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: '#fff', fontWeight: 700, flexShrink: 0, overflow: 'hidden' }}>
-                  {a.profile?.avatar_url ? <img src={a.profile.avatar_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/> : (a.agency_name?.[0] || 'A')}
+                <div style={{ width: 46, height: 46, borderRadius: '50%', background: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: '#fff', fontWeight: 700, flexShrink: 0, overflow: 'hidden', position: 'relative' }}>
+                  {a.profile?.avatar_url ? <Image src={a.profile.avatar_url} alt="" fill style={{ objectFit: 'cover' }}/> : (a.agency_name?.[0] || 'A')}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 600, fontSize: 14, color: '#111' }}>{a.agency_name}</div>
@@ -533,8 +636,8 @@ export default function AdminPage() {
             </div>
             {users.filter(u => !search || u.full_name?.toLowerCase().includes(search.toLowerCase()) || u.email?.toLowerCase().includes(search.toLowerCase())).map(u => (
               <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 16px', background: '#fff', border: '1px solid #eae9e4', borderRadius: 12, marginBottom: 8 }}>
-                <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, color: '#fff', fontWeight: 700, flexShrink: 0, overflow: 'hidden' }}>
-                  {u.avatar_url ? <img src={u.avatar_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/> : (u.full_name?.[0]?.toUpperCase() || 'U')}
+                <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, color: '#fff', fontWeight: 700, flexShrink: 0, overflow: 'hidden', position: 'relative' }}>
+                  {u.avatar_url ? <Image src={u.avatar_url} alt="" fill style={{ objectFit: 'cover' }}/> : (u.full_name?.[0]?.toUpperCase() || 'U')}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 600, fontSize: 14, color: '#111' }}>{u.full_name || 'No name'}</div>
@@ -730,6 +833,10 @@ export default function AdminPage() {
         )}
 
         {/* ── SUBSCRIPTIONS ── */}
+        {tab === 'audit' && (
+          <AuditLogTab logs={auditLogs} onLoad={loadAuditLogs}/>
+        )}
+
         {tab === 'subscriptions' && (
           <>
             <div style={{ display: 'flex', gap: 10, marginBottom: 16, alignItems: 'center', flexWrap: 'wrap' }}>

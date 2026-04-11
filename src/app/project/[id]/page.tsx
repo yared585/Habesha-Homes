@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { MapPin, Building2, CheckCircle, Clock, Phone, Mail, ChevronDown, ChevronUp } from 'lucide-react'
 import { formatETB } from '@/lib/utils'
@@ -132,14 +133,17 @@ export default function ProjectPage() {
             {/* Gallery */}
             {images.length > 0 && (
               <div style={{ borderRadius: 14, overflow: 'hidden', marginBottom: 24, background: '#111' }}>
-                <img src={images[activeImage]} alt={project.name} style={{ width: '100%', height: 420, objectFit: 'cover', display: 'block' }} loading="lazy"/>
+                <div style={{ position: 'relative', height: 420 }}>
+                  <Image src={images[activeImage]} alt={project.name} fill sizes="(max-width: 768px) 100vw, 700px" style={{ objectFit: 'cover' }} priority/>
+                </div>
                 {images.length > 1 && (
                   <div style={{ display: 'flex', gap: 6, padding: '8px', background: '#111' }}>
                     {images.map((img: string, i: number) => (
-                      <img key={i} src={img} onClick={() => setActiveImage(i)}
-                        style={{ width: 80, height: 55, objectFit: 'cover', borderRadius: 6, cursor: 'pointer', opacity: i === activeImage ? 1 : 0.45, border: i === activeImage ? '2px solid #16a34a' : '2px solid transparent' }}
-                        loading="lazy"
-                      />
+                      <div key={i} onClick={() => setActiveImage(i)}
+                        style={{ width: 80, height: 55, borderRadius: 6, cursor: 'pointer', overflow: 'hidden', flexShrink: 0, position: 'relative', opacity: i === activeImage ? 1 : 0.45, border: i === activeImage ? '2px solid #16a34a' : '2px solid transparent' }}
+                      >
+                        <Image src={img} alt="" fill style={{ objectFit: 'cover' }}/>
+                      </div>
                     ))}
                   </div>
                 )}

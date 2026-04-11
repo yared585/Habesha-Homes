@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { MapPin, Bed, Bath, Square, Calendar, Heart, Share2, Phone, Mail, TrendingUp, Shield, BarChart3, CheckCircle, ChevronDown, ChevronUp, Eye, Star, Clock } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { PropertyChat } from '@/components/ai/PropertyChat'
@@ -226,7 +227,9 @@ export default function PropertyDetailPage() {
             <div style={{ borderRadius: 16, overflow: 'hidden', marginBottom: 20, background: '#111', position: 'relative' }}>
               {images.length > 0 ? (
                 <>
-                  <img src={images[activeImage]?.url} alt={title} style={{ width: '100%', height: 520, objectFit: 'cover', display: 'block' }}/>
+                  <div style={{ position: 'relative', height: 520 }}>
+                    <Image src={images[activeImage]?.url} alt={title} fill sizes="(max-width: 768px) 100vw, 800px" style={{ objectFit: 'cover' }} priority/>
+                  </div>
                   <div style={{ position: 'absolute', bottom: 14, right: 14, background: 'rgba(0,0,0,0.55)', color: '#fff', fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 20 }}>
                     {activeImage + 1} / {images.length}
                   </div>
@@ -258,9 +261,11 @@ export default function PropertyDetailPage() {
               {images.length > 1 && (
                 <div style={{ display: 'flex', gap: 6, padding: '8px 8px', background: '#111', overflowX: 'auto' }}>
                   {images.map((img, i) => (
-                    <img key={i} src={img.url} onClick={() => setActiveImage(i)}
-                      style={{ width: 90, height: 60, objectFit: 'cover', borderRadius: 8, cursor: 'pointer', flexShrink: 0, opacity: i === activeImage ? 1 : 0.45, border: i === activeImage ? '2px solid #16a34a' : '2px solid transparent', transition: 'all .15s' }}
-                    />
+                    <div key={i} onClick={() => setActiveImage(i)}
+                      style={{ width: 90, height: 60, borderRadius: 8, cursor: 'pointer', flexShrink: 0, overflow: 'hidden', position: 'relative', opacity: i === activeImage ? 1 : 0.45, border: i === activeImage ? '2px solid #16a34a' : '2px solid transparent', transition: 'all .15s' }}
+                    >
+                      <Image src={img.url} alt="" fill style={{ objectFit: 'cover' }}/>
+                    </div>
                   ))}
                 </div>
               )}
@@ -472,9 +477,9 @@ export default function PropertyDetailPage() {
             <div style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 14, padding: '16px 18px' }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: '#888', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 12 }}>Listed by</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
-                <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, color: '#fff', fontWeight: 700, overflow: 'hidden', flexShrink: 0 }}>
+                <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, color: '#fff', fontWeight: 700, overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
                   {(property.agent as any)?.profile?.avatar_url
-                    ? <img src={(property.agent as any).profile.avatar_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
+                    ? <Image src={(property.agent as any).profile.avatar_url} alt="" fill style={{ objectFit: 'cover' }}/>
                     : ((property.agent as any)?.agency_name || 'A')[0]}
                 </div>
                 <div>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { MapPin, Bed, Bath, Square, Calendar, Heart, Share2, Phone, Mail, TrendingUp, Shield, BarChart3, CheckCircle, ChevronDown, ChevronUp, Eye, Star, Clock, X, ChevronLeft, ChevronRight, Grid } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { PropertyChat } from '@/components/ai/PropertyChat'
@@ -351,29 +352,29 @@ export default function PropertyDetailPage() {
                 <div style={{ height: 380, background: '#f0f0ec', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aaa', fontSize: 14 }}>No photos available</div>
               ) : images.length === 1 ? (
                 /* Single image — full width */
-                <div style={{ position: 'relative', cursor: 'zoom-in' }} onClick={() => openLightbox(0)}>
-                  <img src={images[0].url} alt={title} style={{ width: '100%', height: 460, objectFit: 'cover', display: 'block' }}/>
+                <div style={{ position: 'relative', height: 460, cursor: 'zoom-in' }} onClick={() => openLightbox(0)}>
+                  <Image src={images[0].url} alt={title} fill sizes="(max-width: 768px) 100vw, 800px" style={{ objectFit: 'cover' }} priority/>
                 </div>
               ) : (
                 /* Zillow-style: main left + 2 stacked right */
                 <div className="property-photo-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '230px 230px', gap: 3 }}>
                   {/* Main large image — spans 2 rows */}
                   <div style={{ gridRow: '1 / 3', position: 'relative', cursor: 'zoom-in', overflow: 'hidden' }} onClick={() => openLightbox(0)}>
-                    <img src={images[0].url} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform .3s' }}
+                    <Image src={images[0].url} alt={title} fill sizes="(max-width: 768px) 100vw, 500px" style={{ objectFit: 'cover', transition: 'transform .3s' }} priority
                       onMouseEnter={e => (e.currentTarget as HTMLImageElement).style.transform = 'scale(1.02)'}
                       onMouseLeave={e => (e.currentTarget as HTMLImageElement).style.transform = 'scale(1)'}
                     />
                   </div>
                   {/* Top-right image */}
                   <div style={{ position: 'relative', cursor: 'zoom-in', overflow: 'hidden' }} onClick={() => openLightbox(1)}>
-                    <img src={images[1].url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform .3s' }}
+                    <Image src={images[1].url} alt="" fill sizes="(max-width: 768px) 50vw, 300px" style={{ objectFit: 'cover', transition: 'transform .3s' }}
                       onMouseEnter={e => (e.currentTarget as HTMLImageElement).style.transform = 'scale(1.02)'}
                       onMouseLeave={e => (e.currentTarget as HTMLImageElement).style.transform = 'scale(1)'}
                     />
                   </div>
                   {/* Bottom-right image */}
                   <div style={{ position: 'relative', cursor: 'zoom-in', overflow: 'hidden' }} onClick={() => openLightbox(images.length > 2 ? 2 : 1)}>
-                    <img src={images[Math.min(2, images.length - 1)].url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform .3s' }}
+                    <Image src={images[Math.min(2, images.length - 1)].url} alt="" fill sizes="(max-width: 768px) 50vw, 300px" style={{ objectFit: 'cover', transition: 'transform .3s' }}
                       onMouseEnter={e => (e.currentTarget as HTMLImageElement).style.transform = 'scale(1.02)'}
                       onMouseLeave={e => (e.currentTarget as HTMLImageElement).style.transform = 'scale(1)'}
                     />
@@ -652,9 +653,9 @@ export default function PropertyDetailPage() {
             <div style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 14, padding: '16px 18px' }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: '#888', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 12 }}>Listed by</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
-                <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, color: '#fff', fontWeight: 700, overflow: 'hidden', flexShrink: 0 }}>
+                <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, color: '#fff', fontWeight: 700, overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
                   {(property.agent as any)?.profile?.avatar_url
-                    ? <img src={(property.agent as any).profile.avatar_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
+                    ? <Image src={(property.agent as any).profile.avatar_url} alt="" fill style={{ objectFit: 'cover' }}/>
                     : ((property.agent as any)?.agency_name || 'A')[0]}
                 </div>
                 <div>
@@ -723,7 +724,7 @@ export default function PropertyDetailPage() {
                   >
                     <div style={{ position: 'relative', paddingBottom: '57%', background: '#f0f0ec', overflow: 'hidden' }}>
                       {simPhotos[0]
-                        ? <img src={simPhotos[0]} alt={sim.title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}/>
+                        ? <Image src={simPhotos[0]} alt={sim.title} fill sizes="(max-width: 768px) 50vw, 280px" style={{ objectFit: 'cover' }}/>
                         : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ccc', fontSize: 12 }}>No photo</div>
                       }
                       <span style={{ position: 'absolute', top: 10, left: 10, background: sim.listing_intent === 'rent' ? '#1d4ed8' : '#16a34a', color: '#fff', fontSize: 9, fontWeight: 800, padding: '2px 8px', borderRadius: 20, letterSpacing: '.06em' }}>

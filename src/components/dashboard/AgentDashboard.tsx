@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { Home, Eye, MessageSquare, TrendingUp, Plus, Building2, Star, Phone, Mail, Edit, BarChart3, Clock, CheckCircle, XCircle, AlertCircle, ArrowUp, ArrowDown, CreditCard, ArrowRight } from 'lucide-react'
 import { Card, StatCard, EmptyState } from '@/components/ui'
@@ -39,7 +40,7 @@ function ListingCard({ p, inquiryCount }: { p: any; inquiryCount: number }) {
       {/* Photo — fixed 160px wide, full height */}
       <div style={{ width: 160, flexShrink: 0, background: '#f0f0ec', position: 'relative' }}>
         {p.cover_image_url
-          ? <img src={p.cover_image_url} alt={p.title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}/>
+          ? <Image src={p.cover_image_url} alt={p.title} fill style={{ objectFit: 'cover' }}/>
           : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Building2 size={24} color="#d0d0cc"/></div>
         }
         {p.is_featured && (

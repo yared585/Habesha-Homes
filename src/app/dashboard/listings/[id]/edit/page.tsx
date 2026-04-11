@@ -75,7 +75,7 @@ export default function EditListingPage() {
     // If listing was rejected, resubmit for review — but check limit first
     let newStatus: string | undefined
     if (form.status === 'rejected') {
-      const planRaw = profile?.subscription_plan as string | undefined
+      const planRaw = (profile as any)?.subscription_plan as string | undefined
       const plan = planRaw || 'free'
       const limit = PLAN_LIMITS[plan] ?? 3
 
