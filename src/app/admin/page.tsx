@@ -50,19 +50,24 @@ const BLANK_PROJECT = {
   description: '', amenities: '', status: 'active',
 }
 
-function AuditLogTab({ logs, onLoad }: { logs: any[]; onLoad: () => void }) {
-  useEffect(() => { onLoad() }, [])
+function AuditLogTab({ logs, onLoad }: { logs: any[]; onLoad: () => Promise<{ ok: boolean }> }) {
+  const [ready, setReady] = useState(false)
+  const [tableError, setTableError] = useState(false)
+
+  useEffect(() => {
+    onLoad().then(({ ok }) => { setTableError(!ok); setReady(true) })
+  }, [])
 
   const ACTION_LABELS: Record<string, string> = {
     role_change: 'Role changed',
   }
 
-  if (logs.length === 0) return (
+  if (!ready) return (
+    <div style={{ textAlign: 'center', padding: 40, color: '#aaa', fontSize: 14 }}>Loading...</div>
+  )
+
+  if (tableError) return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <div style={{ fontSize: 13, color: '#888' }}>No audit events yet.</div>
-        <button onClick={onLoad} style={{ fontSize: 12, padding: '6px 14px', borderRadius: 8, border: '1px solid #e0dfd9', background: '#fff', cursor: 'pointer', fontFamily: 'inherit' }}>Refresh</button>
-      </div>
       <div style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 12, padding: 24 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: '#111', marginBottom: 8 }}>Setup required</div>
         <div style={{ fontSize: 12, color: '#888', marginBottom: 12 }}>Run this SQL in your Supabase dashboard to enable audit logging:</div>
@@ -77,11 +82,7 @@ function AuditLogTab({ logs, onLoad }: { logs: any[]; onLoad: () => void }) {
   created_at timestamptz default now()
 );
 
--- Index for fast queries
 create index if not exists audit_logs_created_at_idx on audit_logs(created_at desc);
-create index if not exists audit_logs_admin_id_idx on audit_logs(admin_id);
-
--- Only admins can read; service role writes via API
 alter table audit_logs enable row level security;
 create policy "Admins can read audit logs"
   on audit_logs for select
@@ -92,11 +93,20 @@ create policy "Admins can read audit logs"
     </div>
   )
 
+  if (logs.length === 0) return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <div style={{ fontSize: 13, color: '#888' }}>No audit events yet. Role changes will appear here.</div>
+        <button onClick={() => onLoad().then(({ ok }) => setTableError(!ok))} style={{ fontSize: 12, padding: '6px 14px', borderRadius: 8, border: '1px solid #e0dfd9', background: '#fff', cursor: 'pointer', fontFamily: 'inherit' }}>Refresh</button>
+      </div>
+    </div>
+  )
+
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <div style={{ fontSize: 13, color: '#888' }}>{logs.length} recent events</div>
-        <button onClick={onLoad} style={{ fontSize: 12, padding: '6px 14px', borderRadius: 8, border: '1px solid #e0dfd9', background: '#fff', cursor: 'pointer', fontFamily: 'inherit' }}>Refresh</button>
+        <button onClick={() => onLoad()} style={{ fontSize: 12, padding: '6px 14px', borderRadius: 8, border: '1px solid #e0dfd9', background: '#fff', cursor: 'pointer', fontFamily: 'inherit' }}>Refresh</button>
       </div>
       {logs.map(log => (
         <div key={log.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, padding: '14px 16px', background: '#fff', border: '1px solid #eae9e4', borderRadius: 12, marginBottom: 8 }}>
@@ -305,12 +315,14 @@ export default function AdminPage() {
 
   async function loadAuditLogs() {
     const sb = createClient()
-    const { data } = await sb
+    const { data, error } = await sb
       .from('audit_logs')
-      .select('*, admin:profiles!audit_logs_admin_id_fkey(full_name, email), target:profiles!audit_logs_target_user_id_fkey(full_name, email)')
+      .select('*')
       .order('created_at', { ascending: false })
       .limit(100)
-    if (data) setAuditLogs(data)
+    // Return error flag so the tab can distinguish "table missing" from "empty"
+    setAuditLogs(error ? [] : (data ?? []))
+    return { ok: !error }
   }
 
   async function changeAgentPlan(userId: string, plan: string) {

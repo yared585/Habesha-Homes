@@ -119,16 +119,13 @@ export function PropertyCard({ property: p }: Props) {
           {/* Intent badge — top left */}
           <div style={{
             position: 'absolute', top: 10, left: 10,
-            background: 'rgba(0,0,0,0.48)',
+            background: isRent ? '#2563eb' : isBoth ? '#7c3aed' : '#16a34a',
             color: '#fff',
             fontSize: 10,
-            fontWeight: 600,
+            fontWeight: 700,
             padding: '3px 10px',
             borderRadius: 20,
             letterSpacing: '.04em',
-            backdropFilter: 'blur(6px)',
-            WebkitBackdropFilter: 'blur(6px)',
-            border: '1px solid rgba(255,255,255,0.2)',
           }}>
             {isRent ? 'For rent' : isBoth ? 'For sale & rent' : 'For sale'}
           </div>

@@ -2,8 +2,60 @@
 // Property search with filters, pagination, geospatial
 
 import { NextRequest, NextResponse } from 'next/server'
+import { Resend } from 'resend'
 import { createClient } from '@/lib/supabase/server'
 import type { PropertyFilters, PropertyType, ListingIntent } from '@/types'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
+const FROM = 'Habesha Properties <noreply@habeshaproperties.com>'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://habeshaproperties.com'
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'yohanesy585@gmail.com'
+
+async function notifyAdminNewListing(property: any, agentName: string, agentEmail: string) {
+  const price = property.price_etb
+    ? `ETB ${Number(property.price_etb).toLocaleString()}`
+    : 'Not specified'
+
+  const html = `
+<!DOCTYPE html><html><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f9f9f7;font-family:system-ui,-apple-system,sans-serif;">
+<div style="max-width:560px;margin:0 auto;padding:32px 16px;">
+  <div style="background:#0d2318;border-radius:14px 14px 0 0;padding:28px 32px;text-align:center;">
+    <h1 style="color:#fff;font-size:22px;font-weight:800;margin:0 0 6px;letter-spacing:-0.02em;">New Listing Submitted</h1>
+    <p style="color:rgba(255,255,255,0.6);font-size:14px;margin:0;">Pending your review on Habesha Properties</p>
+  </div>
+  <div style="background:#fff;padding:32px;border:1px solid #eae9e4;border-top:none;">
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:18px;margin-bottom:24px;">
+      <div style="font-size:12px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Property</div>
+      <div style="font-size:17px;font-weight:700;color:#111;margin-bottom:4px;">${property.title || 'Untitled'}</div>
+      <div style="font-size:13px;color:#555;">${property.property_type || ''} · ${property.city || ''}</div>
+    </div>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
+      <tr><td style="font-size:13px;color:#888;padding:6px 0;width:110px;">Agent</td><td style="font-size:14px;font-weight:600;color:#111;">${agentName}</td></tr>
+      <tr><td style="font-size:13px;color:#888;padding:6px 0;">Agent Email</td><td style="font-size:14px;color:#111;"><a href="mailto:${agentEmail}" style="color:#16a34a;">${agentEmail}</a></td></tr>
+      <tr><td style="font-size:13px;color:#888;padding:6px 0;">Price</td><td style="font-size:14px;font-weight:600;color:#1a3d2b;">${price}</td></tr>
+      <tr><td style="font-size:13px;color:#888;padding:6px 0;">Intent</td><td style="font-size:14px;color:#111;">${property.listing_intent || 'sale'}</td></tr>
+      <tr><td style="font-size:13px;color:#888;padding:6px 0;">Bedrooms</td><td style="font-size:14px;color:#111;">${property.bedrooms ?? '—'}</td></tr>
+    </table>
+    <div style="text-align:center;">
+      <a href="${APP_URL}/admin" style="display:inline-block;background:#1a3d2b;color:#fff;padding:13px 32px;border-radius:10px;font-size:15px;font-weight:700;text-decoration:none;">
+        Review in Admin Panel →
+      </a>
+    </div>
+  </div>
+  <div style="background:#f9f9f7;border:1px solid #eae9e4;border-top:none;border-radius:0 0 14px 14px;padding:16px 32px;text-align:center;">
+    <p style="font-size:12px;color:#aaa;margin:0;">Habesha Properties · <a href="${APP_URL}" style="color:#16a34a;">${APP_URL}</a></p>
+  </div>
+</div>
+</body></html>`
+
+  await resend.emails.send({
+    from: FROM,
+    to: ADMIN_EMAIL,
+    subject: `New listing pending review: "${property.title || 'Untitled'}" — ${agentName}`,
+    html,
+  })
+}
 
 const VALID_INTENTS: ListingIntent[] = ['sale', 'rent', 'both']
 const VALID_TYPES: PropertyType[] = ['apartment','villa','house','condominium','commercial','land','office','warehouse']
@@ -193,6 +245,19 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) throw error
+
+    // Notify admin — non-blocking
+    const { data: agentProfile } = await supabase
+      .from('profiles')
+      .select('full_name, email')
+      .eq('id', user.id)
+      .single()
+
+    notifyAdminNewListing(
+      property,
+      agentProfile?.full_name || 'Unknown Agent',
+      agentProfile?.email || '',
+    ).catch(() => { /* non-critical */ })
 
     return NextResponse.json({ data: property }, { status: 201 })
 

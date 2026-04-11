@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import Link from 'next/link'
 import { usePropertyCounts } from '@/hooks/useProperties'
 
@@ -93,10 +94,10 @@ const CATEGORIES = [
 export function PropertyCategories() {
   const { counts, loading } = usePropertyCounts()
 
-  function fmt(key: string, n: number) {
+  function fmt(key: string, n: number): React.ReactNode {
     if (loading) return '...'
     if (key === 'developments') return n === 0 ? '0 projects' : `${n} projects`
-    if (n === 0) return 'Coming soon'
+    if (n === 0) return <span style={{ background: '#f0f0ec', color: '#bbb', fontSize: 10, fontWeight: 600, padding: '1px 7px', borderRadius: 10 }}>Soon</span>
     return n === 1 ? '1 listing' : `${n.toLocaleString()} listings`
   }
 

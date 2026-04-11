@@ -92,10 +92,10 @@ export function usePropertyCounts() {
   useEffect(() => {
     const sb = createClient()
     Promise.all([
-      sb.from('properties').select('*', { count: 'exact', head: true }).eq('status', 'active').in('property_type', ['house', 'villa']),
-      sb.from('properties').select('*', { count: 'exact', head: true }).eq('status', 'active').in('property_type', ['apartment', 'condominium']),
-      sb.from('properties').select('*', { count: 'exact', head: true }).eq('status', 'active').eq('property_type', 'land'),
-      sb.from('properties').select('*', { count: 'exact', head: true }).eq('status', 'active').in('property_type', ['commercial', 'office']),
+      sb.from('properties').select('*', { count: 'exact', head: true }).eq('status', 'active').or('property_type.ilike.house,property_type.ilike.villa,property_type.ilike.houses,property_type.ilike.home'),
+      sb.from('properties').select('*', { count: 'exact', head: true }).eq('status', 'active').or('property_type.ilike.apartment,property_type.ilike.condominium,property_type.ilike.flat,property_type.ilike.apartments'),
+      sb.from('properties').select('*', { count: 'exact', head: true }).eq('status', 'active').or('property_type.ilike.land,property_type.ilike.plot,property_type.ilike.land_plot'),
+      sb.from('properties').select('*', { count: 'exact', head: true }).eq('status', 'active').or('property_type.ilike.commercial,property_type.ilike.office,property_type.ilike.shop'),
       sb.from('projects').select('*', { count: 'exact', head: true }),
     ]).then(([houses, apartments, land, commercial, developments]) => {
       setCounts({
@@ -106,7 +106,7 @@ export function usePropertyCounts() {
         developments: developments.count || 0,
       })
       setLoading(false)
-    })
+    }).catch(() => setLoading(false))
   }, [])
   return { counts, loading }
 }

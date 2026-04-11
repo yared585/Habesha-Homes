@@ -416,7 +416,7 @@ export default function PropertyDetailPage() {
               {/* Badge row + meta row */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-                  <span style={{ background: property.listing_intent === 'rent' ? '#1d4ed8' : '#166534', color: '#fff', fontSize: 10, fontWeight: 800, padding: '3px 9px', borderRadius: 20, letterSpacing: '.06em' }}>
+                  <span style={{ background: property.listing_intent === 'rent' ? '#2563eb' : '#16a34a', color: '#fff', fontSize: 10, fontWeight: 800, padding: '3px 9px', borderRadius: 20, letterSpacing: '.06em' }}>
                     {property.listing_intent === 'rent' ? 'FOR RENT' : 'FOR SALE'}
                   </span>
                   {property.property_type && (
@@ -727,7 +727,7 @@ export default function PropertyDetailPage() {
                         ? <Image src={simPhotos[0]} alt={sim.title} fill sizes="(max-width: 768px) 50vw, 280px" style={{ objectFit: 'cover' }}/>
                         : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ccc', fontSize: 12 }}>No photo</div>
                       }
-                      <span style={{ position: 'absolute', top: 10, left: 10, background: sim.listing_intent === 'rent' ? '#1d4ed8' : '#16a34a', color: '#fff', fontSize: 9, fontWeight: 800, padding: '2px 8px', borderRadius: 20, letterSpacing: '.06em' }}>
+                      <span style={{ position: 'absolute', top: 10, left: 10, background: sim.listing_intent === 'rent' ? '#2563eb' : '#16a34a', color: '#fff', fontSize: 9, fontWeight: 800, padding: '2px 8px', borderRadius: 20, letterSpacing: '.06em' }}>
                         {sim.listing_intent === 'rent' ? 'RENT' : 'SALE'}
                       </span>
                     </div>

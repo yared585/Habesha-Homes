@@ -29,6 +29,7 @@ function SearchContent() {
     query: searchParams.get('q') || '',
     listing_intent: (['sale','rent','both'].includes(searchParams.get('intent') || '') ? searchParams.get('intent') as any : undefined),
     neighborhoods: searchParams.get('neighborhoods')?.split(',').filter(Boolean) || [],
+    property_types: searchParams.get('types')?.split(',').filter(Boolean) as any[] || [],
     furnished: searchParams.get('furnished') || undefined,
   })
 
@@ -40,10 +41,11 @@ function SearchContent() {
       query: searchParams.get('q') || '',
       listing_intent: (['sale','rent','both'].includes(intent || '') ? intent as any : undefined),
       neighborhoods: searchParams.get('neighborhoods')?.split(',').filter(Boolean) || [],
+      property_types: searchParams.get('types')?.split(',').filter(Boolean) as any[] || [],
       furnished: searchParams.get('furnished') || undefined,
     }))
     setPage(1)
-  }, [searchParams.get('intent'), searchParams.get('q')])
+  }, [searchParams.get('intent'), searchParams.get('q'), searchParams.get('types')])
 
   useEffect(() => {
     loadNeighborhoods()
@@ -65,6 +67,7 @@ function SearchContent() {
     if (filters.query) params.set('q', filters.query)
     if (filters.listing_intent) params.set('intent', filters.listing_intent)
     if (filters.neighborhoods?.length) params.set('neighborhoods', filters.neighborhoods.join(','))
+    if (filters.property_types?.length) params.set('types', filters.property_types.join(','))
     if (filters.min_price_etb) params.set('min_price', filters.min_price_etb.toString())
     if (filters.max_price_etb) params.set('max_price', filters.max_price_etb.toString())
     if (filters.min_bedrooms) params.set('min_beds', filters.min_bedrooms.toString())
