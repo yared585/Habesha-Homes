@@ -6,6 +6,7 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Search, SlidersHorizontal, MapIcon, List, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Spinner } from '@/components/ui/Spinner'
@@ -287,7 +288,7 @@ function SearchContent() {
                   <div style={{ background: 'white', borderRadius: 10, overflow: 'hidden', border: '1px solid #eee', transition: 'all .2s' }}>
                     <div style={{ height: 180, background: '#e8f5e9', position: 'relative', overflow: 'hidden' }}>
                       {property.cover_image_url && (
-                        <img src={property.cover_image_url} alt={property.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <Image src={property.cover_image_url} alt={property.title} fill sizes="(max-width: 768px) 100vw, 350px" style={{ objectFit: 'cover' }}/>
                       )}
                       <div style={{ position: 'absolute', top: 10, left: 10, display: 'flex', gap: 5 }}>
                         {property.is_featured && <span style={{ background: '#1D9E75', color: 'white', fontSize: 10, padding: '2px 8px', borderRadius: 20, fontWeight: 600 }}>Featured</span>}

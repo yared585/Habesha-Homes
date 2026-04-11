@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { MapPin, Bed, Bath, Maximize2, Camera, Heart } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
@@ -197,9 +198,9 @@ export function PropertyCard({ property: p }: Props) {
           {/* Agent strip */}
           {agent && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 4, paddingTop: 6, borderTop: '1px solid #f0f0ee' }}>
-              <div style={{ width: 18, height: 18, borderRadius: '50%', flexShrink: 0, background: '#e8e7e2', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#888' }}>
+              <div style={{ width: 18, height: 18, borderRadius: '50%', flexShrink: 0, background: '#e8e7e2', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#888', position: 'relative' }}>
                 {agent?.profile?.avatar_url
-                  ? <img src={agent.profile.avatar_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
+                  ? <Image src={agent.profile.avatar_url} alt="" fill style={{ objectFit: 'cover' }}/>
                   : (agent?.agency_name?.[0] || 'A')}
               </div>
               <span style={{ fontSize: 10.5, color: '#aaa', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

@@ -30,34 +30,32 @@ export async function POST(request: NextRequest) {
   const { amount, label } = PLAN_PRICES[plan]
 
   try {
-    const session = await stripe.checkout.sessions.create({
-      mode: 'subscription',
-      payment_method_types: ['card'],
-      line_items: [{
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: `Habesha Properties ${label}`,
-            description: `Monthly subscription for Habesha Properties agent listing plan`,
+    const session = await stripe.checkout.sessions.create(
+      {
+        mode: 'subscription',
+        payment_method_types: ['card'],
+        line_items: [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: `Habesha Properties ${label}`,
+              description: `Monthly subscription for Habesha Properties agent listing plan`,
+            },
+            unit_amount: amount,
+            recurring: { interval: 'month' },
           },
-          unit_amount: amount,
-          recurring: { interval: 'month' },
-        },
-        quantity: 1,
-      }],
-      metadata: { user_id: user.id, plan: plan },
-      customer_email: user.email,
-      success_url: `${APP_URL}/dashboard?subscribed=true&plan=${plan}`,
-      cancel_url: `${APP_URL}/pricing`,
-    })
+          quantity: 1,
+        }],
+        metadata: { user_id: user.id, plan: plan },
+        customer_email: user.email,
+        success_url: `${APP_URL}/dashboard?subscribed=true&plan=${plan}`,
+        cancel_url: `${APP_URL}/pricing`,
+      },
+      // Prevent duplicate sessions if user double-clicks — 5-min window per user+plan
+      { idempotencyKey: `sub:${user.id}:${plan}:${Math.floor(Date.now() / 300_000)}` }
+    )
 
-    // Update subscription plan after checkout session is created.
-    // For production, use a Stripe webhook (checkout.session.completed) instead.
-    await supabase
-      .from('profiles')
-      .update({ subscription_plan: plan })
-      .eq('id', user.id)
-
+    // Plan update happens via webhook (checkout.session.completed) — do NOT update here
     return NextResponse.json({ url: session.url })
   } catch (err: any) {
     console.error('Stripe error:', err)

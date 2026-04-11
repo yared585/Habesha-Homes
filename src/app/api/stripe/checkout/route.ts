@@ -27,32 +27,35 @@ export async function POST(req: NextRequest) {
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://habesha-homes.vercel.app'
 
-    // Create Stripe checkout session
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [{
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: product.name,
-            description: product.description,
-            images: ['https://habesha-homes.vercel.app/og-image.png'],
+    // Create Stripe checkout session — idempotency key prevents duplicate charges on double-click
+    const session = await stripe.checkout.sessions.create(
+      {
+        payment_method_types: ['card'],
+        line_items: [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: product.name,
+              description: product.description,
+              images: ['https://habesha-homes.vercel.app/og-image.png'],
+            },
+            unit_amount: product.price,
           },
-          unit_amount: product.price,
+          quantity: 1,
+        }],
+        mode: 'payment',
+        allow_promotion_codes: true,
+        customer_email: user_email,
+        success_url: `${appUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}&report_type=${report_type}`,
+        cancel_url: `${appUrl}/payment/cancel`,
+        metadata: {
+          report_type,
+          property_id: property_id || '',
+          user_id: user_id || '',
         },
-        quantity: 1,
-      }],
-      mode: 'payment',
-      allow_promotion_codes: true,
-      customer_email: user_email,
-      success_url: `${appUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}&report_type=${report_type}`,
-      cancel_url: `${appUrl}/payment/cancel`,
-      metadata: {
-        report_type,
-        property_id: property_id || '',
-        user_id: user_id || '',
       },
-    })
+      { idempotencyKey: `checkout:${user_id}:${report_type}:${property_id || 'none'}:${Math.floor(Date.now() / 60_000)}` }
+    )
 
     // Save pending payment to database
     if (user_id) {

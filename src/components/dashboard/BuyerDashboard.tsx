@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Heart, MessageSquare, Shield, Search, Eye, MapPin, Phone, Mail, Clock, ArrowRight, User, Edit } from 'lucide-react'
 import { Card, StatCard, EmptyState } from '@/components/ui'
 import { createClient } from '@/lib/supabase/client'
@@ -120,8 +121,8 @@ export function BuyerDashboard({ profile, saved, stats }: Props) {
                       onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)'}
                       onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'}
                     >
-                      <div style={{ height: 130, background: '#f0f0ec', overflow: 'hidden' }}>
-                        {p.cover_image_url && <img src={p.cover_image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy"/>}
+                      <div style={{ height: 130, background: '#f0f0ec', overflow: 'hidden', position: 'relative' }}>
+                        {p.cover_image_url && <Image src={p.cover_image_url} alt={p.title || ''} fill sizes="280px" style={{ objectFit: 'cover' }}/>}
                       </div>
                       <div style={{ padding: '12px 14px' }}>
                         <div style={{ fontWeight: 600, fontSize: 13, color: '#111', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.title}</div>
@@ -146,8 +147,8 @@ export function BuyerDashboard({ profile, saved, stats }: Props) {
               {saved.map((p: any) => (
                 <Link key={p.id} href={`/property/${p.id}`} style={{ textDecoration: 'none' }}>
                   <div style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 12, overflow: 'hidden' }}>
-                    <div style={{ height: 150, background: '#f0f0ec', overflow: 'hidden' }}>
-                      {p.cover_image_url && <img src={p.cover_image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy"/>}
+                    <div style={{ height: 150, background: '#f0f0ec', overflow: 'hidden', position: 'relative' }}>
+                      {p.cover_image_url && <Image src={p.cover_image_url} alt={p.title || ''} fill sizes="280px" style={{ objectFit: 'cover' }}/>}
                     </div>
                     <div style={{ padding: '14px 16px' }}>
                       <div style={{ fontWeight: 700, fontSize: 14, color: '#111', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.title}</div>
@@ -179,8 +180,8 @@ export function BuyerDashboard({ profile, saved, stats }: Props) {
               <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
                 {/* Property photo */}
                 {inq.property?.cover_image_url && (
-                  <div style={{ width: 60, height: 50, borderRadius: 8, overflow: 'hidden', flexShrink: 0 }}>
-                    <img src={inq.property.cover_image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy"/>
+                  <div style={{ width: 60, height: 50, borderRadius: 8, overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
+                    <Image src={inq.property.cover_image_url} alt="" fill style={{ objectFit: 'cover' }}/>
                   </div>
                 )}
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -233,9 +234,9 @@ export function BuyerDashboard({ profile, saved, stats }: Props) {
         <div style={{ display: 'grid', gap: 16, maxWidth: 500 }}>
           <div style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 14, padding: 22 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
-              <div style={{ width: 60, height: 60, borderRadius: '50%', background: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, color: '#fff', fontWeight: 700, overflow: 'hidden', flexShrink: 0 }}>
+              <div style={{ width: 60, height: 60, borderRadius: '50%', background: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, color: '#fff', fontWeight: 700, overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
                 {(profile as any).avatar_url
-                  ? <img src={(profile as any).avatar_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
+                  ? <Image src={(profile as any).avatar_url} alt="" fill style={{ objectFit: 'cover' }}/>
                   : profile.full_name?.[0]?.toUpperCase() || 'U'}
               </div>
               <div>

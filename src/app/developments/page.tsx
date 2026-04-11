@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { MapPin, Building2, ArrowRight, Eye } from 'lucide-react'
 import { formatETB } from '@/lib/utils'
@@ -57,7 +58,7 @@ export default function DevelopmentsPage() {
                   {/* Image */}
                   <div style={{ height: 200, background: '#f0f0ec', position: 'relative', overflow: 'hidden' }}>
                     {p.cover_image_url
-                      ? <img src={p.cover_image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy"/>
+                      ? <Image src={p.cover_image_url} alt={p.name || ''} fill sizes="(max-width: 768px) 100vw, 400px" style={{ objectFit: 'cover' }}/>
                       : <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Building2 size={40} color="#ccc"/></div>
                     }
                     {p.is_featured && (
