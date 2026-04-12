@@ -3,7 +3,7 @@ import { Resend } from 'resend'
 import { createClient } from '@/lib/supabase/server'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
-const FROM = 'Habesha Properties <noreply@habeshaproperties.com>'
+const FROM = process.env.EMAIL_FROM || 'Habesha Properties <onboarding@resend.dev>'
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://habeshaproperties.com'
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'yohanesy585@gmail.com'
 

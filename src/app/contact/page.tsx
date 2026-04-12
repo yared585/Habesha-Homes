@@ -21,13 +21,15 @@ export default function ContactPage() {
     setSending(true)
     setError('')
     try {
-      await fetch('/api/email', {
+      const res = await fetch('/api/email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'contact', data: form })
       })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to send')
       setSent(true)
-    } catch { setError('Something went wrong. Please try again.') }
+    } catch (err: any) { setError(err.message || 'Something went wrong. Please try again.') }
     setSending(false)
   }
 
