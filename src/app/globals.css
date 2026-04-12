@@ -481,6 +481,17 @@ img[loading="lazy"] {
     padding-left: 16px !important;
     padding-right: 16px !important;
   }
+
+  .hero-filter-bar-mobile {
+    padding: 0 !important;
+  }
+
+  #category-bar {
+    position: sticky;
+    top: 58px;
+    z-index: 99;
+    background: #fff;
+  }
 }
 
 @media (min-width: 769px) {

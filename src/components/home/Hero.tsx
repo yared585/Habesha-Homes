@@ -187,20 +187,32 @@ export function Hero() {
 
         {/* mobile search */}
         <div className="hero-filter-bar-mobile" style={{ padding: '0' }}>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Link href="/search"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 10,
-                background: '#1a3d2b', color: '#fff', borderRadius: 50,
-                padding: '13px 32px', fontSize: 15, fontWeight: 700, textDecoration: 'none',
-                boxShadow: '0 2px 12px rgba(26,61,43,0.25)',
-              }}
-            ><Search size={17}/> {tl('search')}</Link>
-          </div>
-          <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
-            <Link href="/search?intent=sale" style={{ flex: 1, textAlign: 'center', padding: '11px 8px', background: '#f0fdf4', color: '#1a3d2b', borderRadius: 24, fontSize: 13, fontWeight: 600, textDecoration: 'none', border: '1px solid #bbf7d0' }}>{tl('buy')}</Link>
-            <Link href="/search?intent=rent" style={{ flex: 1, textAlign: 'center', padding: '11px 8px', background: '#f0fdf4', color: '#1a3d2b', borderRadius: 24, fontSize: 13, fontWeight: 600, textDecoration: 'none', border: '1px solid #bbf7d0' }}>{tl('rent')}</Link>
-            <Link href="/search?view=map" style={{ flex: 1, textAlign: 'center', padding: '11px 8px', background: '#f5f5f2', color: '#555', borderRadius: 24, fontSize: 13, fontWeight: 600, textDecoration: 'none', border: '1px solid #e8e7e2' }}>{tl('map')}</Link>
+          <button
+            onClick={() => window.location.href = '/search'}
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              width: '100%', background: '#fff', border: '1.5px solid #e0e0e0',
+              borderRadius: 50, padding: '10px 10px 10px 18px',
+              cursor: 'pointer', fontFamily: 'inherit',
+              boxShadow: '0 2px 16px rgba(0,0,0,0.1)', marginBottom: 10,
+            }}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1 }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#111' }}>Anywhere in Ethiopia</span>
+              <span style={{ fontSize: 11, color: '#aaa' }}>Any type · Any price</span>
+            </div>
+            <span style={{
+              background: '#1a3d2b', color: '#fff', borderRadius: '50%',
+              width: 34, height: 34, display: 'flex', alignItems: 'center',
+              justifyContent: 'center', flexShrink: 0,
+            }}>
+              <Search size={14}/>
+            </span>
+          </button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Link href="/search?intent=sale" style={{ flex: 1, textAlign: 'center', padding: '9px', background: '#f0fdf4', color: '#1a3d2b', borderRadius: 24, fontSize: 13, fontWeight: 600, textDecoration: 'none', border: '1px solid #bbf7d0' }}>{tl('buy')}</Link>
+            <Link href="/search?intent=rent" style={{ flex: 1, textAlign: 'center', padding: '9px', background: '#f0fdf4', color: '#1a3d2b', borderRadius: 24, fontSize: 13, fontWeight: 600, textDecoration: 'none', border: '1px solid #bbf7d0' }}>{tl('rent')}</Link>
+            <Link href="/search?view=map" style={{ flex: 1, textAlign: 'center', padding: '9px', background: '#f5f5f2', color: '#555', borderRadius: 24, fontSize: 13, fontWeight: 600, textDecoration: 'none', border: '1px solid #e8e7e2' }}>{tl('map')}</Link>
           </div>
         </div>
 
