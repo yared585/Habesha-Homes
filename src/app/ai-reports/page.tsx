@@ -248,13 +248,13 @@ export default function AIReportsPage() {
         <div style={{ maxWidth: 1100, margin: '0 auto', textAlign: 'center' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 20, padding: '5px 14px', marginBottom: 20 }}>
             <Sparkles size={12} color="#16a34a"/>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#15803d' }}>Powered by Claude AI</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#15803d' }}>AI-powered intelligence</span>
           </div>
           <h1 style={{ fontSize: 'clamp(32px,5vw,52px)', fontWeight: 900, color: '#111', margin: '0 0 16px', letterSpacing: '-.025em' }}>
             AI-powered property intelligence
           </h1>
           <p style={{ fontSize: 17, color: '#666', maxWidth: 540, margin: '0 auto 32px', lineHeight: 1.7 }}>
-            Professional fraud detection and valuations — powered by Claude AI in Amharic and English. Free for registered users.
+            Professional fraud detection and valuations — in Amharic and English. Free for registered users.
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link href="/search" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#1a3d2b', color: '#fff', padding: '12px 24px', borderRadius: 12, fontSize: 14, fontWeight: 700, textDecoration: 'none' }}>
@@ -309,14 +309,14 @@ export default function AIReportsPage() {
       <section style={{ padding: '60px 24px', background: '#fafaf8', borderTop: '1px solid #eae9e4' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
           <div>
-            <h2 style={{ fontSize: 28, fontWeight: 900, color: '#111', margin: '0 0 14px' }}>Why Claude AI?</h2>
+            <h2 style={{ fontSize: 28, fontWeight: 900, color: '#111', margin: '0 0 14px' }}>Why our AI tools?</h2>
             <p style={{ fontSize: 15, color: '#666', lineHeight: 1.7, marginBottom: 24 }}>
-              Claude is the only AI that handles Amharic fluently. With a 200,000 token context window, Claude can read entire legal contracts in one shot.
+              The only AI property platform that handles Amharic fluently — reading entire legal contracts in one shot.
             </p>
             {[
-              { icon: <MessageCircle size={18}/>, t: 'Speaks Amharic fluently', d: 'Native Amharic support — not translation. Claude understands Ethiopian legal terminology.' },
-              { icon: <FileText size={18}/>, t: 'Reads full contracts', d: '200K context window means Claude reads your entire lease or sale agreement in one go.' },
-              { icon: <Shield size={18}/>, t: 'Vision AI for documents', d: 'Claude analyzes photos of title documents, detecting forged stamps and inconsistencies.' },
+              { icon: <MessageCircle size={18}/>, t: 'Speaks Amharic fluently', d: 'Native Amharic support — not translation. Understands Ethiopian legal terminology.' },
+              { icon: <FileText size={18}/>, t: 'Reads full contracts', d: 'Reads your entire lease or sale agreement in one go — no page limits.' },
+              { icon: <Shield size={18}/>, t: 'Vision AI for documents', d: 'Analyzes photos of title documents, detecting forged stamps and inconsistencies.' },
             ].map(({ icon, t, d }) => (
               <div key={t} style={{ display: 'flex', gap: 14, marginBottom: 20 }}>
                 <div style={{ width: 40, height: 40, borderRadius: 10, background: '#f0fdf4', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#16a34a', flexShrink: 0 }}>{icon}</div>
@@ -328,7 +328,7 @@ export default function AIReportsPage() {
             ))}
           </div>
           <div style={{ background: '#0d2318', borderRadius: 20, padding: 32 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#4ade80', marginBottom: 16 }}>🤖 Claude AI — live example</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: '#4ade80', marginBottom: 16 }}>🤖 AI Assistant — live example</div>
             {[
               { role: 'user', msg: 'ዋጋው ለቦሌ ትክክለኛ ነው? Is ETB 2.8M fair for this apartment?' },
               { role: 'ai', msg: 'Based on current Bole market data (ETB 65,000-80,000/m²), this 45m² apartment should be priced ETB 2.9M-3.6M. At ETB 2.8M it is slightly below market — a good deal. Rental yield estimate: 8.2%/year. ዋጋው ጥሩ ነው!' },

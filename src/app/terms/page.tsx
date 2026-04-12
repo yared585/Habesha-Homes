@@ -25,7 +25,7 @@ export default function TermsPage() {
           },
           {
             title: '2. Description of Service',
-            content: 'Habesha Properties is an online real estate marketplace connecting property buyers, renters, and sellers in Ethiopia. We provide AI-powered tools including property valuations, fraud detection, contract analysis, and neighborhood reports powered by Anthropic\'s Claude AI.'
+            content: 'Habesha Properties is an online real estate marketplace connecting property buyers, renters, and sellers in Ethiopia. We provide AI-powered tools including property valuations, fraud detection, contract analysis, and neighborhood reports.'
           },
           {
             title: '3. User Accounts',

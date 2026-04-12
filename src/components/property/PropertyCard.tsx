@@ -71,6 +71,8 @@ export function PropertyCard({ property: p }: Props) {
   const price = p.listing_intent === 'rent' ? p.rent_per_month_etb : p.price_etb
   const isRent = p.listing_intent === 'rent'
   const isBoth = p.listing_intent === 'both'
+  const isSold = p.status === 'sold'
+  const isRented = p.status === 'rented'
   const agent = (p as any).agent
   const photos: string[] = (p as any).photos
   const photoCount = photos?.length || (p.cover_image_url ? 1 : 0)
@@ -115,18 +117,31 @@ export function PropertyCard({ property: p }: Props) {
           {/* Dark gradient overlay at bottom */}
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 72, background: 'linear-gradient(to top, rgba(0,0,0,0.45), transparent)', pointerEvents: 'none' }}/>
 
+          {/* Sold / Rented dim overlay + stamp */}
+          {(isSold || isRented) && (
+            <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, pointerEvents: 'none' }}>
+              <div style={{
+                background: isSold ? '#2563eb' : '#7c3aed',
+                color: '#fff', fontSize: 15, fontWeight: 900,
+                letterSpacing: '0.1em', textTransform: 'uppercase',
+                padding: '8px 24px', borderRadius: 6,
+                transform: 'rotate(-8deg)',
+                border: '2px solid rgba(255,255,255,0.35)',
+                boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
+              }}>
+                {isSold ? 'Sold' : 'Rented'}
+              </div>
+            </div>
+          )}
+
           {/* Intent badge — top left */}
           <div style={{
-            position: 'absolute', top: 10, left: 10,
-            background: isRent ? '#2563eb' : isBoth ? '#7c3aed' : '#16a34a',
-            color: '#fff',
-            fontSize: 10,
-            fontWeight: 700,
-            padding: '3px 10px',
-            borderRadius: 20,
-            letterSpacing: '.04em',
+            position: 'absolute', top: 10, left: 10, zIndex: 2,
+            background: isSold ? '#2563eb' : isRented ? '#7c3aed' : isRent ? '#2563eb' : isBoth ? '#7c3aed' : '#16a34a',
+            color: '#fff', fontSize: 10, fontWeight: 700,
+            padding: '3px 10px', borderRadius: 20, letterSpacing: '.04em',
           }}>
-            {isRent ? 'For rent' : isBoth ? 'For sale & rent' : 'For sale'}
+            {isSold ? 'Sold' : isRented ? 'Rented' : isRent ? 'For rent' : isBoth ? 'For sale & rent' : 'For sale'}
           </div>
 
           {/* Verified badge — top left, below intent */}

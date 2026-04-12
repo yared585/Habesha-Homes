@@ -27,11 +27,11 @@ export default function PrivacyPage() {
           },
           {
             title: '3. AI Processing',
-            content: 'When you use AI-powered features (fraud detection, valuations, contract analysis), your uploaded documents and property details are processed by Anthropic\'s Claude AI. Documents are processed in real-time and are not stored permanently by Anthropic. We store the generated report results in your account.'
+            content: 'When you use AI-powered features (fraud detection, valuations, contract analysis), your uploaded documents and property details are processed by our AI system. Documents are processed in real-time and are not stored permanently. We store the generated report results in your account.'
           },
           {
             title: '4. Information Sharing',
-            content: 'We do not sell your personal information. We share information only: with agents when you submit an inquiry about their listing; with Stripe for payment processing; with Anthropic for AI report generation; when required by Ethiopian law or legal process; with your explicit consent.'
+            content: 'We do not sell your personal information. We share information only: with agents when you submit an inquiry about their listing; with Stripe for payment processing; for AI report generation; when required by Ethiopian law or legal process; with your explicit consent.'
           },
           {
             title: '5. Data Storage',
