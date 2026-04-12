@@ -47,8 +47,9 @@ export default function ContactPage() {
           <div>
             <h2 style={{ fontSize: 18, fontWeight: 800, color: '#111', marginBottom: 24 }}>Contact information</h2>
             {[
-              { icon: <Mail size={17} color="#16a34a"/>, label: 'Email', value: 'support@habeshahomes.com', href: 'mailto:support@habeshahomes.com' },
-              { icon: <Phone size={17} color="#16a34a"/>, label: 'Phone', value: '+251 911 000 000', href: 'tel:+251911000000' },
+              { icon: <Mail size={17} color="#16a34a"/>, label: 'Email', value: 'yohanesy585@gmail.com', href: 'mailto:yohanesy585@gmail.com' },
+              { icon: <Phone size={17} color="#16a34a"/>, label: 'Phone (Local)', value: '301-605-0766', href: 'tel:3016050766' },
+              { icon: <Phone size={17} color="#16a34a"/>, label: 'Phone (Ethiopia)', value: '+251 913 964 204', href: 'tel:+251913964204' },
               { icon: <MapPin size={17} color="#16a34a"/>, label: 'Office', value: 'Bole, Addis Ababa, Ethiopia', href: null },
             ].map(({ icon, label, value, href }) => (
               <div key={label} style={{ display: 'flex', gap: 14, marginBottom: 20 }}>
