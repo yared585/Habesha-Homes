@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { createClient } from '@/lib/supabase/client'
+import { createClient, getClientUser } from '@/lib/supabase/client'
 import { Building2, Eye, MessageSquare, TrendingUp, Plus, CheckCircle, Clock, XCircle, Edit, BarChart3, Users, DollarSign } from 'lucide-react'
 import { formatETB } from '@/lib/utils'
 
@@ -32,7 +32,7 @@ export default function DeveloperDashboard() {
 
   async function loadData() {
     const sb = createClient()
-    const { data: { user } } = await sb.auth.getUser()
+    const user = await getClientUser()
     if (!user) { router.push('/auth/login'); return }
 
     const { data: profileData } = await sb.from('profiles').select('*').eq('id', user.id).single()

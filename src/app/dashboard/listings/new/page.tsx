@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
-import { createClient } from '@/lib/supabase/client'
+import { createClient, getClientUser } from '@/lib/supabase/client'
 import { Check, ArrowRight, ArrowLeft, Home, MapPin, Image, Sparkles, Building2 } from 'lucide-react'
 import { PhotoUpload } from '@/components/property/PhotoUpload'
 
@@ -336,6 +336,12 @@ function Step5({ form, set, onGenerate, generating, generated }: any) {
 }
 
 // ── Main page ─────────────────────────────────────────────────────────────────
+const PLAN_LIMITS: Record<string, number> = { free: 3, basic: 10, pro: Infinity, premium: Infinity }
+const PLAN_UPGRADES: Record<string, string> = {
+  free: 'Upgrade to Basic (ETB 100/month) to add up to 10 listings.',
+  basic: 'Upgrade to Pro (ETB 500/month) for unlimited listings.',
+}
+
 export default function NewListingPage() {
   const router = useRouter()
   const { profile, loading } = useAuth(true)
@@ -345,6 +351,35 @@ export default function NewListingPage() {
   const [generating, setGenerating] = useState(false)
   const [generated, setGenerated] = useState(false)
   const [error, setError] = useState('')
+  const [limitReached, setLimitReached] = useState<{ count: number; limit: number; plan: string } | null>(null)
+
+  useEffect(() => {
+    if (!profile) return
+    checkLimit()
+  }, [profile])
+
+  async function checkLimit() {
+    const user = await getClientUser()
+    if (!user) return
+    const sb = createClient()
+
+    const { data: prof } = await sb.from('profiles').select('subscription_plan').eq('id', user.id).single()
+    const plan = (prof?.subscription_plan as string) || 'free'
+    const limit = PLAN_LIMITS[plan] ?? 3
+    if (!isFinite(limit)) return // unlimited plan
+
+    // Fetch actual IDs — avoids head:true counting bugs with compound filters
+    const { data: rows } = await sb
+      .from('properties')
+      .select('id, status')
+      .or(`owner_id.eq.${user.id},agent_id.eq.${user.id}`)
+
+    const count = (rows || []).filter(r => r.status !== 'rejected').length
+
+    if (count >= limit) {
+      setLimitReached({ count, limit, plan })
+    }
+  }
 
   function set(partial: Partial<ListingForm>) {
     setFormState(prev => ({ ...prev, ...partial }))
@@ -392,14 +427,14 @@ Keep each paragraph under 100 words.`
     setSubmitting(true)
     setError('')
     const sb = createClient()
-    const { data: { user } } = await sb.auth.getUser()
-    if (!user) { router.push('/auth/login'); return }
 
     // Find neighborhood id
     const { data: hood } = await sb.from('neighborhoods')
       .select('id').eq('name', form.neighborhood_name).single()
 
     // Make sure agent record exists first
+    const user = await getClientUser()
+    if (!user) { router.push('/auth/login'); return }
     await sb.from('agents').upsert({
       id: user.id,
       agency_name: profile?.full_name || 'My Agency',
@@ -407,39 +442,42 @@ Keep each paragraph under 100 words.`
       is_verified: false,
     })
 
-    const { data: property, error: err } = await sb.from('properties').insert({
-      title: form.title,
-      title_amharic: form.title_amharic || null,
-      listing_intent: form.listing_intent,
-      property_type: form.property_type,
-      price_etb: form.price_etb ? parseFloat(form.price_etb) : null,
-      rent_per_month_etb: form.rent_per_month_etb ? parseFloat(form.rent_per_month_etb) : null,
-      is_negotiable: form.is_negotiable,
-      bedrooms: form.bedrooms ? parseInt(form.bedrooms) : null,
-      bathrooms: form.bathrooms ? parseInt(form.bathrooms) : null,
-      size_sqm: form.size_sqm ? parseFloat(form.size_sqm) : null,
-      year_built: form.year_built ? parseInt(form.year_built) : null,
-      floor_number: form.floor_number ? parseInt(form.floor_number) : null,
-      amenities: form.amenities,
-      description: form.description || null,
-      city: form.city,
-      address: form.address || null,
-      neighborhood_id: hood?.id || null,
-      cover_image_url: form.cover_image_url || null,
-      photos: form.photos?.length ? form.photos : (form.cover_image_url ? [form.cover_image_url] : []),
-      video_url: form.video_url || null,
-      is_furnished: form.is_furnished === 'true',
-      furnished_status: form.is_furnished === 'semi' ? 'semi' : null,
-      coordinates: form.lat && form.lng ? `SRID=4326;POINT(${form.lng} ${form.lat})` : null,
-      lat: form.lat ? parseFloat(form.lat) : null,
-      lng: form.lng ? parseFloat(form.lng) : null,
-      agent_id: user.id,
-      status: 'pending_review',
-      listed_at: new Date().toISOString(),
-    }).select().single()
+    // Submit via API — enforces plan limits, sets owner_id, notifies admin
+    const res = await fetch('/api/properties', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: form.title,
+        title_amharic: form.title_amharic || null,
+        listing_intent: form.listing_intent,
+        property_type: form.property_type,
+        price_etb: form.price_etb ? parseFloat(form.price_etb) : null,
+        rent_per_month_etb: form.rent_per_month_etb ? parseFloat(form.rent_per_month_etb) : null,
+        is_negotiable: form.is_negotiable,
+        bedrooms: form.bedrooms ? parseInt(form.bedrooms) : null,
+        bathrooms: form.bathrooms ? parseInt(form.bathrooms) : null,
+        size_sqm: form.size_sqm ? parseFloat(form.size_sqm) : null,
+        year_built: form.year_built ? parseInt(form.year_built) : null,
+        floor_number: form.floor_number ? parseInt(form.floor_number) : null,
+        amenities: form.amenities,
+        description: form.description || null,
+        city: form.city,
+        address: form.address || null,
+        neighborhood_id: hood?.id || null,
+        cover_image_url: form.cover_image_url || null,
+        photos: form.photos?.length ? form.photos : (form.cover_image_url ? [form.cover_image_url] : []),
+        video_url: form.video_url || null,
+        is_furnished: form.is_furnished === 'true',
+        furnished_status: form.is_furnished === 'semi' ? 'semi' : null,
+        lat: form.lat ? parseFloat(form.lat) : null,
+        lng: form.lng ? parseFloat(form.lng) : null,
+      }),
+    })
 
-    if (err) {
-      setError(err.message)
+    const json = await res.json()
+
+    if (!res.ok) {
+      setError(json.error || 'Failed to create listing')
       setSubmitting(false)
       return
     }
@@ -452,6 +490,31 @@ Keep each paragraph under 100 words.`
     <div style={{ textAlign: 'center', padding: '80px 24px' }}>
       <h2 style={{ fontSize: 24, fontWeight: 700, color: '#111', marginBottom: 12 }}>Agents only</h2>
       <p style={{ fontSize: 15, color: '#888' }}>You need an agent account to list properties.</p>
+    </div>
+  )
+
+  if (limitReached) return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', padding: '40px 24px' }}>
+      <div style={{ maxWidth: 480, textAlign: 'center' }}>
+        <div style={{ fontSize: 48, marginBottom: 16 }}>🔒</div>
+        <h2 style={{ fontSize: 22, fontWeight: 800, color: '#111', marginBottom: 10 }}>Listing limit reached</h2>
+        <p style={{ fontSize: 15, color: '#555', marginBottom: 6 }}>
+          You have <strong>{limitReached.count}</strong> listings on the <strong>{limitReached.plan}</strong> plan (limit: {limitReached.limit}).
+        </p>
+        <p style={{ fontSize: 14, color: '#888', marginBottom: 28 }}>
+          {PLAN_UPGRADES[limitReached.plan] || 'Upgrade your plan to add more listings.'}
+        </p>
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+          <button onClick={() => router.push('/dashboard')}
+            style={{ padding: '11px 24px', borderRadius: 10, border: '1.5px solid #e0dfd9', background: '#fff', fontSize: 14, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}>
+            ← Back to dashboard
+          </button>
+          <button onClick={() => router.push('/pricing')}
+            style={{ padding: '11px 24px', borderRadius: 10, border: 'none', background: '#16a34a', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+            Upgrade plan
+          </button>
+        </div>
+      </div>
     </div>
   )
 

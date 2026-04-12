@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
+import { createClient, getClientUser } from '@/lib/supabase/client'
 import { PropertyCard } from '@/components/property/PropertyCard'
 import { Heart, Search } from 'lucide-react'
 import type { Property } from '@/types'
@@ -19,7 +19,7 @@ export default function SavedPage() {
 
   async function loadSaved() {
     const sb = createClient()
-    const { data: { user } } = await sb.auth.getUser()
+    const user = await getClientUser()
     if (!user) { router.push('/auth/login'); return }
 
     const { data } = await sb

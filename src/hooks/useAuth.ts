@@ -43,13 +43,13 @@ export function useAuth(requireAuth = false) {
       setLoading(false)
     }
 
-    sb.auth.getUser().then(({ data: { user } }) => {
-      if (!user) {
+    sb.auth.getSession().then(({ data: { session } }) => {
+      if (!session?.user) {
         setLoading(false)
         if (requireAuth) router.push('/auth/login')
         return
       }
-      loadProfile(user.id, { ...user.user_metadata, email: user.email })
+      loadProfile(session.user.id, { ...session.user.user_metadata, email: session.user.email })
     })
 
     const { data: { subscription } } = sb.auth.onAuthStateChange((_event, session) => {

@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { MapPin, Bed, Bath, Square, Calendar, Heart, Share2, Phone, Mail, TrendingUp, Shield, BarChart3, CheckCircle, ChevronDown, ChevronUp, Eye, Star, Clock, X, ChevronLeft, ChevronRight, Grid } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { createClient, getClientUser } from '@/lib/supabase/client'
 import { PropertyChat } from '@/components/ai/PropertyChat'
 import { FraudCheckUpload } from '@/components/ai/FraudCheckUpload'
 import { ValuationReport } from '@/components/ai/ValuationReport'
@@ -33,7 +33,7 @@ function InquiryForm({ property }: { property: Property }) {
 
   useEffect(() => {
     // Pre-fill from logged in user
-    createClient().auth.getUser().then(({ data: { user } }) => {
+    getClientUser().then(user => {
       if (!user) return
       createClient().from('profiles').select('full_name,email,phone').eq('id', user.id).single()
         .then(({ data }) => {
@@ -50,7 +50,7 @@ function InquiryForm({ property }: { property: Property }) {
 
     console.log('Inquiry submitted for property:', property.id)
 
-    const { data: { user } } = await sb.auth.getUser()
+    const user = await getClientUser()
 
     const { data: inquiryData, error: inquiryError } = await sb.from('inquiries').insert({
       property_id: property.id,
@@ -256,7 +256,7 @@ export default function PropertyDetailPage() {
         .limit(4)
       if (sim) setSimilar(sim as unknown as Property[])
       // Check if saved
-      const { data: { user } } = await sb.auth.getUser()
+      const user = await getClientUser()
       if (user) {
         const { data: savedData } = await sb.from('saved_properties').select('id').eq('user_id', user.id).eq('property_id', id).maybeSingle()
         if (savedData) setSaved(true)
@@ -267,7 +267,7 @@ export default function PropertyDetailPage() {
 
   async function toggleSave() {
     const sb = createClient()
-    const { data: { user } } = await sb.auth.getUser()
+    const user = await getClientUser()
     if (!user) { window.location.href = '/auth/login'; return }
     if (saved) {
       await sb.from('saved_properties').delete().eq('user_id', user.id).eq('property_id', property!.id)
@@ -348,6 +348,30 @@ export default function PropertyDetailPage() {
               <Lightbox images={images} startIndex={lightboxStart} onClose={() => setLightboxOpen(false)}/>
             )}
             <div className="property-photo-wrapper" style={{ borderRadius: 16, overflow: 'hidden', marginBottom: 20, position: 'relative' }}>
+              {/* Sold / Rented overlay banner */}
+              {(property.status === 'sold' || property.status === 'rented') && (
+                <div style={{
+                  position: 'absolute', inset: 0, zIndex: 10,
+                  background: 'rgba(0,0,0,0.45)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  pointerEvents: 'none',
+                }}>
+                  <div style={{
+                    background: property.status === 'sold' ? '#2563eb' : '#7c3aed',
+                    color: '#fff',
+                    fontSize: 28, fontWeight: 900,
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    padding: '14px 40px',
+                    borderRadius: 8,
+                    transform: 'rotate(-8deg)',
+                    boxShadow: '0 4px 24px rgba(0,0,0,0.3)',
+                    border: '3px solid rgba(255,255,255,0.3)',
+                  }}>
+                    {property.status === 'sold' ? 'Sold' : 'Rented'}
+                  </div>
+                </div>
+              )}
               {images.length === 0 ? (
                 <div style={{ height: 380, background: '#f0f0ec', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aaa', fontSize: 14 }}>No photos available</div>
               ) : images.length === 1 ? (
@@ -416,9 +440,15 @@ export default function PropertyDetailPage() {
               {/* Badge row + meta row */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-                  <span style={{ background: property.listing_intent === 'rent' ? '#2563eb' : '#16a34a', color: '#fff', fontSize: 10, fontWeight: 800, padding: '3px 9px', borderRadius: 20, letterSpacing: '.06em' }}>
-                    {property.listing_intent === 'rent' ? 'FOR RENT' : 'FOR SALE'}
-                  </span>
+                  {property.status === 'sold' ? (
+                    <span style={{ background: '#2563eb', color: '#fff', fontSize: 10, fontWeight: 800, padding: '3px 9px', borderRadius: 20, letterSpacing: '.06em' }}>SOLD</span>
+                  ) : property.status === 'rented' ? (
+                    <span style={{ background: '#7c3aed', color: '#fff', fontSize: 10, fontWeight: 800, padding: '3px 9px', borderRadius: 20, letterSpacing: '.06em' }}>RENTED</span>
+                  ) : (
+                    <span style={{ background: property.listing_intent === 'rent' ? '#2563eb' : '#16a34a', color: '#fff', fontSize: 10, fontWeight: 800, padding: '3px 9px', borderRadius: 20, letterSpacing: '.06em' }}>
+                      {property.listing_intent === 'rent' ? 'FOR RENT' : 'FOR SALE'}
+                    </span>
+                  )}
                   {property.property_type && (
                     <span style={{ background: '#f5f5f2', color: '#555', fontSize: 11, fontWeight: 600, padding: '3px 9px', borderRadius: 20, textTransform: 'capitalize' }}>
                       {property.property_type}

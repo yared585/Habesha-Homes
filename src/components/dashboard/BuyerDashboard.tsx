@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Heart, MessageSquare, Shield, Search, Eye, MapPin, Phone, Mail, Clock, ArrowRight, User, Edit } from 'lucide-react'
 import { Card, StatCard, EmptyState } from '@/components/ui'
-import { createClient } from '@/lib/supabase/client'
+import { createClient, getClientUser } from '@/lib/supabase/client'
 import { formatETB } from '@/lib/utils'
 import type { Property, Profile } from '@/types'
 
@@ -34,7 +34,7 @@ export function BuyerDashboard({ profile, saved, stats }: Props) {
   async function loadInquiries() {
     setLoadingInquiries(true)
     const sb = createClient()
-    const { data: { user } } = await sb.auth.getUser()
+    const user = await getClientUser()
     if (!user) return
 
     const { data } = await sb

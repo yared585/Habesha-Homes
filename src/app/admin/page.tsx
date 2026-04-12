@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { createClient } from '@/lib/supabase/client'
+import { createClient, getClientUser } from '@/lib/supabase/client'
 import { PhotoUpload } from '@/components/property/PhotoUpload'
 import {
   CheckCircle, XCircle, Eye, Users, Home, TrendingUp, Shield,
@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 
 type Tab = 'overview' | 'listings' | 'agents' | 'users' | 'reports' | 'inquiries' | 'developments' | 'subscriptions' | 'audit'
-type ListingFilter = 'all' | 'pending_review' | 'active' | 'rejected'
+type ListingFilter = 'all' | 'pending_review' | 'active' | 'rejected' | 'sold' | 'rented' | 'expired' | 'withdrawn'
 
 function StatCard({ icon, label, value, sub, color = '#16a34a' }: { icon: React.ReactNode; label: string; value: number | string; sub?: string; color?: string }) {
   return (
@@ -33,6 +33,9 @@ function StatusBadge({ status }: { status: string }) {
     rejected:       { bg: '#fef2f2', color: '#dc2626' },
     sold:           { bg: '#eff6ff', color: '#2563eb' },
     rented:         { bg: '#f5f3ff', color: '#7c3aed' },
+    expired:        { bg: '#f9f9f7', color: '#888' },
+    withdrawn:      { bg: '#f9f9f7', color: '#888' },
+    draft:          { bg: '#f9f9f7', color: '#bbb' },
   }
   const s = styles[status] || { bg: '#f9f9f7', color: '#888' }
   return (
@@ -172,7 +175,7 @@ export default function AdminPage() {
 
   async function checkAdmin() {
     const sb = createClient()
-    const { data: { user } } = await sb.auth.getUser()
+    const user = await getClientUser()
     if (!user) { router.push('/auth/login'); return }
     const { data: profile } = await sb.from('profiles').select('role').eq('id', user.id).single()
     if (!profile || profile.role !== 'admin') { router.push('/'); return }
@@ -258,25 +261,44 @@ export default function AdminPage() {
   }
 
   async function updateListingStatus(id: string, status: string) {
-    const { error } = await createClient().from('properties').update({ status, updated_at: new Date().toISOString() }).eq('id', id)
-    if (error) { alert('Failed to update: ' + error.message); return }
-    setProperties(p => p.map(x => x.id === id ? { ...x, status } : x))
+    const sb = createClient()
+    const updates: Record<string, any> = { status, updated_at: new Date().toISOString() }
+
     if (status === 'active') {
-      const property = properties.find(p => p.id === id)
-      const agentEmail = property?.agent?.profile?.email
-      const agentName = property?.agent?.agency_name || property?.agent?.profile?.full_name
-      if (property?.id) {
-        await fetch('/api/email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'listing_approved', data: { propertyId: id } })
-        }).catch(() => {})
-      }
+      // Set 90-day expiry from now
+      const expiresAt = new Date()
+      expiresAt.setDate(expiresAt.getDate() + 90)
+      updates.expires_at = expiresAt.toISOString()
+      updates.rejection_reason = null
     }
+
+    if (status === 'rejected') {
+      const reason = prompt('Rejection reason (optional — agent will see this):')
+      updates.rejection_reason = reason?.trim() || null
+    }
+
+    const { error } = await sb.from('properties').update(updates).eq('id', id)
+    if (error) { alert('Failed to update: ' + error.message); return }
+
+    setProperties(p => p.map(x => x.id === id ? { ...x, ...updates } : x))
+
+    if (status === 'active') {
+      fetch('/api/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'listing_approved', data: { propertyId: id } })
+      }).catch(() => {})
+    }
+
+    const prev = properties.find(p => p.id === id)
     setStats(s => ({
       ...s,
-      activeListings: status === 'active' ? s.activeListings + 1 : s.activeListings - (properties.find(p => p.id === id)?.status === 'active' ? 1 : 0),
-      pendingListings: Math.max(0, s.pendingListings - (properties.find(p => p.id === id)?.status === 'pending_review' ? 1 : 0)),
+      activeListings: status === 'active'
+        ? s.activeListings + 1
+        : prev?.status === 'active' ? s.activeListings - 1 : s.activeListings,
+      pendingListings: prev?.status === 'pending_review'
+        ? Math.max(0, s.pendingListings - 1)
+        : s.pendingListings,
     }))
   }
 
@@ -555,10 +577,10 @@ export default function AdminPage() {
                   style={{ padding: '9px 14px 9px 32px', border: '1.5px solid #e0dfd9', borderRadius: 9, fontSize: 13, outline: 'none', fontFamily: 'inherit', background: '#fff', width: 240 }}
                 />
               </div>
-              <div style={{ display: 'flex', gap: 6 }}>
-                {(['all', 'pending_review', 'active', 'rejected'] as const).map(f => (
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {(['all', 'pending_review', 'active', 'rejected', 'sold', 'rented', 'expired', 'withdrawn'] as const).map(f => (
                   <button key={f} onClick={() => setListingFilter(f)}
-                    style={{ padding: '7px 13px', borderRadius: 8, border: `1.5px solid ${listingFilter === f ? '#16a34a' : '#e0dfd9'}`, background: listingFilter === f ? '#f0fdf4' : '#fff', fontSize: 12, color: listingFilter === f ? '#16a34a' : '#666', cursor: 'pointer', fontWeight: listingFilter === f ? 600 : 400, fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 5 }}
+                    style={{ padding: '6px 12px', borderRadius: 8, border: `1.5px solid ${listingFilter === f ? '#16a34a' : '#e0dfd9'}`, background: listingFilter === f ? '#f0fdf4' : '#fff', fontSize: 12, color: listingFilter === f ? '#16a34a' : '#666', cursor: 'pointer', fontWeight: listingFilter === f ? 600 : 400, fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 5 }}
                   >
                     {f === 'pending_review' ? 'Pending' : f.charAt(0).toUpperCase() + f.slice(1)}
                     {f === 'pending_review' && stats.pendingListings > 0 && <span style={{ background: '#d97706', color: '#fff', fontSize: 10, fontWeight: 700, padding: '1px 5px', borderRadius: 8 }}>{stats.pendingListings}</span>}
@@ -581,7 +603,13 @@ export default function AdminPage() {
                       {p.agent?.agency_name || p.agent?.profile?.full_name || 'Unknown'} · {p.city} · ETB {((p.price_etb || p.rent_per_month_etb) || 0).toLocaleString()}
                       {p.bedrooms ? ` · ${p.bedrooms}bed` : ''}{p.size_sqm ? ` · ${p.size_sqm}m²` : ''}
                     </div>
-                    <div style={{ fontSize: 11, color: '#bbb', marginTop: 2 }}>{new Date(p.created_at).toLocaleDateString()} · {p.views || 0} views · {p.is_featured ? '⭐ Featured' : ''}</div>
+                    <div style={{ fontSize: 11, color: '#bbb', marginTop: 2 }}>
+                      {new Date(p.created_at).toLocaleDateString()} · {p.views || 0} views · {p.is_featured ? '⭐ Featured' : ''}
+                      {p.expires_at && p.status === 'active' && ` · Expires ${new Date(p.expires_at).toLocaleDateString()}`}
+                    </div>
+                    {p.rejection_reason && (
+                      <div style={{ fontSize: 11, color: '#dc2626', marginTop: 3 }}>Reason: {p.rejection_reason}</div>
+                    )}
                   </div>
                   <StatusBadge status={p.status}/>
                   <div style={{ display: 'flex', gap: 6, flexShrink: 0, flexWrap: 'wrap', justifyContent: 'flex-end' }}>

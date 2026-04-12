@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
-import { createClient } from '@/lib/supabase/client'
+import { createClient, getClientUser } from '@/lib/supabase/client'
 import { Check, ArrowLeft, Save, Trash2 } from 'lucide-react'
 import { PhotoUpload } from '@/components/property/PhotoUpload'
 
@@ -46,7 +46,7 @@ export default function EditListingPage() {
 
   async function loadListing(id: string) {
     const sb = createClient()
-    const { data: { user } } = await sb.auth.getUser()
+    const user = await getClientUser()
     if (!user) return
 
     const { data } = await sb.from('properties').select('*').eq('id', id).single()
@@ -69,7 +69,7 @@ export default function EditListingPage() {
     setSaving(true)
     setError('')
     const sb = createClient()
-    const { data: { user } } = await sb.auth.getUser()
+    const user = await getClientUser()
     if (!user) { setError('Not authenticated'); setSaving(false); return }
 
     // If listing was rejected, resubmit for review — but check limit first
@@ -132,7 +132,7 @@ export default function EditListingPage() {
     if (!confirm('Are you sure you want to delete this listing? This cannot be undone.')) return
     setDeleting(true)
     const sb = createClient()
-    const { data: { user } } = await sb.auth.getUser()
+    const user = await getClientUser()
     if (!user) return
     // Ownership enforced — agent_id must match
     await sb.from('properties').delete().eq('id', form.id).eq('agent_id', user.id)

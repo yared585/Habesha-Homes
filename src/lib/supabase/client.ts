@@ -1,11 +1,27 @@
 // src/lib/supabase/client.ts
 import { createBrowserClient } from '@supabase/ssr'
+import type { SupabaseClient } from '@supabase/supabase-js'
+
+// Singleton — one client shared across all components in the browser.
+// Multiple instances each compete for the same navigator.lock on getUser(),
+// causing "lock was released because another request stole it" errors.
+let client: SupabaseClient | null = null
 
 export function createClient() {
-  return createBrowserClient(
+  if (client) return client
+  client = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
+  return client
+}
+
+// Use this instead of createClient().auth.getUser() in all client components.
+// getSession() reads from localStorage — no navigator.lock, no race conditions.
+// getUser() makes a network request and acquires a lock; concurrent calls steal it.
+export async function getClientUser() {
+  const { data: { session } } = await createClient().auth.getSession()
+  return session?.user ?? null
 }
 
 // src/lib/supabase/server.ts  — save this as a separate file

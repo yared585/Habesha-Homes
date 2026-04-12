@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { createClient } from '@/lib/supabase/client'
+import { createClient, getClientUser } from '@/lib/supabase/client'
 import { Home, Eye, MessageSquare, TrendingUp, Plus, Building2, Star, Phone, Mail, Edit, BarChart3, Clock, CheckCircle, XCircle, AlertCircle, ArrowUp, ArrowDown, CreditCard, ArrowRight } from 'lucide-react'
 import { Card, StatCard, EmptyState } from '@/components/ui'
 import { formatETB } from '@/lib/utils'
@@ -19,9 +19,12 @@ interface Props {
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string; icon: React.ReactNode; label: string }> = {
     active:         { bg: '#f0fdf4', color: '#16a34a', icon: <CheckCircle size={11}/>, label: 'Active' },
-    pending_review: { bg: '#fef9ec', color: '#d97706', icon: <Clock size={11}/>, label: 'Pending' },
+    pending_review: { bg: '#fef9ec', color: '#d97706', icon: <Clock size={11}/>, label: 'Pending review' },
     rejected:       { bg: '#fef2f2', color: '#dc2626', icon: <XCircle size={11}/>, label: 'Rejected' },
     sold:           { bg: '#eff6ff', color: '#2563eb', icon: <CheckCircle size={11}/>, label: 'Sold' },
+    rented:         { bg: '#f5f3ff', color: '#7c3aed', icon: <CheckCircle size={11}/>, label: 'Rented' },
+    expired:        { bg: '#f9f9f7', color: '#888',    icon: <AlertCircle size={11}/>, label: 'Expired' },
+    withdrawn:      { bg: '#f9f9f7', color: '#888',    icon: <XCircle size={11}/>,    label: 'Withdrawn' },
   }
   const s = map[status] || { bg: '#f9f9f7', color: '#888', icon: <AlertCircle size={11}/>, label: status }
   return (
@@ -31,13 +34,34 @@ function StatusBadge({ status }: { status: string }) {
   )
 }
 
-function ListingCard({ p, inquiryCount }: { p: any; inquiryCount: number }) {
+function ListingCard({ p, inquiryCount, onStatusChange }: { p: any; inquiryCount: number; onStatusChange: (id: string, status: string) => Promise<void> }) {
+  const [acting, setActing] = useState(false)
   const price = p.listing_intent === 'rent' ? p.rent_per_month_etb : p.price_etb
 
-  return (
-    <div style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 12, overflow: 'hidden', marginBottom: 10, display: 'flex', minHeight: 110 }}>
+  const isActive = p.status === 'active'
+  const isRentListing = p.listing_intent === 'rent' || p.listing_intent === 'both'
+  const isSaleListing = p.listing_intent === 'sale' || p.listing_intent === 'both'
+  const canRenew = p.status === 'expired' || p.status === 'withdrawn' || p.status === 'sold' || p.status === 'rented'
 
-      {/* Photo — fixed 160px wide, full height */}
+  async function act(status: string) {
+    if (acting) return
+    const labels: Record<string, string> = { sold: 'sold', rented: 'rented', withdrawn: 'withdrawn' }
+    if (labels[status] && !confirm(`Mark this listing as ${labels[status]}? Buyers will no longer see it in search.`)) return
+    setActing(true)
+    await onStatusChange(p.id, status)
+    setActing(false)
+  }
+
+  // Days until expiry
+  const daysLeft = p.expires_at
+    ? Math.ceil((new Date(p.expires_at).getTime() - Date.now()) / 86_400_000)
+    : null
+  const expiringSoon = daysLeft !== null && daysLeft <= 14 && isActive
+
+  return (
+    <div style={{ background: '#fff', border: `1px solid ${expiringSoon ? '#fde68a' : '#eae9e4'}`, borderRadius: 12, overflow: 'hidden', marginBottom: 10, display: 'flex', minHeight: 110 }}>
+
+      {/* Photo */}
       <div style={{ width: 160, flexShrink: 0, background: '#f0f0ec', position: 'relative' }}>
         {p.cover_image_url
           ? <Image src={p.cover_image_url} alt={p.title} fill style={{ objectFit: 'cover' }}/>
@@ -48,22 +72,35 @@ function ListingCard({ p, inquiryCount }: { p: any; inquiryCount: number }) {
         )}
       </div>
 
-      {/* Content — single row of info + actions on the right */}
+      {/* Content */}
       <div style={{ flex: 1, padding: '12px 16px', minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
 
-        {/* Top row: title + status */}
+        {/* Top row */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: 4 }}>
           <div style={{ fontWeight: 700, fontSize: 14, color: '#111', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{p.title}</div>
           <StatusBadge status={p.status}/>
         </div>
 
-        {/* Meta line */}
-        <div style={{ fontSize: 12, color: '#999', marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        {/* Meta */}
+        <div style={{ fontSize: 12, color: '#999', marginBottom: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {p.city}{p.neighborhood?.name ? ` · ${p.neighborhood.name}` : ''} · {p.property_type}
           {p.bedrooms ? ` · ${p.bedrooms}bd` : ''}{p.bathrooms ? `/${p.bathrooms}ba` : ''}{p.size_sqm ? ` · ${p.size_sqm}m²` : ''}
         </div>
 
-        {/* Price + inline stats */}
+        {/* Expiry / rejection info */}
+        {expiringSoon && (
+          <div style={{ fontSize: 11, color: '#d97706', fontWeight: 600, marginBottom: 4 }}>
+            ⚠ Expires in {daysLeft} day{daysLeft !== 1 ? 's' : ''}
+          </div>
+        )}
+        {p.status === 'expired' && (
+          <div style={{ fontSize: 11, color: '#888', marginBottom: 4 }}>Expired · renew to re-list</div>
+        )}
+        {p.status === 'rejected' && p.rejection_reason && (
+          <div style={{ fontSize: 11, color: '#dc2626', marginBottom: 4 }}>Reason: {p.rejection_reason}</div>
+        )}
+
+        {/* Price + stats */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 16, fontWeight: 800, color: '#16a34a' }}>
             {formatETB(price)}{p.listing_intent === 'rent' && <span style={{ fontSize: 11, fontWeight: 400, color: '#aaa' }}>/mo</span>}
@@ -73,19 +110,44 @@ function ListingCard({ p, inquiryCount }: { p: any; inquiryCount: number }) {
           <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 12, color: '#888' }}><BarChart3 size={11} color="#7c3aed"/> {p.saves || 0}</span>
         </div>
 
-        {/* Action buttons */}
+        {/* Actions */}
         <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
           <Link href={`/property/${p.id}`} target="_blank"
             style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, padding: '5px 11px', borderRadius: 7, border: '1px solid #e0dfd9', color: '#555', textDecoration: 'none', background: '#fff' }}
           ><Eye size={11}/> View</Link>
-          <Link href={`/dashboard/listings/${p.id}/edit`}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, padding: '5px 11px', borderRadius: 7, background: '#f0fdf4', color: '#16a34a', textDecoration: 'none', fontWeight: 600, border: '1px solid #bbf7d0' }}
-          ><Edit size={11}/> Edit</Link>
+
+          {(isActive || p.status === 'pending_review') && (
+            <Link href={`/dashboard/listings/${p.id}/edit`}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, padding: '5px 11px', borderRadius: 7, background: '#f0fdf4', color: '#16a34a', textDecoration: 'none', fontWeight: 600, border: '1px solid #bbf7d0' }}
+            ><Edit size={11}/> Edit</Link>
+          )}
+
+          {isActive && isSaleListing && (
+            <button disabled={acting} onClick={() => act('sold')}
+              style={{ fontSize: 12, padding: '5px 11px', borderRadius: 7, border: 'none', background: '#eff6ff', color: '#2563eb', cursor: acting ? 'not-allowed' : 'pointer', fontWeight: 600, fontFamily: 'inherit' }}
+            >✓ Mark sold</button>
+          )}
+
+          {isActive && isRentListing && (
+            <button disabled={acting} onClick={() => act('rented')}
+              style={{ fontSize: 12, padding: '5px 11px', borderRadius: 7, border: 'none', background: '#f5f3ff', color: '#7c3aed', cursor: acting ? 'not-allowed' : 'pointer', fontWeight: 600, fontFamily: 'inherit' }}
+            >✓ Mark rented</button>
+          )}
+
+          {isActive && (
+            <button disabled={acting} onClick={() => act('withdrawn')}
+              style={{ fontSize: 12, padding: '5px 11px', borderRadius: 7, border: '1px solid #e0dfd9', background: '#fff', color: '#888', cursor: acting ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}
+            >Withdraw</button>
+          )}
+
+          {canRenew && (
+            <button disabled={acting} onClick={() => act('pending_review')}
+              style={{ fontSize: 12, padding: '5px 11px', borderRadius: 7, border: 'none', background: '#f0fdf4', color: '#16a34a', cursor: acting ? 'not-allowed' : 'pointer', fontWeight: 600, fontFamily: 'inherit' }}
+            >↻ Re-list</button>
+          )}
+
           {p.status === 'pending_review' && (
             <span style={{ fontSize: 11, padding: '5px 10px', borderRadius: 7, background: '#fef9ec', color: '#d97706', fontWeight: 600 }}>⏳ Under review</span>
-          )}
-          {p.status === 'rejected' && (
-            <span style={{ fontSize: 11, padding: '5px 10px', borderRadius: 7, background: '#fef2f2', color: '#dc2626', fontWeight: 600 }}>✗ Rejected</span>
           )}
         </div>
       </div>
@@ -100,8 +162,10 @@ const AI_TOOLS = [
   { emoji: '📄', title: 'Contract analyzer', desc: 'Highlight dangerous clauses in any contract.', href: '/ai-reports', btn: 'Analyze', color: '#d97706' },
 ]
 
-export function AgentDashboard({ profile, properties, stats, loading = false }: Props) {
+export function AgentDashboard({ profile, properties: initialProperties, stats, loading = false }: Props) {
   const [tab, setTab] = useState<'listings' | 'inquiries' | 'ai' | 'settings'>('listings')
+  const [localProperties, setLocalProperties] = useState<any[]>(initialProperties)
+  useEffect(() => { setLocalProperties(initialProperties) }, [initialProperties])
   const [inquiries, setInquiries] = useState<any[]>([])
   const [inquiryCounts, setInquiryCounts] = useState<Record<string, number>>({})
   const [loadingInquiries, setLoadingInquiries] = useState(false)
@@ -116,7 +180,7 @@ export function AgentDashboard({ profile, properties, stats, loading = false }: 
 
   async function loadExtra() {
     const sb = createClient()
-    const { data: { user } } = await sb.auth.getUser()
+    const user = await getClientUser()
     if (!user) return
 
     // Load inquiries
@@ -153,7 +217,7 @@ export function AgentDashboard({ profile, properties, stats, loading = false }: 
 
   async function markAllRead() {
     const sb = createClient()
-    const { data: { user } } = await sb.auth.getUser()
+    const user = await getClientUser()
     if (!user) return
     await sb.from('inquiries').update({ is_read: true }).eq('agent_id', user.id).eq('is_read', false)
     window.dispatchEvent(new Event('inquiries-read'))
@@ -171,7 +235,22 @@ export function AgentDashboard({ profile, properties, stats, loading = false }: 
     setSubProfile((p: any) => p ? { ...p, subscription_cancel_at_period_end: true } : p)
   }
 
+  async function updateListingStatus(id: string, status: string) {
+    const sb = createClient()
+    const updates: Record<string, any> = { status, updated_at: new Date().toISOString() }
+
+    // Renewing — go back to pending_review, admin re-approves
+    if (status === 'pending_review') {
+      updates.rejection_reason = null
+    }
+
+    const { error } = await sb.from('properties').update(updates).eq('id', id)
+    if (error) { alert('Failed to update: ' + error.message); return }
+    setLocalProperties(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p))
+  }
+
   // Stats derived from real data
+  const properties = localProperties
   const totalViews = properties.reduce((sum, p) => sum + (p.views || 0), 0)
   const totalSaves = properties.reduce((sum, p) => sum + ((p as any).saves || 0), 0)
   const activeCount = properties.filter(p => p.status === 'active').length
@@ -303,7 +382,7 @@ export function AgentDashboard({ profile, properties, stats, loading = false }: 
             ? <EmptyState icon={<Building2 size={48}/>} title="No listings yet" description="Add your first property to start getting inquiries"
                 action={<Link href="/dashboard/listings/new" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: '#16a34a', color: '#fff', padding: '11px 22px', borderRadius: 10, fontSize: 14, fontWeight: 700, textDecoration: 'none' }}><Plus size={15}/> Add first listing</Link>}
               />
-            : <div>{properties.map(p => <ListingCard key={p.id} p={p} inquiryCount={inquiryCounts[p.id] || 0}/>)}</div>
+            : <div>{properties.map(p => <ListingCard key={p.id} p={p} inquiryCount={inquiryCounts[p.id] || 0} onStatusChange={updateListingStatus}/>)}</div>
       )}
 
       {/* INQUIRIES TAB */}

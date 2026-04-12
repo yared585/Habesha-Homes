@@ -25,8 +25,7 @@ export default function DashboardPage() {
 
   async function loadData() {
     const sb = createClient()
-    const { data: { user } } = await sb.auth.getUser()
-    if (!user) return
+    const uid = profile!.id  // already authenticated via useAuth
 
     if (profile?.role === 'developer') {
       router.push('/dashboard/developer')
@@ -34,17 +33,21 @@ export default function DashboardPage() {
     }
     if (profile?.role === 'agent') {
       const [{ data: props, count }, { count: inqCount }] = await Promise.all([
-        sb.from('properties').select('*, neighborhood:neighborhoods(name)', { count: 'exact' }).eq('agent_id', user.id).order('created_at', { ascending: false }).limit(20),
-        sb.from('inquiries').select('*', { count: 'exact', head: true }).eq('agent_id', user.id),
+        // Match on agent_id OR owner_id — agent_id can be null if agent table row didn't exist at listing time
+        sb.from('properties').select('*, neighborhood:neighborhoods(name)', { count: 'exact' })
+          .or(`agent_id.eq.${uid},owner_id.eq.${uid}`)
+          .order('created_at', { ascending: false })
+          .limit(50),
+        sb.from('inquiries').select('*', { count: 'exact', head: true }).eq('agent_id', uid),
       ])
       const totalViews = (props || []).reduce((sum: number, p: any) => sum + (p.views || 0), 0)
       setProperties((props || []) as unknown as Property[])
       setStats(s => ({ ...s, listings: count || 0, views: totalViews, inquiries: inqCount || 0 }))
     } else {
       const [{ data: savedProps, count: savedCount }, { count: inqCount }, { count: reportCount }] = await Promise.all([
-        sb.from('saved_properties').select('property:properties(*)', { count: 'exact' }).eq('user_id', user.id).limit(10),
-        sb.from('inquiries').select('*', { count: 'exact', head: true }).eq('buyer_id', user.id),
-        sb.from('ai_reports').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
+        sb.from('saved_properties').select('property:properties(*)', { count: 'exact' }).eq('user_id', uid).limit(10),
+        sb.from('inquiries').select('*', { count: 'exact', head: true }).eq('buyer_id', uid),
+        sb.from('ai_reports').select('*', { count: 'exact', head: true }).eq('user_id', uid),
       ])
       setSaved(((savedProps || []).map((s: any) => s.property).filter(Boolean)) as unknown as Property[])
       setStats(s => ({ ...s, saved: savedCount || 0, inquiries: inqCount || 0, reports: reportCount || 0 }))

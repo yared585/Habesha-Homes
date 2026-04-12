@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
-import { createClient } from '@/lib/supabase/client'
+import { createClient, getClientUser } from '@/lib/supabase/client'
 import { Camera, Save, User, Mail, Phone, Globe, MapPin, Loader } from 'lucide-react'
 
 const inputStyle: React.CSSProperties = {
@@ -52,7 +52,7 @@ export default function ProfilePage() {
     setUploadingPhoto(true)
     setError('')
     const sb = createClient()
-    const { data: { user } } = await sb.auth.getUser()
+    const user = await getClientUser()
     if (!user) return
 
     const ext = file.name.split('.').pop()
@@ -71,7 +71,7 @@ export default function ProfilePage() {
     setError('')
     setSuccess(false)
     const sb = createClient()
-    const { data: { user } } = await sb.auth.getUser()
+    const user = await getClientUser()
     if (!user) return
 
     const { error: err } = await sb.from('profiles').update({

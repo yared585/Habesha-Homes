@@ -4,7 +4,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import type { PropertyFilters, PropertyType, ListingIntent } from '@/types'
+
+// Service role client — bypasses RLS for admin operations like counting listings
+function createAdminClient() {
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const FROM = 'Habesha Properties <noreply@habeshaproperties.com>'
@@ -208,13 +217,15 @@ export async function POST(request: NextRequest) {
     const limit = LIMITS[plan] ?? 3
 
     if (isFinite(limit)) {
-      const { count } = await supabase
+      // Use admin client to bypass RLS, fetch actual rows to avoid head:true count bugs
+      const { data: existingRows } = await createAdminClient()
         .from('properties')
-        .select('*', { count: 'exact', head: true })
-        .eq('owner_id', user.id)
-        .not('status', 'eq', 'rejected')
+        .select('id, status')
+        .or(`owner_id.eq.${user.id},agent_id.eq.${user.id}`)
 
-      if ((count || 0) >= limit) {
+      const count = (existingRows || []).filter(r => r.status !== 'rejected').length
+
+      if (count >= limit) {
         return NextResponse.json({
           error: `You've reached your ${limit} listing limit. ${UPGRADES[plan] || 'Upgrade your plan to add more listings.'}`,
           code: 'LISTING_LIMIT_REACHED',

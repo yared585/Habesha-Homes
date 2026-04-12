@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { MapPin, Bed, Bath, Square, Calendar, Heart, Share2, Phone, Mail, TrendingUp, Shield, BarChart3, CheckCircle, ChevronDown, ChevronUp, Eye, Star, Clock } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { createClient, getClientUser } from '@/lib/supabase/client'
 import { PropertyChat } from '@/components/ai/PropertyChat'
 import { FraudCheckUpload } from '@/components/ai/FraudCheckUpload'
 import { ValuationReport } from '@/components/ai/ValuationReport'
@@ -33,7 +33,7 @@ function InquiryForm({ property }: { property: Property }) {
 
   useEffect(() => {
     // Pre-fill from logged in user
-    createClient().auth.getUser().then(({ data: { user } }) => {
+    getClientUser().then(user => {
       if (!user) return
       createClient().from('profiles').select('full_name,email,phone').eq('id', user.id).single()
         .then(({ data }) => {
@@ -157,7 +157,7 @@ export default function PropertyDetailPage() {
       setProperty(data as unknown as Property)
       await sb.from('properties').update({ views: (data.views || 0) + 1 }).eq('id', id)
       // Check if saved
-      const { data: { user } } = await sb.auth.getUser()
+      const user = await getClientUser()
       if (user) {
         const { data: savedData } = await sb.from('saved_properties').select('id').eq('user_id', user.id).eq('property_id', id).maybeSingle()
         if (savedData) setSaved(true)
@@ -168,7 +168,7 @@ export default function PropertyDetailPage() {
 
   async function toggleSave() {
     const sb = createClient()
-    const { data: { user } } = await sb.auth.getUser()
+    const user = await getClientUser()
     if (!user) { window.location.href = '/auth/login'; return }
     if (saved) {
       await sb.from('saved_properties').delete().eq('user_id', user.id).eq('property_id', property!.id)

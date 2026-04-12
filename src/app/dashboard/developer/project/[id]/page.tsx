@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
+import { createClient, getClientUser } from '@/lib/supabase/client'
 import { ArrowLeft, Plus, Edit2, Save, X, CheckCircle, Clock, XCircle } from 'lucide-react'
 import { formatETB } from '@/lib/utils'
 
@@ -26,7 +26,7 @@ export default function ProjectManagePage() {
 
   async function load(id: string) {
     const sb = createClient()
-    const { data: { user } } = await sb.auth.getUser()
+    const user = await getClientUser()
     if (!user) { router.push('/auth/login'); return }
 
     const [{ data: proj }, { data: unitsData }] = await Promise.all([

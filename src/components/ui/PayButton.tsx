@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { createClient, getClientUser } from '@/lib/supabase/client'
 
 interface Props {
   reportType: 'fraud_check' | 'valuation' | 'contract' | 'neighborhood' | 'diaspora'
@@ -27,7 +27,7 @@ export function PayButton({ reportType, propertyId, label, style }: Props) {
     setLoading(true)
 
     const sb = createClient()
-    const { data: { user } } = await sb.auth.getUser()
+    const user = await getClientUser()
 
     if (!user) {
       router.push('/auth/login?redirect=/ai-reports')

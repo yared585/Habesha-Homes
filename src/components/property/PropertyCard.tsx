@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { MapPin, Bed, Bath, Maximize2, Camera, Heart } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
-import { createClient } from '@/lib/supabase/client'
+import { createClient, getClientUser } from '@/lib/supabase/client'
 import type { Property } from '@/types'
 
 // ── Save button ──────────────────────────────────────────────────────────────
@@ -14,10 +14,9 @@ function SaveButton({ propertyId }: { propertyId: string }) {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    const sb = createClient()
-    sb.auth.getUser().then(({ data: { user } }) => {
+    getClientUser().then(user => {
       if (!user) return
-      sb.from('saved_properties').select('id').eq('user_id', user.id).eq('property_id', propertyId).maybeSingle()
+      createClient().from('saved_properties').select('id').eq('user_id', user.id).eq('property_id', propertyId).maybeSingle()
         .then(({ data }) => { if (data) setSaved(true) })
     })
   }, [propertyId])
@@ -26,7 +25,7 @@ function SaveButton({ propertyId }: { propertyId: string }) {
     e.preventDefault()
     e.stopPropagation()
     const sb = createClient()
-    const { data: { user } } = await sb.auth.getUser()
+    const user = await getClientUser()
     if (!user) { window.location.href = '/auth/login'; return }
     setLoading(true)
     if (saved) {
