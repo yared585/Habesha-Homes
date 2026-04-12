@@ -467,3 +467,23 @@ img[loading="lazy"] {
   border-color: var(--green);
 }
 .auth-btn-google:disabled { cursor: not-allowed; }
+
+/* ── Mobile / responsive ─────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .hero-filter-bar-desktop { display: none !important; }
+  .hero-filter-bar-mobile  { display: block !important; }
+
+  .property-card-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .page-container {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .hero-filter-bar-desktop { display: block; }
+  .hero-filter-bar-mobile  { display: none !important; }
+}

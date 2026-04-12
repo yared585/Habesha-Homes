@@ -206,7 +206,7 @@ export function Hero() {
 
 
         {/* popular pills */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center', flexWrap: 'wrap', marginTop: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 12, flexWrap: 'nowrap' as const, overflowX: 'auto', scrollbarWidth: 'none' as const, paddingBottom: 2 }}>
           <span style={{ fontSize: 11, color: '#bbb', fontWeight: 500 }}>{tl('popular')}:</span>
           {['Bole', 'Kazanchis', 'CMC', 'Megenagna', 'Land'].map(t => (
             <Link key={t} href={`/search?q=${encodeURIComponent(t)}`}
