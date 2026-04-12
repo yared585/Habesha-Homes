@@ -5,63 +5,40 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://habeshaproperties.co
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   const supabase = createClient()
-  const { data: p } = await supabase
-    .from('properties')
-    .select('title, description, price_etb, rent_per_month_etb, listing_intent, city, property_type, bedrooms, cover_image_url, neighborhood:neighborhoods(name)')
+  const { data: agent } = await supabase
+    .from('agents')
+    .select('agency_name, bio, is_verified, areas_served, profile:profiles(full_name, avatar_url)')
     .eq('id', params.id)
     .single()
 
-  if (!p) {
-    return {
-      title: 'Property Listing',
-      description: "View property details on Habesha Properties, Ethiopia's leading real estate marketplace.",
-    }
+  if (!agent) {
+    return { title: 'Agent Profile — Habesha Properties' }
   }
 
-  const neighborhood = (p.neighborhood as any)?.name as string | undefined
-  const city = p.city || 'Addis Ababa'
-  const location = [neighborhood, city].filter(Boolean).join(', ')
-  const intent = p.listing_intent === 'rent' ? 'for Rent' : 'for Sale'
-  const price = p.listing_intent === 'rent' ? p.rent_per_month_etb : p.price_etb
-  const priceStr = price ? `ETB ${Number(price).toLocaleString()}` : ''
-  const type = p.property_type
-    ? p.property_type.charAt(0).toUpperCase() + p.property_type.slice(1)
-    : 'Property'
-  const beds = p.bedrooms ? `${p.bedrooms}-Bedroom ` : ''
-
-  const seoTitle = p.title
-    ? `${p.title} — ${location}`
-    : `${beds}${type} ${intent} in ${location}`
-
-  const descParts = [
-    `${beds}${type} ${intent} in ${location}.`,
-    priceStr ? `${priceStr}${p.listing_intent === 'rent' ? '/month' : ''}.` : '',
-    p.description ? p.description.slice(0, 140) + (p.description.length > 140 ? '...' : '') : '',
-    'View photos, contact the agent and get an AI valuation on Habesha Properties.',
-  ]
-  const description = descParts.filter(Boolean).join(' ')
-
-  const images = p.cover_image_url
-    ? [{ url: p.cover_image_url, width: 1200, height: 630, alt: seoTitle }]
-    : []
+  const name = agent.agency_name || (agent.profile as any)?.full_name || 'Agent'
+  const areas = (agent.areas_served as string[] | null)?.join(', ') || 'Ethiopia'
+  const title = `${name} — Real Estate Agent in ${areas}`
+  const description = agent.bio
+    ? agent.bio.slice(0, 155)
+    : `View properties listed by ${name} on Habesha Properties, Ethiopia's leading real estate marketplace.`
+  const avatar = (agent.profile as any)?.avatar_url
 
   return {
-    title: seoTitle,
+    title,
     description,
     openGraph: {
-      title: seoTitle,
+      title,
       description,
-      type: 'website',
+      type: 'profile',
       url: `${APP_URL}/agent/${params.id}`,
-      images,
+      images: avatar ? [{ url: avatar, width: 400, height: 400, alt: name }] : [],
       siteName: 'Habesha Properties',
-      locale: 'en_US',
     },
     twitter: {
-      card: 'summary_large_image',
-      title: seoTitle,
+      card: 'summary',
+      title,
       description,
-      images: images.map(i => i.url),
+      images: avatar ? [avatar] : [],
     },
     alternates: {
       canonical: `${APP_URL}/agent/${params.id}`,
@@ -69,6 +46,6 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   }
 }
 
-export default function AgentPropertyLayout({ children }: { children: React.ReactNode }) {
+export default function AgentProfileLayout({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }

@@ -265,9 +265,9 @@ export default function AdminPage() {
     const updates: Record<string, any> = { status, updated_at: new Date().toISOString() }
 
     if (status === 'active') {
-      // Set 90-day expiry from now
+      // Set 180-day expiry from now
       const expiresAt = new Date()
-      expiresAt.setDate(expiresAt.getDate() + 90)
+      expiresAt.setDate(expiresAt.getDate() + 180)
       updates.expires_at = expiresAt.toISOString()
       updates.rejection_reason = null
     }

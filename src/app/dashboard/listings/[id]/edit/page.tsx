@@ -39,6 +39,7 @@ export default function EditListingPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const [forbidden, setForbidden] = useState(false)
+  const [blockedStatus, setBlockedStatus] = useState<string | null>(null)
 
   useEffect(() => {
     if (params.id && profile) loadListing(params.id as string)
@@ -53,8 +54,15 @@ export default function EditListingPage() {
     if (!data) return
 
     // Ownership check — only the agent who owns it (or admin) can edit
-    if (data.agent_id !== user.id && profile?.role !== 'admin') {
+    if (data.agent_id !== user.id && data.owner_id !== user.id && profile?.role !== 'admin') {
       setForbidden(true)
+      return
+    }
+
+    // Sold/rented — read-only, must re-list from dashboard
+    if (data.status === 'sold' || data.status === 'rented') {
+      setBlockedStatus(data.status)
+      setForm(data)
       return
     }
 
@@ -72,22 +80,27 @@ export default function EditListingPage() {
     const user = await getClientUser()
     if (!user) { setError('Not authenticated'); setSaving(false); return }
 
-    // If listing was rejected, resubmit for review — but check limit first
+    // Resubmit for review when editing rejected, expired, or withdrawn listings
+    const needsResubmit = ['rejected', 'expired', 'withdrawn'].includes(form.status)
     let newStatus: string | undefined
-    if (form.status === 'rejected') {
+    if (needsResubmit) {
       const planRaw = (profile as any)?.subscription_plan as string | undefined
       const plan = planRaw || 'free'
       const limit = PLAN_LIMITS[plan] ?? 3
 
       if (isFinite(limit)) {
-        const { count } = await sb
+        // Use row-based count (head:true is unreliable); check both agent_id and owner_id
+        const { data: rows } = await sb
           .from('properties')
-          .select('*', { count: 'exact', head: true })
-          .eq('agent_id', user.id)
-          .not('status', 'in', '("rejected","withdrawn","expired")')
+          .select('id, status')
+          .or(`agent_id.eq.${user.id},owner_id.eq.${user.id}`)
 
-        if ((count || 0) >= limit) {
-          setError(`You've reached your ${limit}-listing limit on the ${plan} plan. Upgrade to resubmit this listing.`)
+        const activeCount = (rows || []).filter(
+          r => !['rejected', 'withdrawn', 'expired'].includes(r.status) && r.id !== form.id
+        ).length
+
+        if (activeCount >= limit) {
+          setError(`You've reached your ${limit}-listing limit on the ${plan} plan. Upgrade to add more listings.`)
           setSaving(false)
           return
         }
@@ -139,7 +152,7 @@ export default function EditListingPage() {
     router.push('/dashboard')
   }
 
-  if (loading || (!form && !forbidden)) return (
+  if (loading || (!form && !forbidden && !blockedStatus)) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: '#aaa', fontSize: 14 }}>
       Loading listing...
     </div>
@@ -151,6 +164,20 @@ export default function EditListingPage() {
       <div style={{ fontSize: 14, color: '#888' }}>You don't have permission to edit this listing.</div>
       <button onClick={() => router.push('/dashboard')} style={{ marginTop: 8, padding: '9px 20px', background: '#1a3d2b', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 14, fontFamily: 'inherit' }}>
         Back to dashboard
+      </button>
+    </div>
+  )
+
+  if (blockedStatus) return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', gap: 12, color: '#111', padding: '0 24px', textAlign: 'center' }}>
+      <div style={{ fontSize: 32 }}>{blockedStatus === 'sold' ? '🏷️' : '🔑'}</div>
+      <div style={{ fontSize: 18, fontWeight: 700 }}>Listing marked as {blockedStatus}</div>
+      <div style={{ fontSize: 14, color: '#888', maxWidth: 360 }}>
+        This listing is marked as <strong>{blockedStatus}</strong> and cannot be edited directly.
+        To update the details and re-list it, use the <strong>Re-list</strong> button on your dashboard.
+      </div>
+      <button onClick={() => router.push('/dashboard')} style={{ marginTop: 8, padding: '9px 20px', background: '#1a3d2b', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 14, fontFamily: 'inherit' }}>
+        Go to dashboard
       </button>
     </div>
   )
@@ -179,12 +206,36 @@ export default function EditListingPage() {
         <div style={{ background: '#fff', border: '1px solid #eae9e4', borderRadius: 16, padding: 28, display: 'grid', gap: 20 }}>
 
           {/* Status badge */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' as const }}>
             <span style={{ fontSize: 12, color: '#888' }}>Status:</span>
-            <span style={{ fontSize: 12, fontWeight: 700, padding: '3px 10px', borderRadius: 20, background: form.status === 'active' ? '#f0fdf4' : '#fef9ec', color: form.status === 'active' ? '#16a34a' : '#d97706' }}>
+            <span style={{
+              fontSize: 12, fontWeight: 700, padding: '3px 10px', borderRadius: 20,
+              background: form.status === 'active' ? '#f0fdf4' : form.status === 'rejected' ? '#fef2f2' : '#fef9ec',
+              color: form.status === 'active' ? '#16a34a' : form.status === 'rejected' ? '#dc2626' : '#d97706',
+            }}>
               {form.status}
             </span>
+            {form.expires_at && form.status === 'active' && (
+              <span style={{ fontSize: 11, color: '#888' }}>
+                · Expires {new Date(form.expires_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+              </span>
+            )}
           </div>
+
+          {/* Warning banner for expired / withdrawn listings */}
+          {(form.status === 'expired' || form.status === 'withdrawn') && (
+            <div style={{ background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 10, padding: '12px 16px', fontSize: 13, color: '#92400e', lineHeight: 1.5 }}>
+              <strong>⚠ This listing is {form.status}.</strong> You can update the details below, then save to resubmit for admin review. Your listing count limit applies.
+            </div>
+          )}
+
+          {/* Info banner for rejected listings */}
+          {form.status === 'rejected' && (
+            <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 10, padding: '12px 16px', fontSize: 13, color: '#991b1b', lineHeight: 1.5 }}>
+              <strong>This listing was rejected.</strong> Update the details and save to resubmit for admin review.
+              {form.rejection_reason && <div style={{ marginTop: 6, color: '#b91c1c' }}>Reason: {form.rejection_reason}</div>}
+            </div>
+          )}
 
           {/* Intent toggle */}
           <Field label="Listing type">

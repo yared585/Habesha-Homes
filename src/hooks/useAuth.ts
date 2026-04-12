@@ -3,18 +3,16 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import toast from 'react-hot-toast'
 import type { Profile } from '@/types'
 
-const INACTIVITY_TIMEOUT_MS = 2 * 60 * 60 * 1000  // 2 hours
-const WARNING_BEFORE_MS     = 60 * 1000             // warn 1 min before
-const ACTIVITY_KEY          = 'hp_last_activity'
+const INACTIVITY_MS = 2 * 60 * 60 * 1000  // 2 hours
+const ACTIVITY_KEY  = 'hp_last_activity'
 
 export function useAuth(requireAuth = false) {
   const router = useRouter()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
-  const warningToastId = useRef<string | null>(null)
+  const throttleRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const signOut = useCallback(async () => {
     localStorage.removeItem(ACTIVITY_KEY)
@@ -23,14 +21,8 @@ export function useAuth(requireAuth = false) {
     router.push('/')
   }, [router])
 
-  // Record activity
   const markActive = useCallback(() => {
     localStorage.setItem(ACTIVITY_KEY, Date.now().toString())
-    // Dismiss warning toast if user becomes active again
-    if (warningToastId.current) {
-      toast.dismiss(warningToastId.current)
-      warningToastId.current = null
-    }
   }, [])
 
   useEffect(() => {
@@ -60,19 +52,25 @@ export function useAuth(requireAuth = false) {
     return () => subscription.unsubscribe()
   }, [requireAuth, router])
 
-  // Inactivity timeout — only active when logged in
+  // Inactivity timeout — only runs when logged in
   useEffect(() => {
     if (!profile) return
 
-    // Initialise activity timestamp
+    // Stamp activity on mount if not already set
     if (!localStorage.getItem(ACTIVITY_KEY)) markActive()
 
+    // Check on page open — if already idle for 2h, sign out immediately
+    const last = parseInt(localStorage.getItem(ACTIVITY_KEY) || '0', 10)
+    if (Date.now() - last >= INACTIVITY_MS) {
+      signOut()
+      return
+    }
+
     const events = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart']
-    let throttle: ReturnType<typeof setTimeout> | null = null
 
     function onActivity() {
-      if (throttle) return
-      throttle = setTimeout(() => { throttle = null }, 10_000) // throttle to once per 10s
+      if (throttleRef.current) return
+      throttleRef.current = setTimeout(() => { throttleRef.current = null }, 10_000)
       markActive()
     }
 
@@ -80,23 +78,16 @@ export function useAuth(requireAuth = false) {
 
     const interval = setInterval(() => {
       const last = parseInt(localStorage.getItem(ACTIVITY_KEY) || '0', 10)
-      const idle = Date.now() - last
-
-      if (idle >= INACTIVITY_TIMEOUT_MS) {
+      if (Date.now() - last >= INACTIVITY_MS) {
         clearInterval(interval)
-        signOut().then(() => toast('You were signed out due to inactivity.'))
-      } else if (idle >= INACTIVITY_TIMEOUT_MS - WARNING_BEFORE_MS && !warningToastId.current) {
-        warningToastId.current = toast(
-          'You\'ll be signed out in 1 minute due to inactivity. Move your mouse to stay signed in.',
-          { duration: WARNING_BEFORE_MS, icon: '⏱' }
-        )
+        signOut()
       }
     }, 30_000) // check every 30 seconds
 
     return () => {
       events.forEach(e => window.removeEventListener(e, onActivity))
       clearInterval(interval)
-      if (throttle) clearTimeout(throttle)
+      if (throttleRef.current) clearTimeout(throttleRef.current)
     }
   }, [profile, markActive, signOut])
 
